@@ -2531,12 +2531,12 @@
 // ---- Firebase Config — یہاں اپنے Firebase پراجیکٹ کی تفصیلات ڈالیں ----
 // یہ تفصیلات Firebase Console > Project Settings > General > Your apps میں ملتی ہیں
 const FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCEMLxC9stjQFbDz-LIgrcZV4Nu0gbXAj8",
+  authDomain: "ffpos-license.firebaseapp.com",
+  projectId: "ffpos-license",
+  storageBucket: "ffpos-license.firebasestorage.app",
+  messagingSenderId: "641553421260",
+  appId: "1:641553421260:web:3649a16e4a7bc33d564369"
 };
 
 let _ffDb = null;
@@ -2757,7 +2757,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '10aug0426pm';
+const FF_APP_VERSION = '10aug0827pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -7501,7 +7501,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '10aug0426pm';
+const APP_VERSION = '10aug0827pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
