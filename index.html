@@ -2683,15 +2683,35 @@ function closeContactModal(){
 }
 
 // ============================================================
-// FREE TRIAL
+// FREE TRIAL — اب Firestore میں UID کے ساتھ محفوظ (data clear/reinstall سے دوبارہ نہیں ملتا)
 // ============================================================
 const TRIAL_DAYS = 7;
 const TRIAL_KEY  = 'ff_free_trial_used';
 
-function startFreeTrial(){
-  if(localStorage.getItem(TRIAL_KEY)){
-    // Trial پہلے ہو چکا — صرف ایک بار ملتا ہے
-    const msg = document.getElementById('setupMsg');
+async function startFreeTrial(){
+  const msg = document.getElementById('setupMsg');
+
+  if(!_ffDb){
+    msg.textContent = '⚠️ ٹرائل کے لیے انٹرنیٹ کنکشن درکار ہے';
+    msg.className = 'ff-ov-msg error';
+    return;
+  }
+
+  msg.textContent = '⏳ چیک ہو رہا ہے...';
+  msg.className = 'ff-ov-msg info';
+
+  const trialRef = _ffDb.collection('trials').doc(String(FF_UID));
+  let snap;
+  try{
+    snap = await trialRef.get();
+  }catch(e){
+    msg.textContent = '⚠️ انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں';
+    msg.className = 'ff-ov-msg error';
+    return;
+  }
+
+  if(snap.exists){
+    // اس UID پر ٹرائل پہلے ہی استعمال ہو چکا — دوبارہ نہیں مل سکتا
     msg.textContent = '⚠️ ٹرائل پہلے استعمال ہو چکا — Activation Code لیں';
     msg.className = 'ff-ov-msg error';
     setTimeout(()=>{
@@ -2700,16 +2720,25 @@ function startFreeTrial(){
     }, 1500);
     return;
   }
-  // پہلی بار — 7 دن trial شروع
+
   const _tnow = Date.now();
   const expiry = _tnow + (TRIAL_DAYS * 86400000);
+
+  try{
+    // یہ ریکارڈ Firestore میں مستقل رہے گا — دوبارہ نہیں بن سکتا (rules میں update/delete بند ہے)
+    await trialRef.set({ uid: FF_UID, usedAt: _tnow });
+  }catch(e){
+    msg.textContent = '⚠️ ناکام — دوبارہ کوشش کریں';
+    msg.className = 'ff-ov-msg error';
+    return;
+  }
+
   localStorage.setItem('ff_sub_expiry', expiry);
   localStorage.setItem('ff_sub_start', _tnow);
   localStorage.setItem('ff_sub_days', TRIAL_DAYS);
   localStorage.setItem('ff_sub_salt', 'trial');
   localStorage.setItem(TRIAL_KEY, '1');
 
-  const msg = document.getElementById('setupMsg');
   msg.textContent = '✅ 7 دن کا مفت ٹرائل شروع!';
   msg.className = 'ff-ov-msg ok';
 
@@ -2757,7 +2786,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '10aug0827pm';
+const FF_APP_VERSION = '10aug0938pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -7501,7 +7530,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '10aug0827pm';
+const APP_VERSION = '10aug0938pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
