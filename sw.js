@@ -1,5 +1,5 @@
 // FF POS — Service Worker (بنیادی آف لائن سپورٹ)
-const CACHE_NAME = 'ffpos-cache-11aug0541am';
+const CACHE_NAME = 'ffpos-cache-11aug0735am';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -31,6 +31,22 @@ self.addEventListener('activate', (event) => {
 // آف لائن ہونے پر cache سے دکھائیں
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  // ---- صفحہ کھلنے کی درخواست (navigation) — آف لائن ہونے پر ہمیشہ index.html دکھائیں ----
+  // (exact-URL cache match کبھی ناکام ہو سکتا ہے، اس لیے واضح طور پر index.html کی طرف موڑا جا رہا ہے)
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          return response;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
