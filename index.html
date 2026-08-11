@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FF003</title>
+<title>FF118TU0800AM</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <meta name="theme-color" content="#1e3a8a">
@@ -1943,7 +1943,22 @@
 
       <div class="items-grid" id="itemsGrid"></div>
       <div class="pay-section">
-        <div style="display:flex;gap:0;align-items:stretch;">
+        <div style="display:flex;gap:8px;align-items:stretch;">
+          <!-- CLEAR CART — موجودہ (ابھی تک نہ بکا) آرڈر ایک ٹیپ میں صاف کریں -->
+          <button id="clearCartBtn" onclick="clearCurrentOrder()" title="کارٹ صاف کریں" style="
+            flex:0 0 62px;padding:0;border:none;border-radius:16px;
+            background:linear-gradient(175deg,#8d6e63 0%,#5d4037 50%,#3e2723 100%);
+            color:#fff;font-family:var(--font-black);
+            display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+            box-shadow:
+              0 8px 0 rgba(0,0,0,0.28),
+              0 10px 24px rgba(0,0,0,0.35),
+              inset 0 1px 0 rgba(255,255,255,0.25),
+              inset 0 -4px 0 rgba(0,0,0,0.2);
+            min-height:72px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+            <span style="font-size:24px;line-height:1;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.4));">🗑️</span>
+            <span style="font-size:10px;font-weight:900;">CLEAR</span>
+          </button>
           <!-- PAYMENT/PRINT button — full width, horizontal layout: printer left, amount box right -->
           <button id="mainPayBtn" onclick="directPrint()" style="
             flex:1;min-width:0;padding:0;border:none;border-radius:16px;
@@ -2786,7 +2801,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '11aug0541am';
+const FF_APP_VERSION = 'FF118TU0800AM';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -4468,6 +4483,7 @@ async function directPrint(){
     dateStr:new Date().toLocaleDateString('en-PK'),
     items,total,
     mode:'cash',
+    _editable:true,
   };
 
   // auto-reconnect اگر پرنٹر saved ہو
@@ -7640,7 +7656,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '11aug0541am';
+const APP_VERSION = 'FF118TU0800AM';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
