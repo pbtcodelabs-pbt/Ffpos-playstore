@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FF003</title>
+<title>FFPOS</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <meta name="theme-color" content="#1e3a8a">
@@ -1943,7 +1943,14 @@
 
       <div class="items-grid" id="itemsGrid"></div>
       <div class="pay-section">
-        <div style="display:flex;gap:0;align-items:stretch;">
+        <div style="display:flex;gap:8px;align-items:stretch;">
+          <!-- کارٹ صاف کریں — موجودہ آرڈر (ابھی تک بل نہیں بنا) ری سیٹ کرے -->
+          <button id="mainClearCartBtn" onclick="_clearCurrentCart()" title="🗑️ کارٹ صاف کریں" style="
+            flex:0 0 auto;width:58px;border:none;border-radius:16px;
+            background:linear-gradient(160deg,#c62828,#8e0000);
+            color:#fff;font-size:24px;cursor:pointer;
+            box-shadow:0 8px 0 rgba(0,0,0,0.28),0 10px 24px rgba(142,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.25);
+            -webkit-tap-highlight-color:transparent;">🗑️</button>
           <!-- PAYMENT/PRINT button — full width, horizontal layout: printer left, amount box right -->
           <button id="mainPayBtn" onclick="directPrint()" style="
             flex:1;min-width:0;padding:0;border:none;border-radius:16px;
@@ -2790,12 +2797,14 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '11aug0557pm';
+const FF_APP_VERSION = '11aug0623pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
     localStorage.setItem('ff_app_version', FF_APP_VERSION);
   }
+  // براؤزر ٹیب کا عنوان بھی ہمیشہ تازہ ترین ورژن کے ساتھ اپڈیٹ رکھیں
+  document.title = 'FFPOS — ' + FF_APP_VERSION;
 })();
 
 
@@ -4418,6 +4427,16 @@ function removeItem(id, e){
   setCurrentOrder(o); renderItems(); buildTablePanel(); updatePayBtn();
 }
 
+// موجودہ کارٹ (ابھی تک بل نہیں بنا) صاف کریں — مین پیج پر 🗑️ بٹن
+function _clearCurrentCart(){
+  const o=getCurrentOrder();
+  if(!Object.keys(o).length){ showToast('کارٹ پہلے ہی خالی ہے'); return; }
+  if(!confirm('⚠️ کیا موجودہ کارٹ صاف کرنا چاہتے ہیں؟')) return;
+  setCurrentOrder({});
+  renderItems(); buildTablePanel(); updatePayBtn();
+  showToast('🗑️ کارٹ صاف ہو گیا');
+}
+
 // + بٹن touch
 function _plusTouch(id, e){
   e.stopPropagation(); e.preventDefault();
@@ -4526,6 +4545,10 @@ function _showFallbackPreview(sale){
   _billFontSize=parseInt(localStorage.getItem('ff_bill_font_size')||'11');
   document.getElementById('billPreviewContent').style.fontSize=_billFontSize+'px';
   {const _el_bpTableLabel=document.getElementById('bpTableLabel');if(_el_bpTableLabel)_el_bpTableLabel.textContent='Counter';}
+  // یہ بل ابھی pending ہے — ترمیم/حذف بٹن دکھائیں
+  if(pendingSale) pendingSale._editable = true;
+  const editRow = document.getElementById('billEditRow');
+  if(editRow) editRow.style.display='flex';
   // Pay mode بٹن چھپاؤ، صرف "مکمل" بٹن دکھاؤ
   document.getElementById('payModeBtns').style.display='none';
   document.getElementById('altRow').style.display='none';
@@ -4557,8 +4580,9 @@ function fallbackComplete(){
     document.getElementById('billPreviewModal').classList.remove('open');
     document.getElementById('payModeBtns').style.display='grid';
     document.getElementById('altRow').style.display='';
-    const pb=document.getElementById('bpfPrintBtn'); if(pb){ pb.style.display=''; pb.onclick=executePrint; }
     const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
+    const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
+    const pb=document.getElementById('bpfPrintBtn'); if(pb){ pb.style.display=''; pb.onclick=executePrint; }
     _hideProcessBtn();
     renderSummary();
     showToast('✅ پیمنٹ وصول — اگلا گاہک');
@@ -4801,10 +4825,13 @@ function _editBillGoBack(){
   if(!pendingSale) return;
   document.getElementById('billPreviewModal').classList.remove('open');
   document.getElementById('payModeBtns').style.display='grid';
+  document.getElementById('altRow').style.display='';
   const btn = document.getElementById('bpfPrintBtn');
   if(btn){ btn.style.background=''; btn.style.display=''; btn.onclick=executePrint; }
   _showNoPrinterRow(false);
   document.getElementById('altRow').classList.remove('show');
+  const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
+  const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
   // pendingSale خالی کر دیں — اگلی بار "Pay" دبانے پر تازہ ترین کارٹ سے نیا بل بنے گا
   pendingSale = null;
 }
@@ -4822,6 +4849,12 @@ function _deleteWholeBill(){
   setCurrentOrder({});
   renderItems(); buildTablePanel(); updatePayBtn(); renderSummary();
   document.getElementById('billPreviewModal').classList.remove('open');
+  document.getElementById('payModeBtns').style.display='grid';
+  document.getElementById('altRow').style.display='';
+  const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
+  const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
+  const btn = document.getElementById('bpfPrintBtn');
+  if(btn){ btn.style.background=''; btn.style.display=''; btn.onclick=executePrint; }
   showToast('🗑️ بل حذف ہو گیا');
 }
 
@@ -4896,6 +4929,10 @@ function closeBillPreview(){
   btn.onclick = executePrint;
   _showNoPrinterRow(false);
   document.getElementById('altRow').classList.remove('show');
+  document.getElementById('altRow').style.display='';
+  // fallback/edit UI اگلی بار کے لیے صاف کریں
+  const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
+  const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
   // If sale was already committed, don't go back — just close
   if(!pendingSale) return;
   // Sale not yet committed → user going back to edit
@@ -7571,7 +7608,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '11aug0557pm';
+const APP_VERSION = '11aug0623pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
