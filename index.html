@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FF118TU0800AM</title>
+<title>FF003</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <meta name="theme-color" content="#1e3a8a">
@@ -1943,22 +1943,7 @@
 
       <div class="items-grid" id="itemsGrid"></div>
       <div class="pay-section">
-        <div style="display:flex;gap:8px;align-items:stretch;">
-          <!-- CLEAR CART — موجودہ (ابھی تک نہ بکا) آرڈر ایک ٹیپ میں صاف کریں -->
-          <button id="clearCartBtn" onclick="clearCurrentOrder()" title="کارٹ صاف کریں" style="
-            flex:0 0 62px;padding:0;border:none;border-radius:16px;
-            background:linear-gradient(175deg,#8d6e63 0%,#5d4037 50%,#3e2723 100%);
-            color:#fff;font-family:var(--font-black);
-            display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-            box-shadow:
-              0 8px 0 rgba(0,0,0,0.28),
-              0 10px 24px rgba(0,0,0,0.35),
-              inset 0 1px 0 rgba(255,255,255,0.25),
-              inset 0 -4px 0 rgba(0,0,0,0.2);
-            min-height:72px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
-            <span style="font-size:24px;line-height:1;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.4));">🗑️</span>
-            <span style="font-size:10px;font-weight:900;">CLEAR</span>
-          </button>
+        <div style="display:flex;gap:0;align-items:stretch;">
           <!-- PAYMENT/PRINT button — full width, horizontal layout: printer left, amount box right -->
           <button id="mainPayBtn" onclick="directPrint()" style="
             flex:1;min-width:0;padding:0;border:none;border-radius:16px;
@@ -2253,6 +2238,10 @@
       <span id="bpTableLabel" style="font-size:11px;"></span>
     </div>
     <div class="bill-preview-body" id="billPreviewContent"></div>
+    <div id="billEditRow" style="display:none;gap:8px;padding:0 2px 8px;">
+      <button type="button" onclick="_editBillGoBack()" style="flex:1;padding:11px 4px;border:none;border-radius:10px;background:linear-gradient(160deg,#1565c0,#0d47a1);color:#fff;font-weight:900;font-size:13px;box-shadow:0 3px 8px rgba(13,71,161,0.3);">✏️ ترمیم کریں</button>
+      <button type="button" onclick="_deleteWholeBill()" style="flex:1;padding:11px 4px;border:none;border-radius:10px;background:linear-gradient(160deg,#c62828,#b71c1c);color:#fff;font-weight:900;font-size:13px;box-shadow:0 3px 8px rgba(183,28,28,0.3);">🗑️ پورا بل حذف</button>
+    </div>
     <div class="pay-mode-btns" id="payModeBtns">
       <button class="pay-mode-btn cash" id="pmbCash" onclick="selectPayMode('cash')" style="width:100%;">💵 CASH RECEIVED</button>
     </div>
@@ -2801,7 +2790,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = 'FF118TU0800AM';
+const FF_APP_VERSION = '11aug0557pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -4483,7 +4472,6 @@ async function directPrint(){
     dateStr:new Date().toLocaleDateString('en-PK'),
     items,total,
     mode:'cash',
-    _editable:true,
   };
 
   // auto-reconnect اگر پرنٹر saved ہو
@@ -4800,101 +4788,25 @@ function buildBillHtml(sale){
       <div style="background:${bt.footerBg};border-radius:8px;padding:8px 10px;text-align:center;margin-top:2px;">
         <div style="font-family:${_billFont};font-weight:900;font-size:9.5px;color:${bt.footerText};line-height:1.6;">${footerLines}</div>
       </div>
-      ${sale._editable ? _buildBillEditPanel(sale) : ''}
     </div>`;
 }
 
 // ============================================================
-// BILL LIVE EDIT PANEL — بل پرنٹ/کمپلیٹ ہونے سے پہلے ترمیم
+// BILL EDIT — "ترمیم" مین پیج پر واپس لے جاتا ہے، جہاں اصل کارڈز
+// کے +/- سے آرڈر بدلا جا سکتا ہے۔ بل پریویو خود کبھی نہیں بدلتا۔
 // ============================================================
-function _buildBillEditPanel(sale){
-  const rows = sale.items.map((i,idx)=>`
-    <div style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:7px 8px;margin-bottom:6px;">
-      <div style="flex:1;font-size:12px;font-weight:700;color:#222;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${i.name}</div>
-      <button type="button" onclick="_editQty(${idx},-1)" style="width:28px;height:28px;border:none;border-radius:6px;background:#e53935;color:#fff;font-weight:900;font-size:16px;">−</button>
-      <span style="min-width:20px;text-align:center;font-weight:900;font-size:13px;">${i.qty}</span>
-      <button type="button" onclick="_editQty(${idx},1)" style="width:28px;height:28px;border:none;border-radius:6px;background:#2e7d32;color:#fff;font-weight:900;font-size:16px;">+</button>
-      <span style="font-size:11px;color:#555;min-width:58px;text-align:right;">Rs.${i.total}</span>
-      <button type="button" onclick="_deleteItem(${idx})" style="width:28px;height:28px;border:none;border-radius:6px;background:#757575;color:#fff;font-size:13px;">🗑️</button>
-    </div>`).join('');
 
-  return `
-  <div style="margin-top:10px;padding:10px;background:#fff8e1;border:1.5px dashed #ffa000;border-radius:10px;">
-    <div style="font-size:12px;font-weight:900;color:#e65100;margin-bottom:8px;text-align:center;">✏️ آرڈر میں ترمیم کریں</div>
-    ${rows}
-    <button type="button" onclick="_openAddItemPanel()" style="width:100%;padding:9px;border:none;border-radius:8px;background:#1565c0;color:#fff;font-weight:900;font-size:12px;margin-top:2px;">➕ نیا آئٹم شامل کریں</button>
-    <div id="addItemPanel" style="display:none;margin-top:8px;background:#fff;border-radius:8px;padding:9px;border:1px solid #ccc;">
-      <select id="addItemSelect" style="width:100%;padding:9px;border-radius:6px;border:1px solid #ccc;margin-bottom:7px;font-size:12px;"></select>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <button type="button" onclick="_addItemQtyStep(-1)" style="width:32px;height:32px;border:none;border-radius:6px;background:#e53935;color:#fff;font-size:16px;">−</button>
-        <span id="addItemQtyVal" style="min-width:26px;text-align:center;font-weight:900;">1</span>
-        <button type="button" onclick="_addItemQtyStep(1)" style="width:32px;height:32px;border:none;border-radius:6px;background:#2e7d32;color:#fff;font-size:16px;">+</button>
-        <button type="button" onclick="_confirmAddItem()" style="flex:1;padding:9px;border:none;border-radius:6px;background:#2e7d32;color:#fff;font-weight:900;font-size:12px;">شامل کریں ✔</button>
-      </div>
-    </div>
-    <button type="button" onclick="_deleteWholeBill()" style="width:100%;padding:10px;border:none;border-radius:8px;background:#b71c1c;color:#fff;font-weight:900;font-size:13px;margin-top:10px;">🗑️ پورا بل حذف کریں</button>
-  </div>`;
-}
-
-let _addItemQty = 1;
-
-function _refreshBillPreviewLive(){
+// ترمیم بٹن — پریویو بند، مین پیج پر واپس، آرڈر جوں کا توں محفوظ
+function _editBillGoBack(){
   if(!pendingSale) return;
-  document.getElementById('billPreviewContent').innerHTML = buildBillHtml(pendingSale);
-  _applyBillFontSize();
-}
-
-function _editQty(idx, delta){
-  if(!pendingSale) return;
-  const it = pendingSale.items[idx];
-  if(!it) return;
-  it.qty = Math.max(1, it.qty + delta);
-  it.total = it.qty * it.price;
-  pendingSale.total = pendingSale.items.reduce((s,x)=>s+x.total,0);
-  _refreshBillPreviewLive();
-}
-
-function _deleteItem(idx){
-  if(!pendingSale) return;
-  if(pendingSale.items.length<=1){ showToast('⚠️ کم از کم ایک آئٹم ضروری ہے — پورا بل حذف کریں'); return; }
-  if(!confirm('یہ آئٹم بل سے حذف کریں؟')) return;
-  pendingSale.items.splice(idx,1);
-  pendingSale.total = pendingSale.items.reduce((s,x)=>s+x.total,0);
-  _refreshBillPreviewLive();
-}
-
-function _openAddItemPanel(){
-  const panel = document.getElementById('addItemPanel');
-  const sel = document.getElementById('addItemSelect');
-  if(!panel || !sel) return;
-  sel.innerHTML = MENU.map(m=>`<option value="${m.id}">${m.name} — Rs.${m.price}</option>`).join('');
-  _addItemQty = 1;
-  const qv = document.getElementById('addItemQtyVal'); if(qv) qv.textContent = '1';
-  panel.style.display = panel.style.display==='block' ? 'none' : 'block';
-}
-
-function _addItemQtyStep(d){
-  _addItemQty = Math.max(1, _addItemQty + d);
-  const qv = document.getElementById('addItemQtyVal'); if(qv) qv.textContent = _addItemQty;
-}
-
-function _confirmAddItem(){
-  if(!pendingSale) return;
-  const sel = document.getElementById('addItemSelect');
-  if(!sel || !sel.value) return;
-  const id = +sel.value;
-  const item = MENU.find(m=>m.id===id);
-  if(!item) return;
-  const existing = pendingSale.items.find(x=>x.id===id);
-  if(existing){
-    existing.qty += _addItemQty;
-    existing.total = existing.qty * existing.price;
-  } else {
-    pendingSale.items.push({id, name:item.name, qty:_addItemQty, price:item.price, total:item.price*_addItemQty});
-  }
-  pendingSale.total = pendingSale.items.reduce((s,x)=>s+x.total,0);
-  _refreshBillPreviewLive();
-  showToast('✅ آئٹم شامل ہو گیا');
+  document.getElementById('billPreviewModal').classList.remove('open');
+  document.getElementById('payModeBtns').style.display='grid';
+  const btn = document.getElementById('bpfPrintBtn');
+  if(btn){ btn.style.background=''; btn.style.display=''; btn.onclick=executePrint; }
+  _showNoPrinterRow(false);
+  document.getElementById('altRow').classList.remove('show');
+  // pendingSale خالی کر دیں — اگلی بار "Pay" دبانے پر تازہ ترین کارٹ سے نیا بل بنے گا
+  pendingSale = null;
 }
 
 function _deleteWholeBill(){
@@ -4919,6 +4831,9 @@ async function showBillPreview(sale){
   {const _el_bpTableLabel=document.getElementById('bpTableLabel');if(_el_bpTableLabel)_el_bpTableLabel.textContent = tName;}
   const body = document.getElementById('billPreviewContent');
   body.innerHTML = html;
+  // ترمیم/حذف بٹن صرف اسی وقت جب یہ ابھی pending بل ہو (مکمل شدہ/PAID بلوں پر نہیں)
+  const editRow = document.getElementById('billEditRow');
+  if(editRow) editRow.style.display = sale._editable ? 'flex' : 'none';
   // فونٹ سائز سیدھا لگائیں — cfg.zoom نہیں، _billFontSize سے
   _billFontSize = parseInt(localStorage.getItem('ff_bill_font_size')||'11');
   body.style.fontSize = _billFontSize + 'px';
@@ -7656,7 +7571,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = 'FF118TU0800AM';
+const APP_VERSION = '11aug0557pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
