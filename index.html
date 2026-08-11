@@ -2244,6 +2244,14 @@
       <span>🧾 Bill Preview</span>
       <span id="bpTableLabel" style="font-size:11px;"></span>
     </div>
+    <div id="bpCustomerRow" style="display:flex;gap:6px;padding:8px 8px 4px;">
+      <input type="text" id="bpCustomerName" placeholder="👤 کسٹمر کا نام (اختیاری)"
+        oninput="_updateCustomerInfo()"
+        style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:Arial,sans-serif;">
+      <input type="tel" id="bpCustomerMobile" placeholder="📱 موبائل نمبر (اختیاری)"
+        oninput="_updateCustomerInfo()"
+        style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:Arial,sans-serif;">
+    </div>
     <div class="bill-preview-body" id="billPreviewContent"></div>
     <div id="billEditRow" style="display:none;gap:8px;padding:0 2px 8px;">
       <button type="button" onclick="_editBillGoBack()" style="flex:1;padding:11px 4px;border:none;border-radius:10px;background:linear-gradient(160deg,#1565c0,#0d47a1);color:#fff;font-weight:900;font-size:13px;box-shadow:0 3px 8px rgba(13,71,161,0.3);">✏️ ترمیم کریں</button>
@@ -2797,7 +2805,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '11aug0623pm';
+const FF_APP_VERSION = '11aug0734pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -4491,6 +4499,7 @@ async function directPrint(){
     dateStr:new Date().toLocaleDateString('en-PK'),
     items,total,
     mode:'cash',
+    customerName:'', customerMobile:'',
   };
 
   // auto-reconnect اگر پرنٹر saved ہو
@@ -4539,6 +4548,33 @@ function _hideProcessBtn(){
   // processOkBtn موجود نہیں — کچھ نہیں کرنا
 }
 
+// ============================================================
+// کسٹمر نام / موبائل نمبر — بل کے ساتھ محفوظ (ڈیلیوری رابطے کے لیے)
+// ============================================================
+function _showCustomerRow(show, sale){
+  const row = document.getElementById('bpCustomerRow');
+  if(!row) return;
+  row.style.display = show ? 'flex' : 'none';
+  const nameEl = document.getElementById('bpCustomerName');
+  const mobEl  = document.getElementById('bpCustomerMobile');
+  if(nameEl) nameEl.value = (sale && sale.customerName) || '';
+  if(mobEl)  mobEl.value  = (sale && sale.customerMobile) || '';
+  const editable = !sale || sale._editable !== false;
+  if(nameEl) nameEl.disabled = !editable;
+  if(mobEl)  mobEl.disabled  = !editable;
+}
+function _updateCustomerInfo(){
+  if(!pendingSale) return;
+  const nameEl = document.getElementById('bpCustomerName');
+  const mobEl  = document.getElementById('bpCustomerMobile');
+  pendingSale.customerName   = nameEl ? nameEl.value.trim() : '';
+  pendingSale.customerMobile = mobEl  ? mobEl.value.trim()  : '';
+  // پریویو میں فوری اپڈیٹ دکھائیں
+  const body = document.getElementById('billPreviewContent');
+  if(body) body.innerHTML = buildBillHtml(pendingSale);
+  _applyBillFontSize();
+}
+
 function _showFallbackPreview(sale){
   const html=buildBillHtml({...sale,mode:'cash'});
   document.getElementById('billPreviewContent').innerHTML=html;
@@ -4549,6 +4585,7 @@ function _showFallbackPreview(sale){
   if(pendingSale) pendingSale._editable = true;
   const editRow = document.getElementById('billEditRow');
   if(editRow) editRow.style.display='flex';
+  _showCustomerRow(true, sale);
   // Pay mode بٹن چھپاؤ، صرف "مکمل" بٹن دکھاؤ
   document.getElementById('payModeBtns').style.display='none';
   document.getElementById('altRow').style.display='none';
@@ -4582,6 +4619,7 @@ function fallbackComplete(){
     document.getElementById('altRow').style.display='';
     const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
     const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
+  _showCustomerRow(false);
     const pb=document.getElementById('bpfPrintBtn'); if(pb){ pb.style.display=''; pb.onclick=executePrint; }
     _hideProcessBtn();
     renderSummary();
@@ -4609,6 +4647,7 @@ function openPayModal(){
     time:new Date().toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit',hour12:true}),
     dateStr:new Date().toLocaleDateString('en-PK'),
     items,total,mode:null,_editable:true,
+    customerName:'', customerMobile:'',
   };
   showBillPreview(pendingSale);
 }
@@ -4786,6 +4825,7 @@ function buildBillHtml(sale){
       <div style="background:${bt.metaBg};border-radius:7px;padding:5px 10px;margin-bottom:6px;text-align:center;">
         <div style="font-family:${_billFont};font-size:10px;font-weight:900;color:${bt.metaText};">${invLabel} ${sale.invNo} &nbsp;|&nbsp; ${tableName}</div>
         <div style="font-family:${_billFont};font-size:9px;font-weight:bold;color:${bt.metaText};opacity:.8;">${dateStr||sale.dateStr}</div>
+        ${(sale.customerName||sale.customerMobile) ? `<div style="font-family:${_billFont};font-size:9.5px;font-weight:900;color:${bt.metaText};margin-top:3px;">${sale.customerName?('👤 '+sale.customerName):''}${(sale.customerName&&sale.customerMobile)?' &nbsp;|&nbsp; ':''}${sale.customerMobile?('📱 '+sale.customerMobile):''}</div>` : ''}
       </div>
       <table style="width:100%;border-collapse:collapse;margin:0 0 6px;border:1.5px solid ${bt.rowBorder};border-radius:8px;overflow:hidden;">
         <tr style="background:${bt.headerBg};">
@@ -4832,6 +4872,7 @@ function _editBillGoBack(){
   document.getElementById('altRow').classList.remove('show');
   const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
   const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
+  _showCustomerRow(false);
   // pendingSale خالی کر دیں — اگلی بار "Pay" دبانے پر تازہ ترین کارٹ سے نیا بل بنے گا
   pendingSale = null;
 }
@@ -4853,6 +4894,7 @@ function _deleteWholeBill(){
   document.getElementById('altRow').style.display='';
   const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
   const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
+  _showCustomerRow(false);
   const btn = document.getElementById('bpfPrintBtn');
   if(btn){ btn.style.background=''; btn.style.display=''; btn.onclick=executePrint; }
   showToast('🗑️ بل حذف ہو گیا');
@@ -4867,6 +4909,7 @@ async function showBillPreview(sale){
   // ترمیم/حذف بٹن صرف اسی وقت جب یہ ابھی pending بل ہو (مکمل شدہ/PAID بلوں پر نہیں)
   const editRow = document.getElementById('billEditRow');
   if(editRow) editRow.style.display = sale._editable ? 'flex' : 'none';
+  _showCustomerRow(true, sale);
   // فونٹ سائز سیدھا لگائیں — cfg.zoom نہیں، _billFontSize سے
   _billFontSize = parseInt(localStorage.getItem('ff_bill_font_size')||'11');
   body.style.fontSize = _billFontSize + 'px';
@@ -4933,6 +4976,7 @@ function closeBillPreview(){
   // fallback/edit UI اگلی بار کے لیے صاف کریں
   const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
   const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
+  _showCustomerRow(false);
   // If sale was already committed, don't go back — just close
   if(!pendingSale) return;
   // Sale not yet committed → user going back to edit
@@ -5282,6 +5326,17 @@ function _buildBillCanvas(sale, forPrint, lightMode){
       : (sale.dateStr || new Date().toLocaleString('en-PK'));
     ctx.fillText(dateStr, W/2, my);
     my += S(18);
+
+    // کسٹمر نام / موبائل نمبر — اگر درج کیا گیا ہو تو پرنٹ پر بھی دکھائیں
+    if(sale.customerName || sale.customerMobile){
+      ctx.font = `700 ${S(14)}px ${fontFam}`;
+      ctx.fillStyle = C_DARK;
+      const custParts = [];
+      if(sale.customerName) custParts.push('👤 '+sale.customerName);
+      if(sale.customerMobile) custParts.push('📱 '+sale.customerMobile);
+      ctx.fillText(custParts.join('   |   '), W/2, my);
+      my += S(20);
+    }
 
     // thin separator
     ctx.strokeStyle = '#ddd';
@@ -5919,6 +5974,10 @@ function encodeEscPos(sale){
   addBytes(CMD_BOLD_OFF);
   addText(_center(sale.dateStr||'',W)); newLine();
   addText(_center(sale.time||'',W)); newLine();
+  if(sale.customerName || sale.customerMobile){
+    const custLine = [sale.customerName?('Name: '+sale.customerName):'', sale.customerMobile?('Ph: '+sale.customerMobile):''].filter(Boolean).join('  ');
+    addText(_center(custLine.slice(0,W),W)); newLine();
+  }
   newLine();
 
   // ===== ITEMS (no borders, no separators) =====
@@ -7608,7 +7667,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '11aug0623pm';
+const APP_VERSION = '11aug0734pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
