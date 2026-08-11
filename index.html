@@ -2786,7 +2786,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '10aug0938pm';
+const FF_APP_VERSION = '11aug0541am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -4580,7 +4580,7 @@ function openPayModal(){
     table:currentTable,
     time:new Date().toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit',hour12:true}),
     dateStr:new Date().toLocaleDateString('en-PK'),
-    items,total,mode:null,
+    items,total,mode:null,_editable:true,
   };
   showBillPreview(pendingSale);
 }
@@ -4784,7 +4784,117 @@ function buildBillHtml(sale){
       <div style="background:${bt.footerBg};border-radius:8px;padding:8px 10px;text-align:center;margin-top:2px;">
         <div style="font-family:${_billFont};font-weight:900;font-size:9.5px;color:${bt.footerText};line-height:1.6;">${footerLines}</div>
       </div>
+      ${sale._editable ? _buildBillEditPanel(sale) : ''}
     </div>`;
+}
+
+// ============================================================
+// BILL LIVE EDIT PANEL — بل پرنٹ/کمپلیٹ ہونے سے پہلے ترمیم
+// ============================================================
+function _buildBillEditPanel(sale){
+  const rows = sale.items.map((i,idx)=>`
+    <div style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:7px 8px;margin-bottom:6px;">
+      <div style="flex:1;font-size:12px;font-weight:700;color:#222;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${i.name}</div>
+      <button type="button" onclick="_editQty(${idx},-1)" style="width:28px;height:28px;border:none;border-radius:6px;background:#e53935;color:#fff;font-weight:900;font-size:16px;">−</button>
+      <span style="min-width:20px;text-align:center;font-weight:900;font-size:13px;">${i.qty}</span>
+      <button type="button" onclick="_editQty(${idx},1)" style="width:28px;height:28px;border:none;border-radius:6px;background:#2e7d32;color:#fff;font-weight:900;font-size:16px;">+</button>
+      <span style="font-size:11px;color:#555;min-width:58px;text-align:right;">Rs.${i.total}</span>
+      <button type="button" onclick="_deleteItem(${idx})" style="width:28px;height:28px;border:none;border-radius:6px;background:#757575;color:#fff;font-size:13px;">🗑️</button>
+    </div>`).join('');
+
+  return `
+  <div style="margin-top:10px;padding:10px;background:#fff8e1;border:1.5px dashed #ffa000;border-radius:10px;">
+    <div style="font-size:12px;font-weight:900;color:#e65100;margin-bottom:8px;text-align:center;">✏️ آرڈر میں ترمیم کریں</div>
+    ${rows}
+    <button type="button" onclick="_openAddItemPanel()" style="width:100%;padding:9px;border:none;border-radius:8px;background:#1565c0;color:#fff;font-weight:900;font-size:12px;margin-top:2px;">➕ نیا آئٹم شامل کریں</button>
+    <div id="addItemPanel" style="display:none;margin-top:8px;background:#fff;border-radius:8px;padding:9px;border:1px solid #ccc;">
+      <select id="addItemSelect" style="width:100%;padding:9px;border-radius:6px;border:1px solid #ccc;margin-bottom:7px;font-size:12px;"></select>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button type="button" onclick="_addItemQtyStep(-1)" style="width:32px;height:32px;border:none;border-radius:6px;background:#e53935;color:#fff;font-size:16px;">−</button>
+        <span id="addItemQtyVal" style="min-width:26px;text-align:center;font-weight:900;">1</span>
+        <button type="button" onclick="_addItemQtyStep(1)" style="width:32px;height:32px;border:none;border-radius:6px;background:#2e7d32;color:#fff;font-size:16px;">+</button>
+        <button type="button" onclick="_confirmAddItem()" style="flex:1;padding:9px;border:none;border-radius:6px;background:#2e7d32;color:#fff;font-weight:900;font-size:12px;">شامل کریں ✔</button>
+      </div>
+    </div>
+    <button type="button" onclick="_deleteWholeBill()" style="width:100%;padding:10px;border:none;border-radius:8px;background:#b71c1c;color:#fff;font-weight:900;font-size:13px;margin-top:10px;">🗑️ پورا بل حذف کریں</button>
+  </div>`;
+}
+
+let _addItemQty = 1;
+
+function _refreshBillPreviewLive(){
+  if(!pendingSale) return;
+  document.getElementById('billPreviewContent').innerHTML = buildBillHtml(pendingSale);
+  _applyBillFontSize();
+}
+
+function _editQty(idx, delta){
+  if(!pendingSale) return;
+  const it = pendingSale.items[idx];
+  if(!it) return;
+  it.qty = Math.max(1, it.qty + delta);
+  it.total = it.qty * it.price;
+  pendingSale.total = pendingSale.items.reduce((s,x)=>s+x.total,0);
+  _refreshBillPreviewLive();
+}
+
+function _deleteItem(idx){
+  if(!pendingSale) return;
+  if(pendingSale.items.length<=1){ showToast('⚠️ کم از کم ایک آئٹم ضروری ہے — پورا بل حذف کریں'); return; }
+  if(!confirm('یہ آئٹم بل سے حذف کریں؟')) return;
+  pendingSale.items.splice(idx,1);
+  pendingSale.total = pendingSale.items.reduce((s,x)=>s+x.total,0);
+  _refreshBillPreviewLive();
+}
+
+function _openAddItemPanel(){
+  const panel = document.getElementById('addItemPanel');
+  const sel = document.getElementById('addItemSelect');
+  if(!panel || !sel) return;
+  sel.innerHTML = MENU.map(m=>`<option value="${m.id}">${m.name} — Rs.${m.price}</option>`).join('');
+  _addItemQty = 1;
+  const qv = document.getElementById('addItemQtyVal'); if(qv) qv.textContent = '1';
+  panel.style.display = panel.style.display==='block' ? 'none' : 'block';
+}
+
+function _addItemQtyStep(d){
+  _addItemQty = Math.max(1, _addItemQty + d);
+  const qv = document.getElementById('addItemQtyVal'); if(qv) qv.textContent = _addItemQty;
+}
+
+function _confirmAddItem(){
+  if(!pendingSale) return;
+  const sel = document.getElementById('addItemSelect');
+  if(!sel || !sel.value) return;
+  const id = +sel.value;
+  const item = MENU.find(m=>m.id===id);
+  if(!item) return;
+  const existing = pendingSale.items.find(x=>x.id===id);
+  if(existing){
+    existing.qty += _addItemQty;
+    existing.total = existing.qty * existing.price;
+  } else {
+    pendingSale.items.push({id, name:item.name, qty:_addItemQty, price:item.price, total:item.price*_addItemQty});
+  }
+  pendingSale.total = pendingSale.items.reduce((s,x)=>s+x.total,0);
+  _refreshBillPreviewLive();
+  showToast('✅ آئٹم شامل ہو گیا');
+}
+
+function _deleteWholeBill(){
+  if(!pendingSale) return;
+  if(!confirm('⚠️ کیا واقعی پورا بل حذف کرنا چاہتے ہیں؟\nیہ عمل واپس نہیں ہو سکتا۔')) return;
+  const sale = pendingSale;
+  pendingSale = null;
+  if(sale.table != null){
+    if(!tableOrders[sale.table]) tableOrders[sale.table]={};
+    tableOrders[sale.table].order={};
+    saveTableOrders(); updatePendingTabBadge();
+  }
+  setCurrentOrder({});
+  renderItems(); buildTablePanel(); updatePayBtn(); renderSummary();
+  document.getElementById('billPreviewModal').classList.remove('open');
+  showToast('🗑️ بل حذف ہو گیا');
 }
 
 async function showBillPreview(sale){
@@ -7530,7 +7640,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '10aug0938pm';
+const APP_VERSION = '11aug0541am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
