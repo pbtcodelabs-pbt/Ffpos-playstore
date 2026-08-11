@@ -233,7 +233,59 @@
   .screen.active { display:flex; flex-direction:column; }
 
   /* ===== POS LAYOUT ===== */
-  .pos-layout { display:grid; grid-template-columns:1fr; flex:1; overflow:hidden; }
+  .pos-layout { display:grid; grid-template-columns:1fr 72px; flex:1; overflow:hidden; }
+
+  /* ===== TABLE COLUMN — دائیں سائیڈ، اوپر سے نیچے تک ===== */
+  .table-col {
+    display:flex; flex-direction:column; gap:7px;
+    padding:8px 6px; overflow-y:auto; overflow-x:hidden;
+    background:var(--tpanel-bg,#e65100); border-left:2px solid var(--tpanel-border,#bf360c);
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-btn {
+    position:relative; width:100%; aspect-ratio:1/1; flex-shrink:0;
+    border-radius:11px; border:2px solid var(--accent-lt);
+    background:#fff; color:var(--accent);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    font-family:var(--font-black); font-weight:900; font-size:10.5px; line-height:1.15;
+    padding:4px 3px; overflow:hidden; word-break:break-word;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+    box-shadow:0 2px 5px rgba(0,0,0,0.08);
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .table-btn .tbl-name-span { pointer-events:none; }
+  .table-btn.active {
+    background:var(--accent); color:#fff; border-color:var(--accent);
+    box-shadow:0 0 0 2px rgba(0,0,0,0.05), 0 3px 10px rgba(0,0,0,0.2);
+  }
+  /* پینڈنگ بل والا ٹیبل — گلو، مختلف رنگ، تھوڑا اوپر اٹھا ہوا اور آگے نکلا ہوا */
+  .table-btn.pending {
+    background:linear-gradient(160deg,#ff7043,#e64a19);
+    border-color:#bf360c; color:#fff;
+    transform:translateX(-7px) scale(1.08);
+    box-shadow:0 0 14px rgba(230,74,25,0.75), 0 4px 12px rgba(0,0,0,0.3);
+    z-index:5; animation:tblPendingPulse 1.6s ease-in-out infinite;
+  }
+  .table-btn.pending.active {
+    background:linear-gradient(160deg,#ffab00,#ff6f00);
+    border-color:#e65100;
+  }
+  @keyframes tblPendingPulse {
+    0%,100% { box-shadow:0 0 14px rgba(230,74,25,0.75), 0 4px 12px rgba(0,0,0,0.3); }
+    50%     { box-shadow:0 0 20px rgba(230,74,25,0.95), 0 4px 14px rgba(0,0,0,0.35); }
+  }
+  .table-btn .tbl-edit-ico {
+    position:absolute; top:1px; right:2px; font-size:8px; opacity:.55;
+    pointer-events:none;
+  }
+  .table-add-btn {
+    width:100%; aspect-ratio:1/1; flex-shrink:0;
+    border-radius:11px; border:2px dashed var(--accent);
+    background:transparent; color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; font-weight:900; cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
 
   /* ===== MENU PANEL ===== */
   .menu-panel { padding:8px; display:flex; flex-direction:column; overflow:hidden; min-height:0; }
@@ -248,7 +300,7 @@
 
   .items-grid {
     display:grid;
-    grid-template-columns:repeat(2, calc((100% - 16px) / 2)) !important;
+    grid-template-columns:repeat(2, calc((100% - 8px) / 2)) !important;
     gap:8px; align-content:start;
     justify-content:center;
     overflow-y:scroll; overflow-x:hidden;
@@ -978,8 +1030,6 @@
   .alt-btn span.lbl  { font-size:10px; letter-spacing:.4px; }
 
   @media (max-width:600px) {
-    .pos-layout { grid-template-columns:1fr; }
-    .items-grid { grid-template-columns:repeat(3,1fr) !important; gap:12px; }
     .item-card { height:auto; }
   }
 
@@ -1992,7 +2042,8 @@
         </div>
       </div>
     </div>
-    <!-- ٹیبل پینل ہٹا دیا گیا -->
+    <!-- ٹیبل کالم — دائیں سائیڈ، اوپر سے نیچے -->
+    <div class="table-col" id="tableCol"></div>
   </div>
 </div>
 
@@ -2805,7 +2856,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '11aug0734pm';
+const FF_APP_VERSION = '11aug0745pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -3258,7 +3309,6 @@ function navForward(){
 // ============================================================
 // TABLE PANEL
 // ============================================================
-function buildTablePanel(){}
 function selectTable(t){ currentTable=t; buildTablePanel(); updatePayBtn(); renderItems(); }
 
 function updatePendingTabBadge(){}
@@ -3281,6 +3331,7 @@ function buildMenu(){
     `<button class="cat-tab ${c===currentCat?'active':''}" onclick="filterCat('${c}')">${c}</button>`
   ).join('');
   renderItems();
+  buildTablePanel();
 }
 function filterCat(cat){ currentCat=cat; buildMenu(); }
 
@@ -4396,14 +4447,80 @@ function editTableOrder(t){
 }
 
 // ============================================================
-// TABLE NAMES — ٹیبل نمبر سسٹم مکمل ختم، صرف "Counter" استعمال ہوتا ہے
+// TABLE NAMES — دکاندار اپنی مرضی سے نام رکھ سکتا ہے (اردو/انگلش)
 // ============================================================
-function getTableName(t){
-  return 'Counter';
+let tableList = JSON.parse(localStorage.getItem('ff_table_list')||'null');
+if(!tableList){
+  tableList = [1,2,3,4,5,6].map(n=>({id:n,name:'Table '+n}));
+  localStorage.setItem('ff_table_list', JSON.stringify(tableList));
 }
-function changeTableCount(delta){ /* ٹیبل سسٹم ہٹا دیا گیا — اب کوئی اثر نہیں */ }
-function renderTableNamesEditor(){ /* ٹیبل سسٹم ہٹا دیا گیا — کارڈ خود بھی ہٹا دیا گیا */ }
-function saveTableNamesFromEditor(){ /* ٹیبل سسٹم ہٹا دیا گیا — اب کوئی اثر نہیں */ }
+function saveTableList(){ localStorage.setItem('ff_table_list', JSON.stringify(tableList)); }
+function getTableName(t){
+  if(t==='C') return 'Counter';
+  const tbl = tableList.find(x=>x.id===+t);
+  return tbl ? tbl.name : ('Table '+t);
+}
+function changeTableCount(delta){ /* پرانا اسٹیپر ہٹا دیا گیا — + بٹن سے نیا ٹیبل شامل کریں */ }
+function renderTableNamesEditor(){ /* ٹیبل کالم خود ہی نام دکھاتا ہے، الگ ایڈیٹر کی ضرورت نہیں */ }
+function saveTableNamesFromEditor(){ /* اب کوئی اثر نہیں */ }
+
+// نیا ٹیبل شامل کریں
+function _addTable(){
+  const name = prompt('نئے ٹیبل کا نام لکھیں (اردو یا انگلش میں):','');
+  if(name===null) return;
+  const trimmed = name.trim();
+  if(!trimmed){ showToast('⚠️ نام درکار ہے'); return; }
+  const nextId = (tableList.reduce((m,t)=>Math.max(m,t.id),0)) + 1;
+  tableList.push({id:nextId, name:trimmed});
+  saveTableList();
+  buildTablePanel();
+  showToast('✅ ٹیبل شامل ہو گیا');
+}
+
+// ٹیبل کا نام بدلیں یا حذف کریں
+function _tableOptions(id){
+  const tbl = tableList.find(x=>x.id===id);
+  if(!tbl) return;
+  const newName = prompt('ٹیبل کا نام تبدیل کریں (خالی چھوڑ کر حذف کریں):', tbl.name);
+  if(newName===null) return;
+  const trimmed = newName.trim();
+  if(trimmed===''){
+    const hasPending = tableOrders[id] && Object.keys(tableOrders[id].order||{}).length>0;
+    if(hasPending){ showToast('⚠️ پہلے اس ٹیبل کا بل مکمل کریں'); return; }
+    if(!confirm('کیا واقعی "'+tbl.name+'" حذف کرنا چاہتے ہیں؟')) return;
+    tableList = tableList.filter(x=>x.id!==id);
+    saveTableList();
+    delete tableOrders[id]; saveTableOrders();
+    if(currentTable===id){ currentTable='C'; renderItems(); updatePayBtn(); }
+    buildTablePanel();
+    showToast('🗑️ ٹیبل حذف ہو گیا');
+  } else {
+    tbl.name = trimmed;
+    saveTableList();
+    buildTablePanel();
+    showToast('✅ نام تبدیل ہو گیا');
+  }
+}
+
+function buildTablePanel(){
+  const col = document.getElementById('tableCol');
+  if(!col) return;
+  const counterPending = tableOrders['C'] && Object.keys(tableOrders['C'].order||{}).length>0;
+  let html = `
+    <div class="table-btn ${currentTable==='C'?'active':''} ${counterPending?'pending':''}" onclick="selectTable('C')">
+      <span class="tbl-name-span">🧾<br>Counter</span>
+    </div>`;
+  html += tableList.map(t=>{
+    const pending = tableOrders[t.id] && Object.keys(tableOrders[t.id].order||{}).length>0;
+    return `
+    <div class="table-btn ${currentTable===t.id?'active':''} ${pending?'pending':''}" onclick="selectTable(${t.id})" oncontextmenu="event.preventDefault();_tableOptions(${t.id})">
+      <span class="tbl-edit-ico" onclick="event.stopPropagation();_tableOptions(${t.id})" style="pointer-events:auto;">✏️</span>
+      <span class="tbl-name-span">${t.name}</span>
+    </div>`;
+  }).join('');
+  html += `<div class="table-add-btn" onclick="_addTable()">➕</div>`;
+  col.innerHTML = html;
+}
 
 function _firePressFx(e){
   if(!e || !e.currentTarget) return;
@@ -4580,7 +4697,7 @@ function _showFallbackPreview(sale){
   document.getElementById('billPreviewContent').innerHTML=html;
   _billFontSize=parseInt(localStorage.getItem('ff_bill_font_size')||'11');
   document.getElementById('billPreviewContent').style.fontSize=_billFontSize+'px';
-  {const _el_bpTableLabel=document.getElementById('bpTableLabel');if(_el_bpTableLabel)_el_bpTableLabel.textContent='Counter';}
+  {const _el_bpTableLabel=document.getElementById('bpTableLabel');if(_el_bpTableLabel)_el_bpTableLabel.textContent = sale.table==='C'?'Counter':(getTableName(sale.table)||('Table '+sale.table));}
   // یہ بل ابھی pending ہے — ترمیم/حذف بٹن دکھائیں
   if(pendingSale) pendingSale._editable = true;
   const editRow = document.getElementById('billEditRow');
@@ -7667,7 +7784,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '11aug0734pm';
+const APP_VERSION = '11aug0745pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
