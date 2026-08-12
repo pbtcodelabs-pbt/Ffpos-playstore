@@ -1,5 +1,5 @@
 // FF POS — Service Worker (بنیادی آف لائن سپورٹ)
-const CACHE_NAME = 'ffpos-cache-12aug0857am';
+const CACHE_NAME = 'ffpos-cache-12aug0945am';
 const CORE_ASSETS = [
   './',
   './index.html',

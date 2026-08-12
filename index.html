@@ -2020,13 +2020,13 @@
             color:#fff;font-size:18px;cursor:pointer;
             box-shadow:0 6px 0 rgba(0,0,0,0.28),0 8px 18px rgba(142,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.25);
             -webkit-tap-highlight-color:transparent;">🗑️</button>
-          <!-- پینڈنگ کے طور پر بل بنائیں — کسٹمر نام/موبائل درج کر کے پرنٹ/محفوظ کریں، پیمنٹ بعد میں -->
-          <button id="mainPendingBtn" onclick="directToPreview()" title="🕓 Pending بل بنائیں" style="
+          <!-- 👁️ پریویو کھولیں — کسٹمر نام/موبائل، ڈلیوری بوائے، ڈلیوری چارجز وغیرہ لکھ کر پرنٹ کریں (یا Pending محفوظ کریں) -->
+          <button id="mainPendingBtn" onclick="directToPreview()" title="👁️ بل پریویو — تفصیلات لکھیں" style="
             flex:0 0 auto;width:42px;border:none;border-radius:13px;
             background:linear-gradient(160deg,#f9a825,#e65100);
             color:#fff;font-size:18px;cursor:pointer;
             box-shadow:0 6px 0 rgba(0,0,0,0.28),0 8px 18px rgba(230,81,0,0.45),inset 0 1px 0 rgba(255,255,255,0.25);
-            -webkit-tap-highlight-color:transparent;">🕓</button>
+            -webkit-tap-highlight-color:transparent;">👁️</button>
           <!-- PAYMENT/PRINT button — full width, horizontal layout: printer left, amount box right -->
           <button id="mainPayBtn" onclick="directPrint()" style="
             flex:1;min-width:0;padding:0;border:none;border-radius:13px;
@@ -2943,7 +2943,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug0857am';
+const FF_APP_VERSION = '12aug0945am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -5437,7 +5437,13 @@ function buildBillHtml(sale){
         <div style="font-family:${_billFont};font-weight:900;font-size:9.5px;color:${bt.footerText};line-height:1.6;">${footerLines}</div>
       </div>
       <div style="text-align:center;padding:6px 0 0;">
-        <div style="font-family:'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:9px;color:#888;">📲 For Mobile App: 0320-6793793</div>
+        <div style="font-family:'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:9px;color:#888;display:flex;align-items:center;justify-content:center;gap:5px;">
+          <span style="position:relative;width:13px;height:13px;border-radius:4px;background:#25D366;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-size:8px;">📞</span>
+            <span style="position:absolute;right:-3px;bottom:-3px;width:8px;height:8px;border-radius:50%;background:#fff;color:#128C7E;font-size:6px;font-weight:900;line-height:8px;text-align:center;">B</span>
+          </span>
+          Build Your Business Android App Today &nbsp;03206793793
+        </div>
       </div>
     </div>`;
 }
@@ -5797,7 +5803,41 @@ function _getFontFamily(id){
 // ============================================================
 // WHATSAPP SHARE & SAVE IMAGE — Professional Poster Design
 // ============================================================
-function _buildBillCanvas(sale, forPrint, lightMode){
+// واٹس ایپ بزنس آئیکن (سبز باکس + سفید فون + نیچے کونے میں "B" بیج) — کوئی یونیکوڈ ایموجی
+// موجود نہیں اس لیے کینوس پر خود ڈرا کرتے ہیں تاکہ پرنٹ اور شیئر امیج دونوں پر صاف نظر آئے
+function _drawWaBizIcon(ctx, cx, cy, s, monoColor){
+  ctx.save();
+  const r = s*0.24;
+  const x = cx - s/2, y = cy - s/2;
+  // پس منظر — پرنٹ پر ہمیشہ ٹھوس سیاہ/گہرا (monoColor)، شیئر امیج پر اصل واٹس ایپ سبز
+  ctx.fillStyle = monoColor || '#25D366';
+  ctx.beginPath();
+  if(ctx.roundRect) ctx.roundRect(x, y, s, s, r); else ctx.rect(x, y, s, s);
+  ctx.fill();
+  // سفید فون ہینڈ سیٹ آئیکن (سادہ سلائیٹ)
+  ctx.fillStyle = '#ffffff';
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(-Math.PI/4);
+  const armW = s*0.16, armL = s*0.4;
+  if(ctx.roundRect){
+    ctx.beginPath(); ctx.roundRect(-armW/2, -armL/2 - armL*0.55, armW, armL*0.55, armW/2); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(-armW/2, armL*0.02, armW, armL*0.55, armW/2); ctx.fill();
+  }
+  ctx.restore();
+  // نیچے دائیں کونے میں سفید گول بیج جس کے اندر "B"
+  const bR = s*0.30;
+  const bx = x + s - bR*0.55, by = y + s - bR*0.55;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath(); ctx.arc(bx, by, bR, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = monoColor || '#128C7E';
+  ctx.font = `900 ${Math.round(bR*1.25)}px Arial, sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('B', bx, by + bR*0.06);
+  ctx.restore();
+}
+
+function _buildBillCanvas(sale, forPrint, lightMode, printWidthPx){
   return new Promise(resolve=>{
     const cfg     = getBillCfg();
     const items   = sale.items || [];
@@ -5824,8 +5864,11 @@ function _buildBillCanvas(sale, forPrint, lightMode){
     fontPromise.then(()=>{
 
     // ===== کینوس سائز =====
-    const W     = 640;   // زیادہ چوڑا — خوبصورت poster
-    const PAD   = 28;
+    // شیئر/پریویو کے لیے ہمیشہ 640 چوڑا "poster" — لیکن اصل تھرمل پرنٹ کے لیے سیدھا
+    // پرنٹر کی اصل چوڑائی (384/576 dots) پر بناتے ہیں — AIO POS کی طرح — تاکہ بعد میں
+    // پوری تصویر کو 640 سے 384 پر سکیل ڈاؤن (اور اسی وجہ سے پرنٹ چھوٹی) نہ ہو۔
+    const W     = (forPrint && printWidthPx) ? printWidthPx : 640;
+    const PAD   = (forPrint && printWidthPx) ? Math.round(28 * (printWidthPx/640)) : 28;
     const iW    = W - PAD*2;
 
     // بل تھیم رنگ پیلیٹ
@@ -5869,9 +5912,15 @@ function _buildBillCanvas(sale, forPrint, lightMode){
     const extraRows = sale.deliveryCharge ? 2 : 0;
     const TBL_H   = ROW_H * (items.length + 1 + extraRows) + S(16);
     const TOT_H   = S(90);
-    const FOOT_H  = S(80);
+    // فوٹر باکس — "Thank You" لائنیں + اسی ڈبے کے اندر نیچے "Get Our Mobile App" لائن،
+    // مکمل اونچائی کا حساب پہلے سے لگاتے ہیں تاکہ پرنٹ پر یہ کبھی کٹے نہیں
+    const ftLinesCalc = (cfg.footer||'THANK YOU! VISIT AGAIN').split('\n');
+    const FOOT_PAD    = S(14);
+    const FOOT_LINE_H = S(24);
+    const FOOT_APP_H  = S(22);
+    const FOOT_H  = FOOT_PAD*2 + ftLinesCalc.length*FOOT_LINE_H + FOOT_APP_H;
     const deliveryBannerLines = sale.table==='D' ? (sale.deliveryBoyName ? 2 : 1) : 0;
-    const DELIVERY_BANNER_H = deliveryBannerLines ? (S(12) + deliveryBannerLines*S(22) + S(10)) : 0;
+    const DELIVERY_BANNER_H = deliveryBannerLines ? (S(10)*2 + deliveryBannerLines*S(30) + S(10)) : 0;
     const H = HEAD_H + META_H + DELIVERY_BANNER_H + TBL_H + TOT_H + FOOT_H + PAD*2;
 
     const canvas = document.createElement('canvas');
@@ -6015,22 +6064,26 @@ function _buildBillCanvas(sale, forPrint, lightMode){
     }
 
     // 🛵 Delivery حالت (COD/Payment Received) + ڈلیوری بوائے — خوبصورت رنگین بینر
+    // نوٹ: ہر لائن اپنے مخصوص "سلاٹ" کے عین درمیان میں سینٹر ہو (پہلے یہ نیچے کی طرف جھکی ہوئی
+    // اور فونٹ چھوٹا تھا — اب دونوں لائنیں سلاٹ کے وسط میں صاف نظر آئیں گی)
     if(sale.table==='D'){
       const statusText = sale.advancePaid ? '💰 Payment Received' : '🕓 COD — Cash on Delivery';
       const boyLine = sale.deliveryBoyName ? ('🛵 '+sale.deliveryBoyName+(sale.deliveryBoyMobile?(' — '+sale.deliveryBoyMobile):'')) : '';
-      const dLines = boyLine ? 2 : 1;
-      const dH = S(12) + dLines*S(22);
+      const dLines  = boyLine ? 2 : 1;
+      const dLineH  = S(30);
+      const dPadY   = S(10);
+      const dH      = dPadY*2 + dLines*dLineH;
       _drawInfoBanner(my, dH, TC.delBg1, TC.delBg2, TC.delBorder);
-      let cy2 = my + S(6) + S(15);
       ctx.textAlign = 'center';
-      ctx.font = `900 ${S(15)}px ${fontFam}`;
+      const statusFont = S(19);
+      ctx.font = `900 ${statusFont}px ${fontFam}`;
       ctx.fillStyle = useLightBgText ? '#111' : TC.delText;
-      ctx.fillText(statusText, W/2, cy2);
+      ctx.fillText(statusText, W/2, my + dPadY + (dLineH-statusFont)/2);
       if(boyLine){
-        cy2 += S(22);
-        ctx.font = `900 ${S(15)}px ${fontFam}`;
+        const boyFont = S(16);
+        ctx.font = `900 ${boyFont}px ${fontFam}`;
         ctx.fillStyle = useLightBgText ? '#333' : TC.delSub;
-        ctx.fillText(boyLine, W/2, cy2);
+        ctx.fillText(boyLine, W/2, my + dPadY + dLineH + (dLineH-boyFont)/2);
       }
       my += dH + S(10);
     }
@@ -6217,16 +6270,33 @@ function _buildBillCanvas(sale, forPrint, lightMode){
 
     ctx.fillStyle = useLightBgText ? C_DARK : C_WHITE;
     ctx.textAlign = 'center';
-    const ftStart = ty + (FOOT_H - ftLines.length*S(22)) / 2;
-    ftLines.forEach((fl,i)=>{
+    let ftY = ty + FOOT_PAD;
+    ftLines.forEach((fl)=>{
       ctx.font = isUrdu ? `700 ${S(16)}px ${fontFam}` : `900 ${S(15)}px ${fontFam}`;
-      ctx.fillText(fl, W/2, ftStart + i*S(24));
+      ctx.fillText(fl, W/2, ftY);
+      ftY += FOOT_LINE_H;
     });
 
-    // ===== نیچے App watermark — موبائل ایپ کے لیے رابطہ نمبر =====
-    ctx.fillStyle = useLightBgText ? '#777' : 'rgba(255,255,255,0.65)';
-    ctx.font = `700 11px Arial, sans-serif`;
-    ctx.fillText('📲 For Mobile App: 0320-6793793', W/2, H - 10);
+    // ===== "Build Your Business Android App Today" + واٹس ایپ بزنس نمبر — اسی فوٹر باکس کے
+    // اندر، Thank You کے فوراً نیچے۔ آئیکن + متن دونوں کو ایک ساتھ سینٹر کرتے ہیں =====
+    {
+      const waFont = S(13);
+      ctx.font = `700 ${waFont}px Arial, sans-serif`;
+      const waText = 'Build Your Business Android App Today   03206793793';
+      const waTextW = ctx.measureText(waText).width;
+      const waIconS = S(17);
+      const waGap   = S(6);
+      const waTotalW = waIconS + waGap + waTextW;
+      const waIconCX = W/2 - waTotalW/2 + waIconS/2;
+      const waTextX  = W/2 - waTotalW/2 + waIconS + waGap;
+      const waTextY  = ftY + waFont/2; // fillText استعمال 'top' baseline کے مطابق تھا، آئیکن 'middle' استعمال کرتا ہے
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = useLightBgText ? '#444' : 'rgba(255,255,255,0.9)';
+      ctx.fillText(waText, waTextX, ftY);
+      _drawWaBizIcon(ctx, waIconCX, ftY + waFont*0.55, waIconS, forPrint ? '#333333' : null);
+      ctx.textAlign = 'center'; // آگے کے کوڈ کے لیے ڈیفالٹ واپس
+    }
 
     resolve(canvas);
     }); // fontPromise end
@@ -6773,7 +6843,8 @@ function encodeEscPos(sale){
     addText(_center(line.slice(0,W),W)); newLine();
   });
   newLine();
-  addText(_center('For Mobile App: 0320-6793793',W)); newLine();
+  addText(_center('Build Your Business Android App Today',W)); newLine();
+  addText(_center('03206793793',W)); newLine();
 
   newLine(4);
   addBytes(CMD_CUT);
@@ -6875,7 +6946,9 @@ async function buildBillRasterBytes(sale){
   const cfg = getBillCfg();
   const paperWidthMM = cfg.paperWidth || 58;
   const targetWidthPx = paperWidthMM === 80 ? 576 : 384;
-  const billCanvas = await _buildBillCanvas(sale, true, cfg.lightPrint); // forPrint=true, lightMode=کمزور پرنٹر سیٹنگ
+  // کینوس اب سیدھا targetWidthPx پر ہی بنتا ہے (نیچے scaleCanvasToWidth صرف تحفظ کے طور پر —
+  // عام حالت میں سائز پہلے سے برابر ہے اس لیے کوئی سکیل ڈاؤن نہیں ہوگا، پرنٹ اصل سائز میں رہے گی)
+  const billCanvas = await _buildBillCanvas(sale, true, cfg.lightPrint, targetWidthPx); // forPrint=true, lightMode=کمزور پرنٹر سیٹنگ
   const scaled = scaleCanvasToWidth(billCanvas, targetWidthPx);
   const gray = canvasToGrayscale(scaled);
   return canvasToEscPosRaster(gray, paperWidthMM);
@@ -8500,7 +8573,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug0857am';
+const APP_VERSION = '12aug0945am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
