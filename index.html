@@ -2334,59 +2334,65 @@
       <span id="bpTableLabel" style="font-size:11px;"></span>
     </div>
     <!-- 🎨 بل ٹیمپلیٹ (رنگ) منتخب کریں — انتخاب اگلی بار کے لیے خودکار محفوظ رہتا ہے -->
-    <div id="bpThemeStrip" style="display:flex;gap:6px;padding:4px 8px 2px;justify-content:center;">
-      <button type="button" class="bp-theme-swatch" data-th="classic" onclick="setBillTheme('classic')" title="Classic" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#455a64,#263238);cursor:pointer;padding:0;"></button>
-      <button type="button" class="bp-theme-swatch" data-th="saffron" onclick="setBillTheme('saffron')" title="Saffron" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#ffb74d,#e65100);cursor:pointer;padding:0;"></button>
-      <button type="button" class="bp-theme-swatch" data-th="emerald" onclick="setBillTheme('emerald')" title="Emerald" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#66bb6a,#1b5e20);cursor:pointer;padding:0;"></button>
-      <button type="button" class="bp-theme-swatch" data-th="royal" onclick="setBillTheme('royal')" title="Royal" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#ba68c8,#4a148c);cursor:pointer;padding:0;"></button>
-      <button type="button" class="bp-theme-swatch" data-th="mint" onclick="setBillTheme('mint')" title="Mint" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#4db6ac,#00695c);cursor:pointer;padding:0;"></button>
-      <button type="button" class="bp-theme-swatch" data-th="coffee" onclick="setBillTheme('coffee')" title="Coffee" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#a1887f,#4e342e);cursor:pointer;padding:0;"></button>
+    <div id="bpThemeStrip" style="display:flex;gap:4px;padding:3px 8px 2px;justify-content:center;">
+      <button type="button" class="bp-theme-swatch" data-th="classic" onclick="setBillTheme('classic')" title="Classic" style="width:22px;height:22px;border-radius:50%;border:2px solid transparent;background:linear-gradient(135deg,#455a64,#263238);cursor:pointer;padding:0;"></button>
+      <button type="button" class="bp-theme-swatch" data-th="saffron" onclick="setBillTheme('saffron')" title="Saffron" style="width:22px;height:22px;border-radius:50%;border:2px solid transparent;background:linear-gradient(135deg,#ffb74d,#e65100);cursor:pointer;padding:0;"></button>
+      <button type="button" class="bp-theme-swatch" data-th="emerald" onclick="setBillTheme('emerald')" title="Emerald" style="width:22px;height:22px;border-radius:50%;border:2px solid transparent;background:linear-gradient(135deg,#66bb6a,#1b5e20);cursor:pointer;padding:0;"></button>
+      <button type="button" class="bp-theme-swatch" data-th="royal" onclick="setBillTheme('royal')" title="Royal" style="width:22px;height:22px;border-radius:50%;border:2px solid transparent;background:linear-gradient(135deg,#ba68c8,#4a148c);cursor:pointer;padding:0;"></button>
+      <button type="button" class="bp-theme-swatch" data-th="mint" onclick="setBillTheme('mint')" title="Mint" style="width:22px;height:22px;border-radius:50%;border:2px solid transparent;background:linear-gradient(135deg,#4db6ac,#00695c);cursor:pointer;padding:0;"></button>
+      <button type="button" class="bp-theme-swatch" data-th="coffee" onclick="setBillTheme('coffee')" title="Coffee" style="width:22px;height:22px;border-radius:50%;border:2px solid transparent;background:linear-gradient(135deg,#a1887f,#4e342e);cursor:pointer;padding:0;"></button>
     </div>
-    <div id="bpCustomerRow" style="display:flex;gap:6px;padding:5px 8px 3px;">
-      <input type="text" id="bpCustomerName" placeholder="👤 کسٹمر کا نام (اختیاری)"
+    <div id="bpCustomerRow" style="display:flex;gap:5px;padding:3px 8px 2px;">
+      <input type="text" id="bpCustomerName" placeholder="👤 نام (اختیاری)"
         oninput="_updateCustomerInfo()"
-        style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:'Arial Narrow',Arial,sans-serif;">
+        style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid #ccc;border-radius:8px;font-size:11px;font-family:'Arial Narrow',Arial,sans-serif;">
       <input type="tel" id="bpCustomerMobile" placeholder="📱 موبائل نمبر (اختیاری)"
         oninput="_updateCustomerInfo()"
-        style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:'Arial Narrow',Arial,sans-serif;">
+        style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid #ccc;border-radius:8px;font-size:11px;font-family:'Arial Narrow',Arial,sans-serif;">
     </div>
     <!-- صرف 🛵 Delivery کے لیے — COD/Payment، پھر ڈلیوری چارجز، پھر ڈلیوری بوائے (ہر ایک الگ صاف لائن، کمپیکٹ) -->
-    <div id="bpAdvanceRow" style="display:none;padding:0 8px 5px;">
-      <div style="display:flex;gap:6px;">
-        <label id="bpCodBox" onclick="_setCodMode(true)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;background:#ffebee;border:1.5px solid #c62828;border-radius:8px;padding:6px 4px;cursor:pointer;">
-          <input type="checkbox" id="bpCodChk" style="width:14px;height:14px;accent-color:#c62828;pointer-events:none;">
-          <span style="font-size:10.5px;font-weight:900;color:#c62828;font-family:'Arial Narrow',Arial,sans-serif;">🕓 COD</span>
+    <div id="bpAdvanceRow" style="display:none;padding:0 8px 3px;">
+      <div style="display:flex;gap:5px;">
+        <label id="bpCodBox" onclick="_setCodMode(true)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;background:#ffebee;border:1.5px solid #c62828;border-radius:7px;padding:4px 3px;cursor:pointer;">
+          <input type="checkbox" id="bpCodChk" style="width:12px;height:12px;accent-color:#c62828;pointer-events:none;">
+          <span style="font-size:9.5px;font-weight:900;color:#c62828;font-family:'Arial Narrow',Arial,sans-serif;">🕓 COD</span>
         </label>
-        <label id="bpPaidBox" onclick="_setCodMode(false)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;background:#e8f5e9;border:1.5px solid #2e7d32;border-radius:8px;padding:6px 4px;cursor:pointer;">
-          <input type="checkbox" id="bpPaidChk" style="width:14px;height:14px;accent-color:#2e7d32;pointer-events:none;">
-          <span style="font-size:10.5px;font-weight:900;color:#2e7d32;font-family:'Arial Narrow',Arial,sans-serif;">💰 Payment Received</span>
+        <label id="bpPaidBox" onclick="_setCodMode(false)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;background:#e8f5e9;border:1.5px solid #2e7d32;border-radius:7px;padding:4px 3px;cursor:pointer;">
+          <input type="checkbox" id="bpPaidChk" style="width:12px;height:12px;accent-color:#2e7d32;pointer-events:none;">
+          <span style="font-size:9.5px;font-weight:900;color:#2e7d32;font-family:'Arial Narrow',Arial,sans-serif;">💰 Payment Received</span>
         </label>
       </div>
       <!-- 🚚 ڈلیوری چارجز — اپنی علیحدہ لائن، ڈلیوری بوائے سے کوئی تعلق نہیں -->
-      <div style="margin-top:5px;">
-        <input type="number" id="bpDeliveryCharge" placeholder="🚚 ڈلیوری چارجز — صرف رقم لکھیں (اختیاری)" min="0"
+      <div style="margin-top:4px;">
+        <input type="number" id="bpDeliveryCharge" placeholder="🚚 ڈلیوری چارجز (اختیاری)" min="0"
           oninput="_updateDeliveryCharge()"
-          style="width:100%;box-sizing:border-box;padding:7px 10px;border:1.5px solid #ccc;border-radius:8px;font-size:11.5px;font-family:'Arial Narrow',Arial,sans-serif;">
+          style="width:100%;box-sizing:border-box;padding:5px 8px;border:1.5px solid #ccc;border-radius:7px;font-size:10.5px;font-family:'Arial Narrow',Arial,sans-serif;">
       </div>
       <!-- 🛵 ڈلیوری بوائے — علیحدہ لائن، ساتھ مینج (ترمیم/حذف) بٹن -->
-      <div style="display:flex;gap:6px;margin-top:5px;">
+      <div style="display:flex;gap:5px;margin-top:4px;">
         <select id="bpDeliveryBoy" onchange="_onDeliveryBoyChange()"
-          style="flex:1;min-width:0;padding:7px 6px;border:1.5px solid #ccc;border-radius:8px;font-size:11.5px;font-family:'Arial Narrow',Arial,sans-serif;background:#fff;">
+          style="flex:1;min-width:0;padding:5px 5px;border:1.5px solid #ccc;border-radius:7px;font-size:10.5px;font-family:'Arial Narrow',Arial,sans-serif;background:#fff;">
           <option value="">🛵 ڈلیوری بوائے منتخب کریں</option>
         </select>
-        <button type="button" onclick="_manageDeliveryBoys()" title="ڈلیوری بوائے ترمیم/حذف" style="flex:0 0 auto;padding:7px 12px;border:1.5px solid #7c4dff;border-radius:8px;background:#f3e5f5;color:#5e35b1;font-size:12px;font-weight:900;cursor:pointer;">✏️</button>
+        <button type="button" onclick="_manageDeliveryBoys()" title="ڈلیوری بوائے ترمیم/حذف" style="flex:0 0 auto;padding:5px 10px;border:1.5px solid #7c4dff;border-radius:7px;background:#f3e5f5;color:#5e35b1;font-size:11px;font-weight:900;cursor:pointer;">✏️</button>
       </div>
     </div>
-    <div class="bp-zoom-row">
-      <span style="font-size:15px;">🔍</span>
+    <div class="bp-zoom-row" style="gap:4px;">
+      <span style="font-size:12px;">🔤</span>
       <input type="range" id="bpZoomSlider" class="bp-zoom-slider" min="70" max="180" step="5" value="100"
-        oninput="_onBillZoomSlider(this.value)" title="بل زوم — بڑا/چھوٹا کریں">
-      <span id="bpZoomVal" style="font-size:11px;font-weight:900;color:var(--green-dk,#1b5e20);min-width:38px;text-align:right;font-family:var(--font-black);">100%</span>
+        oninput="_onBillZoomSlider(this.value)" title="Text Size — فونٹ بڑا/چھوٹا کریں" style="flex:1;">
+      <span id="bpZoomVal" style="font-size:10px;font-weight:900;color:var(--green-dk,#1b5e20);min-width:32px;text-align:right;font-family:var(--font-black);">100%</span>
+    </div>
+    <div class="bp-zoom-row" style="gap:4px;margin-top:2px;">
+      <span style="font-size:12px;">↕️</span>
+      <input type="range" id="bpRowZoomSlider" class="bp-zoom-slider" min="70" max="180" step="5" value="100"
+        oninput="_onBillRowZoomSlider(this.value)" title="Row Height — قطار کی اونچائی/spacing" style="flex:1;">
+      <span id="bpRowZoomVal" style="font-size:10px;font-weight:900;color:var(--green-dk,#1b5e20);min-width:32px;text-align:right;font-family:var(--font-black);">100%</span>
     </div>
     <div class="bill-preview-body" id="billPreviewContent"></div>
-    <div id="billEditRow" style="display:none;gap:7px;padding:0 2px 6px;">
-      <button type="button" onclick="_editBillGoBack()" style="flex:1;padding:9px 4px;border:none;border-radius:9px;background:linear-gradient(160deg,#1565c0,#0d47a1);color:#fff;font-weight:900;font-size:12.5px;box-shadow:0 3px 8px rgba(13,71,161,0.3);">✏️ ترمیم کریں</button>
-      <button type="button" onclick="_deleteWholeBill()" style="flex:1;padding:9px 4px;border:none;border-radius:9px;background:linear-gradient(160deg,#c62828,#b71c1c);color:#fff;font-weight:900;font-size:12.5px;box-shadow:0 3px 8px rgba(183,28,28,0.3);">🗑️ پورا بل حذف</button>
+    <div id="billEditRow" style="display:none;gap:6px;padding:0 2px 4px;">
+      <button type="button" onclick="_editBillGoBack()" style="flex:1;padding:7px 4px;border:none;border-radius:8px;background:linear-gradient(160deg,#1565c0,#0d47a1);color:#fff;font-weight:900;font-size:11.5px;box-shadow:0 2px 6px rgba(13,71,161,0.3);">✏️ ترمیم کریں</button>
+      <button type="button" onclick="_deleteWholeBill()" style="flex:1;padding:7px 4px;border:none;border-radius:8px;background:linear-gradient(160deg,#c62828,#b71c1c);color:#fff;font-weight:900;font-size:11.5px;box-shadow:0 2px 6px rgba(183,28,28,0.3);">🗑️ پورا بل حذف</button>
     </div>
     <div class="pay-mode-btns" id="payModeBtns">
       <button class="pay-mode-btn cash" id="pmbCash" onclick="selectPayMode('cash')" style="width:100%;">💵 CASH RECEIVED</button>
@@ -2396,58 +2402,58 @@
     </div>
       <div class="bill-preview-footer">
       <!-- Fallback complete row — صرف process/ok flow میں دکھے -->
-      <div id="fallbackCompleteRow" style="display:none;flex-direction:row;gap:7px;">
+      <div id="fallbackCompleteRow" style="display:none;flex-direction:row;gap:6px;">
         <button onclick="fallbackPending()" style="
-          flex:1;padding:11px 4px;border:none;border-radius:10px;
+          flex:1;padding:8px 4px;border:none;border-radius:9px;
           background:linear-gradient(160deg,#f9a825,#e65100);
-          color:#fff;font-size:13px;font-family:var(--font-black);font-weight:900;
-          cursor:pointer;box-shadow:0 3px 8px rgba(230,81,0,0.35);
-          display:flex;align-items:center;justify-content:center;gap:6px;">
+          color:#fff;font-size:12px;font-family:var(--font-black);font-weight:900;
+          cursor:pointer;box-shadow:0 2px 6px rgba(230,81,0,0.35);
+          display:flex;align-items:center;justify-content:center;gap:5px;">
           🕓 <span id="fbPendingBtnLabel">Pending</span>
         </button>
         <button onclick="fallbackComplete()" style="
-          flex:1;padding:11px 4px;border:none;border-radius:10px;
+          flex:1;padding:8px 4px;border:none;border-radius:9px;
           background:linear-gradient(160deg,#2e7d32,#1b5e20);
-          color:#fff;font-size:13px;font-family:var(--font-black);font-weight:900;
-          cursor:pointer;box-shadow:0 3px 8px rgba(46,125,50,0.35);
-          display:flex;align-items:center;justify-content:center;gap:6px;">
+          color:#fff;font-size:12px;font-family:var(--font-black);font-weight:900;
+          cursor:pointer;box-shadow:0 2px 6px rgba(46,125,50,0.35);
+          display:flex;align-items:center;justify-content:center;gap:5px;">
           💰 <span>Cash Received</span>
         </button>
       </div>
       <!-- 🟢 WhatsApp Share — ایک ہی بٹن، کمپیکٹ (Android کی حد کی وجہ سے نمبر پر براہ راست چیٹ کھولنا ممکن نہیں) -->
       <button type="button" id="bpWaShareBtn" onclick="shareOnWhatsApp()" style="display:none;
-        width:100%;padding:9px 4px;border:none;border-radius:10px;margin-top:5px;
+        width:100%;padding:7px 4px;border:none;border-radius:9px;margin-top:4px;
         background:linear-gradient(160deg,#25d366,#128c7e);
-        color:#fff;font-size:12.5px;font-family:var(--font-black);font-weight:900;
-        cursor:pointer;box-shadow:0 3px 8px rgba(37,211,102,0.4);
-        display:flex;align-items:center;justify-content:center;gap:6px;">
+        color:#fff;font-size:11.5px;font-family:var(--font-black);font-weight:900;
+        cursor:pointer;box-shadow:0 2px 6px rgba(37,211,102,0.4);
+        display:flex;align-items:center;justify-content:center;gap:5px;">
         <span>💬 WhatsApp Share</span>
       </button>
       <!-- مین پرنٹ بٹن — پوری چوڑائی (پرنٹر موجود ہو) -->
-      <button type="button" class="bpf-print" id="bpfPrintBtn" onclick="executePrint()" disabled>
+      <button type="button" class="bpf-print" id="bpfPrintBtn" onclick="executePrint()" disabled style="margin-top:4px;padding-top:8px;padding-bottom:8px;">
         <span>🖨️</span>
         <span id="bpfPrintLabel">TAP CASH RECEIVED TO CONFIRM</span>
       </button>
       <!-- نو پرنٹر row — آدھا آدھا (صرف تب دکھے جب پرنٹر نہ ہو) -->
-      <div id="noPrinterRow" style="display:none;gap:6px;grid-template-columns:1fr 1fr;">
+      <div id="noPrinterRow" style="display:none;gap:5px;grid-template-columns:1fr 1fr;margin-top:4px;">
         <button id="okCompleteBtn" onclick="completeWithoutPrint()" style="
-          padding:11px 4px;border:none;border-radius:11px;
+          padding:8px 4px;border:none;border-radius:9px;
           background:linear-gradient(160deg,#2e7d32,#1b5e20);
-          color:#fff;font-size:13px;font-family:var(--font-black);font-weight:900;
-          cursor:pointer;box-shadow:0 3px 10px rgba(46,125,50,0.35);
-          display:flex;align-items:center;justify-content:center;gap:5px;">
+          color:#fff;font-size:11.5px;font-family:var(--font-black);font-weight:900;
+          cursor:pointer;box-shadow:0 2px 6px rgba(46,125,50,0.35);
+          display:flex;align-items:center;justify-content:center;gap:4px;">
           ✅ <span id="okCompleteLabel">Receive Payment &amp; Go Back</span>
         </button>
         <button onclick="goToSettingsForPrinter()" style="
-          padding:11px 4px;border:none;border-radius:11px;
+          padding:8px 4px;border:none;border-radius:9px;
           background:linear-gradient(160deg,#e65100,#bf360c);
-          color:#fff;font-size:12px;font-family:var(--font-black);font-weight:900;
-          cursor:pointer;box-shadow:0 3px 10px rgba(230,81,0,0.35);
-          display:flex;align-items:center;justify-content:center;gap:4px;">
+          color:#fff;font-size:11px;font-family:var(--font-black);font-weight:900;
+          cursor:pointer;box-shadow:0 2px 6px rgba(230,81,0,0.35);
+          display:flex;align-items:center;justify-content:center;gap:3px;">
           🖨️⚙️ <span>پرنٹر سیٹنگ</span>
         </button>
       </div>
-      <button class="bpf-back" onclick="closeBillPreview()" style="font-size:16px;font-weight:900;padding:14px;">✅ OK — GO BACK</button>
+      <button class="bpf-back" onclick="closeBillPreview()" style="font-size:14px;font-weight:900;padding:10px;margin-top:4px;">✅ OK — GO BACK</button>
     </div>
   </div>
 </div>
@@ -2953,7 +2959,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = 'FF12augwe1017am';
+const FF_APP_VERSION = '12aug1133am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -4792,6 +4798,7 @@ async function directToPreview(){
 }
 
 async function directPrint(){
+  if(_printInProgress){ showToast('⏳ پرنٹ پہلے سے جاری ہے، انتظار کریں'); return; }
   const o=getCurrentOrder();
   const total=Object.entries(o).reduce((s,[id,q])=>s+(MENU.find(i=>i.id===+id)?.price||0)*q,0);
   if(!total){ showToast('⚠️ پہلے آئٹم شامل کریں'); return; }
@@ -4829,7 +4836,9 @@ async function directPrint(){
 
   if(isPrinterLive()){
     // ✅ پرنٹر موجود — فوری پرنٹ، کوئی preview نہیں
+    _printInProgress = true;
     const ok=await sendToBluetooth(sale);
+    _printInProgress = false;
     if(ok){
       // کامیاب — سیل سیو، کارٹ صاف
       state.sales.push(sale);
@@ -5044,38 +5053,46 @@ function _refreshWaButtons(sale){
 
 // صرف پرنٹ کریں — بل کی حالت (Pending/Cash) کو ہاتھ نہیں لگاتا
 // تاکہ Pending بل بھی جتنی بار چاہیں پرنٹ ہو سکے (ڈلیوری کاپی وغیرہ)
+let _printInProgress = false;
 async function _previewPrintOnly(){
   if(!pendingSale){ showToast('⚠️ کوئی بل موجود نہیں'); return; }
+  if(_printInProgress){ showToast('⏳ پرنٹ پہلے سے جاری ہے، انتظار کریں'); return; }
+  _printInProgress = true;
   const btn=document.getElementById('bpfPrintBtn');
   const lbl=document.getElementById('bpfPrintLabel');
-  // auto-reconnect اگر پرنٹر saved ہو مگر لائیو نہ ہو
-  if(!isPrinterLive()){
-    const savedId=localStorage.getItem(LS_PRINTER_ID);
-    if(savedId && navigator.bluetooth && navigator.bluetooth.getDevices){
-      if(btn){ btn.disabled=true; } if(lbl) lbl.textContent='🔄 پرنٹر سے جوڑ رہے ہیں...';
-      setPrinterAttemptInProgress(true);
-      try{
-        const devices=await navigator.bluetooth.getDevices();
-        const found=devices.find(d=>d.id===savedId);
-        if(found) await doConnect(found);
-      }catch(e){}
-      setPrinterAttemptInProgress(false);
-      if(btn) btn.disabled=false;
+  if(btn) btn.disabled = true;
+  try{
+    // auto-reconnect اگر پرنٹر saved ہو مگر لائیو نہ ہو
+    if(!isPrinterLive()){
+      const savedId=localStorage.getItem(LS_PRINTER_ID);
+      if(savedId && navigator.bluetooth && navigator.bluetooth.getDevices){
+        if(lbl) lbl.textContent='🔄 پرنٹر سے جوڑ رہے ہیں...';
+        setPrinterAttemptInProgress(true);
+        try{
+          const devices=await navigator.bluetooth.getDevices();
+          const found=devices.find(d=>d.id===savedId);
+          if(found) await doConnect(found);
+        }catch(e){}
+        setPrinterAttemptInProgress(false);
+      }
     }
+    if(!isPrinterLive()){
+      showToast('⚠️ پرنٹر کنیکٹ نہیں — پہلے Settings سے پرنٹر جوڑیں');
+      if(lbl) lbl.textContent='🖨️ PRINT (پرنٹر جوڑیں)';
+      return;
+    }
+    if(lbl) lbl.textContent='🖨️ پرنٹ ہو رہا ہے...';
+    const ok = await sendToBluetooth(pendingSale);
+    if(ok){
+      showToast('🖨️ بل پرنٹ ہو گیا');
+    } else {
+      showToast('❌ پرنٹ نہیں ہوا — پرنٹر چیک کریں');
+    }
+    if(lbl) lbl.textContent = '🖨️ PRINT BILL';
+  } finally {
+    _printInProgress = false;
+    if(btn) btn.disabled = false;
   }
-  if(!isPrinterLive()){
-    showToast('⚠️ پرنٹر کنیکٹ نہیں — پہلے Settings سے پرنٹر جوڑیں');
-    if(lbl) lbl.textContent='🖨️ PRINT (پرنٹر جوڑیں)';
-    return;
-  }
-  if(lbl) lbl.textContent='🖨️ پرنٹ ہو رہا ہے...';
-  const ok = await sendToBluetooth(pendingSale);
-  if(ok){
-    showToast('🖨️ بل پرنٹ ہو گیا');
-  } else {
-    showToast('❌ پرنٹ نہیں ہوا — پرنٹر چیک کریں');
-  }
-  if(lbl) lbl.textContent = '🖨️ PRINT BILL';
 }
 
 function fallbackPending(){
@@ -5297,10 +5314,12 @@ function getBillCfg(){
     phone:    '',
     footer:   'THANK YOU! VISIT AGAIN',
     zoom:     100,
+    rowZoom:  100,  // ↕️ قطار کی اونچائی/spacing — فونٹ سائز سے علیحدہ
     paperWidth: 58,   // 58 | 80 (mm) — تھرمل راسٹر پرنٹنگ کے لیے
     lightPrint: false, // true = کمزور/سستے پرنٹر کے لیے سادہ، کم سیاہی والا پرنٹ
   }));
   if(!cfg.paperWidth) cfg.paperWidth = 58;
+  if(!cfg.rowZoom) cfg.rowZoom = 100;
   if(typeof cfg.lightPrint !== 'boolean') cfg.lightPrint = false;
   return cfg;
 }
@@ -5389,65 +5408,75 @@ function buildBillHtml(sale){
   };
   const bt = BT[billTheme]||BT.classic;
 
+  // 🔍 دو علیحدہ زوم — Text Size (فونٹ) اور Row Height (قطار کی اونچائی/spacing)
+  // پہلے یہاں تمام font-size/padding ہارڈ کوڈڈ px تھے، اس لیے زوم سلائیڈر کا preview پر
+  // کوئی اثر نظر نہیں آتا تھا۔ اب ہر سائز/پیڈنگ انہی سکیل فنکشنز سے آتی ہے — لائیو بدلتی ہے۔
+  const fZoomPct = Math.min(180, Math.max(70, cfg.zoom||100));
+  const rZoomPct = Math.min(180, Math.max(70, cfg.rowZoom||100));
+  const fScale = fZoomPct/100;
+  const rScale = rZoomPct/100;
+  const F  = (px) => Math.round(px*fScale*10)/10;   // فونٹ سائز
+  const RP = (px) => Math.round(px*rScale*10)/10;   // قطار/پیڈنگ (عمودی)
+
   return `
-    <div style="background:${bt.bodyBg};min-height:100%;padding:9px 11px 14px;box-sizing:border-box;font-family:${_billFont};position:relative;overflow:visible;">
+    <div style="background:${bt.bodyBg};min-height:100%;padding:${RP(9)}px 11px ${RP(14)}px;box-sizing:border-box;font-family:${_billFont};position:relative;overflow:visible;">
       ${sale._watermark==='PAID' ? `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:64px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;color:rgba(46,125,50,0.18);letter-spacing:4px;pointer-events:none;white-space:nowrap;z-index:999;text-align:center;line-height:1.2;">✅ PAID</div>` : ''}
       ${sale._watermark==='PENDING' ? `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:56px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;color:rgba(230,81,0,0.22);letter-spacing:3px;pointer-events:none;white-space:nowrap;z-index:999;text-align:center;line-height:1.2;">🕓 PENDING</div>` : ''}
-      <div style="background:${bt.shopBg};border-radius:10px;padding:9px 10px;text-align:center;margin-bottom:6px;box-shadow:0 3px 10px rgba(0,0,0,0.12);">
-        <div style="font-family:${_billFont};font-weight:900;font-size:22px;color:${bt.shopText};letter-spacing:.5px;text-shadow:${bt.shopBg.includes('gradient')?'0 1px 4px rgba(0,0,0,0.3)':'none'};">&#127828; ${cfg.shopName}</div>
+      <div style="background:${bt.shopBg};border-radius:10px;padding:${RP(9)}px 10px;text-align:center;margin-bottom:6px;box-shadow:0 3px 10px rgba(0,0,0,0.12);">
+        <div style="font-family:${_billFont};font-weight:900;font-size:${F(22)}px;color:${bt.shopText};letter-spacing:.5px;text-shadow:${bt.shopBg.includes('gradient')?'0 1px 4px rgba(0,0,0,0.3)':'none'};">&#127828; ${cfg.shopName}</div>
         ${subHtml?`<div style="display:flex;justify-content:center;margin-top:5px;">${subHtml}</div>`:''}
         ${phoneHtml?`<div style="display:flex;justify-content:center;margin-top:4px;">${phoneHtml}</div>`:''}
       </div>
-      <div style="background:${bt.metaBg};border-radius:7px;padding:5px 10px;margin-bottom:6px;text-align:center;">
-        <div style="font-family:${_billFont};font-size:10px;font-weight:900;color:${bt.metaText};">${invLabel} ${sale.invNo} &nbsp;|&nbsp; ${tableName}</div>
-        <div style="font-family:${_billFont};font-size:9px;font-weight:bold;color:${bt.metaText};opacity:.8;">${dateStr||sale.dateStr}</div>
+      <div style="background:${bt.metaBg};border-radius:7px;padding:${RP(5)}px 10px;margin-bottom:6px;text-align:center;">
+        <div style="font-family:${_billFont};font-size:${F(10)}px;font-weight:900;color:${bt.metaText};">${invLabel} ${sale.invNo} &nbsp;|&nbsp; ${tableName}</div>
+        <div style="font-family:${_billFont};font-size:${F(9)}px;font-weight:bold;color:${bt.metaText};opacity:.8;">${dateStr||sale.dateStr}</div>
       </div>
       ${(sale.customerName||sale.customerMobile) ? `
-      <div style="background:linear-gradient(135deg,${bt.bannerBg1},${bt.bannerBg2});border:1.5px solid ${bt.bannerBorder};border-radius:12px;padding:7px 10px;margin-bottom:6px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.3);">
-        ${sale.customerName ? `<div style="font-family:${_billFont};font-size:16px;font-weight:900;color:${bt.bannerNameText};letter-spacing:.3px;">👤 ${sale.customerName}</div>` : ''}
-        ${sale.customerMobile ? `<div style="font-family:${_billFont};font-size:17px;font-weight:900;color:${bt.bannerMobileText};letter-spacing:.5px;margin-top:${sale.customerName?'2px':'0'};">📱 ${sale.customerMobile}</div>` : ''}
+      <div style="background:linear-gradient(135deg,${bt.bannerBg1},${bt.bannerBg2});border:1.5px solid ${bt.bannerBorder};border-radius:12px;padding:${RP(7)}px 10px;margin-bottom:6px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.3);">
+        ${sale.customerName ? `<div style="font-family:${_billFont};font-size:${F(16)}px;font-weight:900;color:${bt.bannerNameText};letter-spacing:.3px;">👤 ${sale.customerName}</div>` : ''}
+        ${sale.customerMobile ? `<div style="font-family:${_billFont};font-size:${F(17)}px;font-weight:900;color:${bt.bannerMobileText};letter-spacing:.5px;margin-top:${sale.customerName?'2px':'0'};">📱 ${sale.customerMobile}</div>` : ''}
       </div>` : ''}
       ${sale.table==='D' ? `
-      <div style="background:linear-gradient(135deg,${bt.delivBg1},${bt.delivBg2});border:1.5px solid ${bt.delivBorder};border-radius:12px;padding:6px 10px;margin-bottom:6px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.3);">
-        <div style="font-family:${_billFont};font-size:11px;font-weight:900;color:${bt.delivText};">${sale.advancePaid ? '💰 Payment Received' : '🕓 COD — پیمنٹ ڈلیوری پر لینی ہے'}</div>
-        ${sale.deliveryBoyName ? `<div style="font-family:${_billFont};font-size:12px;font-weight:900;color:${bt.delivSub};margin-top:2px;">🛵 ${sale.deliveryBoyName}${sale.deliveryBoyMobile?(' — 📞 '+sale.deliveryBoyMobile):''}</div>` : ''}
+      <div style="background:linear-gradient(135deg,${bt.delivBg1},${bt.delivBg2});border:1.5px solid ${bt.delivBorder};border-radius:12px;padding:${RP(6)}px 10px;margin-bottom:6px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.3);">
+        <div style="font-family:${_billFont};font-size:${F(11)}px;font-weight:900;color:${bt.delivText};">${sale.advancePaid ? '💰 Payment Received' : '🕓 COD — پیمنٹ ڈلیوری پر لینی ہے'}</div>
+        ${sale.deliveryBoyName ? `<div style="font-family:${_billFont};font-size:${F(12)}px;font-weight:900;color:${bt.delivSub};margin-top:2px;">🛵 ${sale.deliveryBoyName}${sale.deliveryBoyMobile?(' — 📞 '+sale.deliveryBoyMobile):''}</div>` : ''}
       </div>` : ''}
       <table style="width:100%;border-collapse:collapse;margin:0 0 6px;border:1.5px solid ${bt.rowBorder};border-radius:8px;overflow:hidden;">
         <tr style="background:${bt.headerBg};">
-          <th style="font-family:${_billFont};font-weight:900;font-size:9px;padding:5px 3px;text-align:center;color:${bt.headerText};border:1px solid ${bt.rowBorder};width:18px;">${snoLabel}</th>
-          <th style="font-family:${_billFont};font-weight:900;font-size:9px;padding:5px 3px;text-align:left;color:${bt.headerText};border:1px solid ${bt.rowBorder};">${itemLabel}</th>
-          <th style="font-family:${_billFont};font-weight:900;font-size:9px;padding:5px 3px;text-align:center;color:${bt.headerText};border:1px solid ${bt.rowBorder};">${qtyLabel}</th>
-          <th style="font-family:${_billFont};font-weight:900;font-size:9px;padding:5px 3px;text-align:center;color:${bt.headerText};border:1px solid ${bt.rowBorder};">${priceLabel}</th>
-          <th style="font-family:${_billFont};font-weight:900;font-size:9px;padding:5px 3px;text-align:center;color:${bt.headerText};border:1px solid ${bt.rowBorder};">${totalLabel}</th>
+          <th style="font-family:${_billFont};font-weight:900;font-size:${F(9)}px;padding:${RP(5)}px 3px;text-align:center;color:${bt.headerText};border:1px solid ${bt.rowBorder};width:18px;">${snoLabel}</th>
+          <th style="font-family:${_billFont};font-weight:900;font-size:${F(9)}px;padding:${RP(5)}px 3px;text-align:left;color:${bt.headerText};border:1px solid ${bt.rowBorder};">${itemLabel}</th>
+          <th style="font-family:${_billFont};font-weight:900;font-size:${F(9)}px;padding:${RP(5)}px 3px;text-align:center;color:${bt.headerText};border:1px solid ${bt.rowBorder};">${qtyLabel}</th>
+          <th style="font-family:${_billFont};font-weight:900;font-size:${F(9)}px;padding:${RP(5)}px 3px;text-align:center;color:${bt.headerText};border:1px solid ${bt.rowBorder};">${priceLabel}</th>
+          <th style="font-family:${_billFont};font-weight:900;font-size:${F(9)}px;padding:${RP(5)}px 3px;text-align:center;color:${bt.headerText};border:1px solid ${bt.rowBorder};">${totalLabel}</th>
         </tr>
         ${sale.items.map((i,idx)=>`
           <tr style="background:${idx%2===0?bt.rowEven:bt.rowOdd};">
-            <td style="font-family:${_billFont};font-size:12px;padding:5px 3px;text-align:center;color:#555;border:1px solid ${bt.rowBorder};">${idx+1}</td>
-            <td style="font-family:${_billFont};font-size:13px;font-weight:900;padding:5px 5px;text-align:left;color:#111;border:1px solid ${bt.rowBorder};">${i.name}</td>
-            <td style="font-family:${_billFont};font-size:13px;font-weight:900;padding:5px 3px;text-align:center;color:#111;border:1px solid ${bt.rowBorder};">${i.qty}</td>
-            <td style="font-family:${_billFont};font-size:13px;font-weight:900;padding:5px 3px;text-align:center;color:#333;border:1px solid ${bt.rowBorder};">${i.price}</td>
-            <td style="font-family:${_billFont};font-size:14px;font-weight:900;padding:5px 3px;text-align:center;color:#000;border:1px solid ${bt.rowBorder};">${i.total}</td>
+            <td style="font-family:${_billFont};font-size:${F(12)}px;padding:${RP(5)}px 3px;text-align:center;color:#555;border:1px solid ${bt.rowBorder};">${idx+1}</td>
+            <td style="font-family:${_billFont};font-size:${F(13)}px;font-weight:900;padding:${RP(5)}px 5px;text-align:left;color:#111;border:1px solid ${bt.rowBorder};">${i.name}</td>
+            <td style="font-family:${_billFont};font-size:${F(13)}px;font-weight:900;padding:${RP(5)}px 3px;text-align:center;color:#111;border:1px solid ${bt.rowBorder};">${i.qty}</td>
+            <td style="font-family:${_billFont};font-size:${F(13)}px;font-weight:900;padding:${RP(5)}px 3px;text-align:center;color:#333;border:1px solid ${bt.rowBorder};">${i.price}</td>
+            <td style="font-family:${_billFont};font-size:${F(14)}px;font-weight:900;padding:${RP(5)}px 3px;text-align:center;color:#000;border:1px solid ${bt.rowBorder};">${i.total}</td>
           </tr>`).join('')}
         ${sale.deliveryCharge ? `
         <tr style="background:${bt.rowOdd};">
-          <td colspan="4" style="font-family:${_billFont};font-size:11px;font-weight:900;padding:5px 6px;text-align:left;color:${bt.metaText};border:1px solid ${bt.rowBorder};">Subtotal</td>
-          <td style="font-family:${_billFont};font-size:12px;font-weight:900;padding:5px 3px;text-align:center;color:#333;border:1px solid ${bt.rowBorder};">${sale.itemsTotal!=null?sale.itemsTotal:(sale.total-sale.deliveryCharge)}</td>
+          <td colspan="4" style="font-family:${_billFont};font-size:${F(11)}px;font-weight:900;padding:${RP(5)}px 6px;text-align:left;color:${bt.metaText};border:1px solid ${bt.rowBorder};">Subtotal</td>
+          <td style="font-family:${_billFont};font-size:${F(12)}px;font-weight:900;padding:${RP(5)}px 3px;text-align:center;color:#333;border:1px solid ${bt.rowBorder};">${sale.itemsTotal!=null?sale.itemsTotal:(sale.total-sale.deliveryCharge)}</td>
         </tr>
         <tr style="background:${bt.rowEven};">
-          <td colspan="4" style="font-family:${_billFont};font-size:11px;font-weight:900;padding:5px 6px;text-align:left;color:${bt.metaText};border:1px solid ${bt.rowBorder};">🚚 Delivery Charges</td>
-          <td style="font-family:${_billFont};font-size:12px;font-weight:900;padding:5px 3px;text-align:center;color:#333;border:1px solid ${bt.rowBorder};">${sale.deliveryCharge}</td>
+          <td colspan="4" style="font-family:${_billFont};font-size:${F(11)}px;font-weight:900;padding:${RP(5)}px 6px;text-align:left;color:${bt.metaText};border:1px solid ${bt.rowBorder};">🚚 Delivery Charges</td>
+          <td style="font-family:${_billFont};font-size:${F(12)}px;font-weight:900;padding:${RP(5)}px 3px;text-align:center;color:#333;border:1px solid ${bt.rowBorder};">${sale.deliveryCharge}</td>
         </tr>` : ''}
         <!-- TOTAL row — label بائیں، رقم دائیں موٹی، اندر کوئی vertical border نہیں -->
         <tr style="background:${bt.rowEven};">
-          <td colspan="3" style="font-family:${_billFont};font-size:11px;font-weight:900;padding:9px 6px;text-align:left;color:${bt.metaText};border-top:2px solid ${bt.rowBorder};border-bottom:1.5px solid ${bt.rowBorder};border-left:1.5px solid ${bt.rowBorder};border-right:none;">${totalAmtLabel}</td>
-          <td colspan="2" style="font-family:${_billFont};font-size:40px;font-weight:900;letter-spacing:1px;padding:10px 6px;text-align:right;color:#000;border-top:2px solid ${bt.rowBorder};border-bottom:1.5px solid ${bt.rowBorder};border-right:1.5px solid ${bt.rowBorder};border-left:none;">Rs. ${sale.total}</td>
+          <td colspan="3" style="font-family:${_billFont};font-size:${F(11)}px;font-weight:900;padding:${RP(9)}px 6px;text-align:left;color:${bt.metaText};border-top:2px solid ${bt.rowBorder};border-bottom:1.5px solid ${bt.rowBorder};border-left:1.5px solid ${bt.rowBorder};border-right:none;">${totalAmtLabel}</td>
+          <td colspan="2" style="font-family:${_billFont};font-size:${F(40)}px;font-weight:900;letter-spacing:1px;padding:${RP(10)}px 6px;text-align:right;color:#000;border-top:2px solid ${bt.rowBorder};border-bottom:1.5px solid ${bt.rowBorder};border-right:1.5px solid ${bt.rowBorder};border-left:none;">Rs. ${sale.total}</td>
         </tr>
       </table>
-      <div style="background:${bt.footerBg};border-radius:8px;padding:6px 10px;text-align:center;margin-top:2px;">
-        <div style="font-family:${_billFont};font-weight:900;font-size:9.5px;color:${bt.footerText};line-height:1.6;">${footerLines}</div>
+      <div style="background:${bt.footerBg};border-radius:8px;padding:${RP(6)}px 10px;text-align:center;margin-top:2px;">
+        <div style="font-family:${_billFont};font-weight:900;font-size:${F(9.5)}px;color:${bt.footerText};line-height:1.6;">${footerLines}</div>
       </div>
-      <div style="text-align:center;padding:7px 4px 4px;margin-top:2px;">
-        <div style="font-family:'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:9px;color:#888;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;line-height:1.5;">
+      <div style="text-align:center;padding:${RP(7)}px 4px ${RP(4)}px;margin-top:2px;">
+        <div style="font-family:'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:${F(9)}px;color:#888;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;line-height:1.5;">
           <span style="position:relative;width:13px;height:13px;border-radius:4px;background:#25D366;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
             <span style="font-size:8px;">📞</span>
             <span style="position:absolute;right:-3px;bottom:-3px;width:8px;height:8px;border-radius:50%;background:#fff;color:#128C7E;font-size:6px;font-weight:900;line-height:8px;text-align:center;">B</span>
@@ -5719,7 +5748,6 @@ function setImgFont(id){
 // ============================================================
 function setBillTheme(themeId){
   localStorage.setItem('ff_bill_theme', themeId);
-  const tIds = ['classic','saffron','emerald','royal','mint','coffee'];
   const activeBorders = { classic:'#263238', saffron:'#e65100', emerald:'#1b5e20', royal:'#4a148c', mint:'#00695c', coffee:'#4e342e' };
   // مرکزی ٹیمپلیٹ سٹرپ (Bill Preview کے اندر) — منتخب رنگ پر روشن بارڈر + تھوڑا بڑا
   document.querySelectorAll('.bp-theme-swatch').forEach(b=>{
@@ -5728,27 +5756,6 @@ function setBillTheme(themeId){
     b.style.borderColor = isActive ? (activeBorders[tid]||'#333') : 'transparent';
     b.style.transform = isActive ? 'scale(1.18)' : 'scale(1)';
     b.style.boxShadow = isActive ? '0 3px 10px rgba(0,0,0,0.35)' : '0 1px 4px rgba(0,0,0,0.15)';
-  });
-  // پرانا (Home/Settings) سٹرپ اگر موجود ہو
-  const colors = {
-    classic: { bg:'#fff',     text:'#333',    border:'#999',    activeBg:'#333',    activeText:'#fff' },
-    saffron: { bg:'#fff3e0',  text:'#e65100', border:'#ffcc80', activeBg:'#e65100', activeText:'#fff' },
-    emerald: { bg:'#e8f5e9',  text:'#1b5e20', border:'#a5d6a7', activeBg:'#1b5e20', activeText:'#fff' },
-    royal:   { bg:'#f3e5f5',  text:'#4a148c', border:'#ce93d8', activeBg:'#4a148c', activeText:'#fff' },
-    mint:    { bg:'#e0f7f4',  text:'#00695c', border:'#80cbc4', activeBg:'#00695c', activeText:'#fff' },
-    coffee:  { bg:'#f5e6d3',  text:'#4e342e', border:'#d7bb8d', activeBg:'#4e342e', activeText:'#fff' },
-  };
-  ['bthBtn0','bthBtn1','bthBtn2','bthBtn3','bthBtn4','bthBtn5'].forEach((bid,i)=>{
-    const b = document.getElementById(bid);
-    if(!b) return;
-    const tid = tIds[i];
-    const c = colors[tid];
-    const isActive = tid === themeId;
-    b.style.background   = isActive ? c.activeBg : c.bg;
-    b.style.color        = isActive ? c.activeText : c.text;
-    b.style.borderColor  = isActive ? c.activeBg : c.border;
-    b.style.transform    = isActive ? 'scale(1.06)' : 'scale(1)';
-    b.style.boxShadow    = isActive ? '0 3px 8px rgba(0,0,0,0.2)' : 'none';
   });
   // بل پری ویو — فوری ریفریش (فونٹ سائز بھی برقرار رہے)
   if(pendingSale){
@@ -5783,14 +5790,23 @@ function toggleBillCfgPanel(){
 // ============================================================
 let _billFontSize = parseInt(localStorage.getItem('ff_bill_font_size')||'11');
 
-// 🔍 زوم سلائیڈر — اب یہی واحد کنٹرول ہے: بل پریویو (اسکرین) اور اصل پرنٹ/شیئر
-// (کینوس، _buildBillCanvas میں cfg.zoom) دونوں اسی ایک ویلیو سے سکیل ہوتے ہیں —
-// 58mm/80mm چوڑائی ہمیشہ فکس رہتی ہے، صرف فونٹ/سائز بڑا چھوٹا ہوتا ہے۔
+// 🔤 Text Size زوم — فونٹ سائز (buildBillHtml کے F() اور کینوس کے fscale دونوں کو کنٹرول کرتا ہے)
 function _onBillZoomSlider(val){
   const cfg = getBillCfg();
   cfg.zoom = Math.min(180, Math.max(70, +val||100));
   localStorage.setItem('ff_bill_cfg', JSON.stringify(cfg));
-  if(pendingSale && pendingSale.mode){
+  if(pendingSale){
+    document.getElementById('billPreviewContent').innerHTML = buildBillHtml(pendingSale);
+  }
+  _applyBillFontSize();
+}
+
+// ↕️ Row Height زوم — قطار کی اونچائی/spacing (فونٹ سائز سے علیحدہ، RP() کنٹرول کرتا ہے)
+function _onBillRowZoomSlider(val){
+  const cfg = getBillCfg();
+  cfg.rowZoom = Math.min(180, Math.max(70, +val||100));
+  localStorage.setItem('ff_bill_cfg', JSON.stringify(cfg));
+  if(pendingSale){
     document.getElementById('billPreviewContent').innerHTML = buildBillHtml(pendingSale);
   }
   _applyBillFontSize();
@@ -5801,7 +5817,7 @@ function changeBillFontSize(delta){
   cfg.zoom = Math.min(180, Math.max(70, (cfg.zoom||100) + delta*10));
   localStorage.setItem('ff_bill_cfg', JSON.stringify(cfg));
   // بل پریویو HTML دوبارہ بنائیں تاکہ فونٹ سائز فوری دکھے
-  if(pendingSale && pendingSale.mode){
+  if(pendingSale){
     document.getElementById('billPreviewContent').innerHTML = buildBillHtml(pendingSale);
   }
   _applyBillFontSize();
@@ -5810,12 +5826,14 @@ function changeBillFontSize(delta){
 function _applyBillFontSize(){
   const cfg = getBillCfg();
   const pct = Math.min(180, Math.max(70, cfg.zoom||100));
+  const rpct = Math.min(180, Math.max(70, cfg.rowZoom||100));
   _billFontSize = Math.min(20, Math.max(7, Math.round(11 * pct/100)));
-  const body = document.getElementById('billPreviewContent');
-  if(body) body.style.fontSize = _billFontSize + 'px';
   const sl = document.getElementById('bpZoomSlider');
   if(sl){ sl.value = pct; updateSliderFill(sl,70,180); }
   const zd = document.getElementById('bpZoomVal'); if(zd) zd.textContent = pct+'%';
+  const rsl = document.getElementById('bpRowZoomSlider');
+  if(rsl){ rsl.value = rpct; updateSliderFill(rsl,70,180); }
+  const rzd = document.getElementById('bpRowZoomVal'); if(rzd) rzd.textContent = rpct+'%';
   const disp = document.getElementById('billFontSizeDisplay');
   if(disp) disp.textContent = pct+'%';
 }
@@ -5876,12 +5894,14 @@ function _buildBillCanvas(sale, forPrint, lightMode, printWidthPx){
     const printPlainFont = !!(forPrint && isUrdu);
     lightMode = !!lightMode;
 
-    // Bill Preview کے فونٹ سائز سلائیڈر (9–15px) اور Settings کے Zoom (60–150%) — دونوں یہاں لاگو
-    // ہوتے ہیں تاکہ جو کچھ Preview/Settings میں سیٹ کیا جائے وہی پرنٹ/شیئر پر نظر آئے
-    // زوم سلائیڈر (Bill Preview کے اوپر) کی ویلیو (cfg.zoom) ہی واحد سکیل کنٹرول ہے
+    // Bill Preview کے دو زوم سلائیڈرز — 🔤 Text Size (فونٹ) اور ↕️ Row Height (قطار کی اونچائی)
+    // دونوں علیحدہ ہیں: S() صرف فونٹ کے لیے، RS() صرف قطار کی اونچائی/پیڈنگ کے لیے
     const zoomScale = (cfg.zoom || 100) / 100;
+    const rowZoomScale = (cfg.rowZoom || 100) / 100;
     const fscale = Math.min(1.8, Math.max(0.6, zoomScale));
+    const rscale = Math.min(1.8, Math.max(0.6, rowZoomScale));
     const S = (n) => Math.round(n * fscale);
+    const RS = (n) => Math.round(n * rscale);
 
     // اردو فونٹ لوڈ کریں اگر منتخب ہو (پرنٹ کے لیے سادہ فونٹ استعمال ہو تو لوڈ کی ضرورت نہیں)
     const fontPromise = (isUrdu && !printPlainFont && document.fonts && document.fonts.load)
@@ -5933,8 +5953,8 @@ function _buildBillCanvas(sale, forPrint, lightMode, printWidthPx){
     // پرنٹ ہمیشہ ٹھوس سیاہ لکیریں — تھرمل پرنٹر پر ہلکے/گرے رنگ کبھی بھروسے مند صاف نہیں آتے
     const C_BORDER   = (forPrint || lightMode) ? '#000000' : ATC.border;
 
-    // ===== اونچائی کا اندازہ (فونٹ سائز سکیل کے مطابق) =====
-    const ROW_H   = S(38);
+    // ===== اونچائی کا اندازہ (فونٹ سائز اور رو-ہائٹ سکیل کے مطابق) =====
+    const ROW_H   = RS(38);   // آئٹم ٹیبل کی ہر قطار — Row Height سلائیڈر سے علیحدہ کنٹرول
     const HEAD_H  = S(isUrdu ? 160 : 140);
     const META_H  = S(60);
     const extraRows = sale.deliveryCharge ? 2 : 0;
@@ -6175,8 +6195,8 @@ function _buildBillCanvas(sale, forPrint, lightMode, printWidthPx){
         if(c.k==='sno')   val = String(idx+1);
         if(c.k==='item')  val = String(it.name||'').slice(0,22);
         if(c.k==='qty')   val = String(it.qty||'');
-        if(c.k==='price') val = 'Rs.'+it.price;
-        if(c.k==='total') val = 'Rs.'+it.total;
+        if(c.k==='price') val = String(it.price);
+        if(c.k==='total') val = String(it.total);
 
         const align = (c.k==='item') ? (isUrdu?'right':'left') : 'center';
         ctx.textAlign = align;
@@ -6874,7 +6894,7 @@ function encodeEscPos(sale){
     addBytes(CMD_BOLD_OFF);
     // Qty x Price = Total — on same line
     const qStr  = 'Qty:'+String(it.qty);
-    const prStr = 'Rs.'+String(it.price);
+    const prStr = String(it.price);
     const toStr = 'Total:'+String(it.total);
     const row   = qStr.padEnd(10,' ')+prStr.padEnd(12,' ')+toStr;
     addText(row.slice(0,W)); newLine();
@@ -7036,6 +7056,7 @@ async function sendToBluetooth(sale){
   const MAX_RETRIES = 2;
 
   for(let attempt=0; attempt<=MAX_RETRIES; attempt++){
+    let anySent = false; // اس attempt میں کچھ ڈیٹا پرنٹر کو جا چکا ہو تو دوبارہ پوری رسید نہیں بھیجیں گے
     try{
       const data = await buildBillRasterBytes(sale);
       for(let i=0;i<data.length;i+=CHUNK){
@@ -7047,10 +7068,19 @@ async function sendToBluetooth(sale){
           // writeValueWithoutResponse — delay سے کام لیتے ہیں
           await thermalChar.writeValueWithoutResponse(chunk);
         }
+        anySent = true;
         await new Promise(r=>setTimeout(r,DELAY_MS));
       }
       return true;
     }catch(e){
+      // اگر کچھ ڈیٹا پہلے ہی پرنٹر کو جا چکا ہو تو دوبارہ پوری رسید بھیجنا خطرناک ہے —
+      // پرنٹر کا آدھا/باقی بفر اور نیا ڈیٹا مل کر گڈمڈ (garbled/double) پرنٹ بنا دیتا ہے۔
+      // اس لیے ادھورے پرنٹ کی صورت میں دوبارہ خودکار کوشش نہیں، صاف پیغام دیں۔
+      if(anySent){
+        thermalChar=null; refreshSettingsUI();
+        showToast('⚠️ پرنٹ ادھورا رہ گیا — دوبارہ 🖨️ PRINT دبائیں');
+        return false;
+      }
       if(attempt<MAX_RETRIES){
         showToast('🔄 دوبارہ کوشش ('+(attempt+1)+'/'+MAX_RETRIES+')...');
         thermalChar=null;
@@ -8629,7 +8659,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = 'FF12augwe1017am';
+const APP_VERSION = '12aug1133am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
