@@ -2009,11 +2009,18 @@
         <div style="display:flex;gap:8px;align-items:stretch;">
           <!-- کارٹ صاف کریں — موجودہ آرڈر (ابھی تک بل نہیں بنا) ری سیٹ کرے -->
           <button id="mainClearCartBtn" onclick="_clearCurrentCart()" title="🗑️ کارٹ صاف کریں" style="
-            flex:0 0 auto;width:58px;border:none;border-radius:16px;
+            flex:0 0 auto;width:52px;border:none;border-radius:16px;
             background:linear-gradient(160deg,#c62828,#8e0000);
-            color:#fff;font-size:24px;cursor:pointer;
+            color:#fff;font-size:22px;cursor:pointer;
             box-shadow:0 8px 0 rgba(0,0,0,0.28),0 10px 24px rgba(142,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.25);
             -webkit-tap-highlight-color:transparent;">🗑️</button>
+          <!-- پینڈنگ کے طور پر بل بنائیں — کسٹمر نام/موبائل درج کر کے پرنٹ/محفوظ کریں، پیمنٹ بعد میں -->
+          <button id="mainPendingBtn" onclick="directToPreview()" title="🕓 Pending بل بنائیں" style="
+            flex:0 0 auto;width:52px;border:none;border-radius:16px;
+            background:linear-gradient(160deg,#f9a825,#e65100);
+            color:#fff;font-size:22px;cursor:pointer;
+            box-shadow:0 8px 0 rgba(0,0,0,0.28),0 10px 24px rgba(230,81,0,0.45),inset 0 1px 0 rgba(255,255,255,0.25);
+            -webkit-tap-highlight-color:transparent;">🕓</button>
           <!-- PAYMENT/PRINT button — full width, horizontal layout: printer left, amount box right -->
           <button id="mainPayBtn" onclick="directPrint()" style="
             flex:1;min-width:0;padding:0;border:none;border-radius:16px;
@@ -2120,6 +2127,14 @@
 
     <!-- Expense list hidden (now inline above) -->
     <div style="display:none;"><div id="expListCard"><div id="expList"></div></div></div>
+
+    <!-- ===== PENDING BILLS — بل بن چکا مگر پیمنٹ باقی ===== -->
+    <div class="summary-card" id="pendingBillsCard" style="display:none;">
+      <h3 style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+        🕓 PENDING BILLS
+      </h3>
+      <div id="pendingBillsList"></div>
+    </div>
 
     <!-- ===== SALE HISTORY ===== -->
     <div class="summary-card">
@@ -2329,14 +2344,22 @@
     </div>
       <div class="bill-preview-footer">
       <!-- Fallback complete row — صرف process/ok flow میں دکھے -->
-      <div id="fallbackCompleteRow" style="display:none;flex-direction:column;gap:7px;">
+      <div id="fallbackCompleteRow" style="display:none;flex-direction:row;gap:7px;">
+        <button onclick="fallbackPending()" style="
+          flex:1;padding:14px 4px;border:none;border-radius:11px;
+          background:linear-gradient(160deg,#f9a825,#e65100);
+          color:#fff;font-size:14px;font-family:var(--font-black);font-weight:900;
+          cursor:pointer;box-shadow:0 3px 10px rgba(230,81,0,0.4);
+          display:flex;align-items:center;justify-content:center;gap:6px;">
+          🕓 <span>Pending</span>
+        </button>
         <button onclick="fallbackComplete()" style="
-          width:100%;padding:14px 4px;border:none;border-radius:11px;
+          flex:1;padding:14px 4px;border:none;border-radius:11px;
           background:linear-gradient(160deg,#2e7d32,#1b5e20);
-          color:#fff;font-size:15px;font-family:var(--font-black);font-weight:900;
+          color:#fff;font-size:14px;font-family:var(--font-black);font-weight:900;
           cursor:pointer;box-shadow:0 3px 10px rgba(46,125,50,0.4);
-          display:flex;align-items:center;justify-content:center;gap:8px;">
-          💰 <span>Payment Received</span>
+          display:flex;align-items:center;justify-content:center;gap:6px;">
+          💰 <span>Cash Received</span>
         </button>
       </div>
       <!-- مین پرنٹ بٹن — پوری چوڑائی (پرنٹر موجود ہو) -->
@@ -2869,7 +2892,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug0528am';
+const FF_APP_VERSION = '12aug0534am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -4506,6 +4529,19 @@ if(!tableList){
   localStorage.setItem('ff_table_list', JSON.stringify(tableList));
 }
 function saveTableList(){ localStorage.setItem('ff_table_list', JSON.stringify(tableList)); }
+
+// ============================================================
+// پینڈنگ بلز — بل بن چکا/پرنٹ ہو چکا مگر ابھی پیمنٹ وصول نہیں ہوئی
+// (مثلاً ڈلیوری پر بھیجا گیا بل) — جب تک وصول نہ ہو، پینڈنگ رہے گا
+// ============================================================
+let pendingBills = JSON.parse(localStorage.getItem('ff_pending_bills')||'[]');
+function savePendingBills(){ localStorage.setItem('ff_pending_bills', JSON.stringify(pendingBills)); }
+function _tableHasPending(t){
+  const cartNotEmpty = tableOrders[t] && Object.keys(tableOrders[t].order||{}).length>0;
+  const hasPendingBill = pendingBills.some(b=>b.table===t);
+  return cartNotEmpty || hasPendingBill;
+}
+
 function getTableName(t){
   if(t==='C') return 'Counter';
   const tbl = tableList.find(x=>x.id===+t);
@@ -4536,7 +4572,7 @@ function _tableOptions(id){
   if(newName===null) return;
   const trimmed = newName.trim();
   if(trimmed===''){
-    const hasPending = tableOrders[id] && Object.keys(tableOrders[id].order||{}).length>0;
+    const hasPending = _tableHasPending(id);
     if(hasPending){ showToast('⚠️ پہلے اس ٹیبل کا بل مکمل کریں'); return; }
     if(!confirm('کیا واقعی "'+tbl.name+'" حذف کرنا چاہتے ہیں؟')) return;
     tableList = tableList.filter(x=>x.id!==id);
@@ -4556,13 +4592,13 @@ function _tableOptions(id){
 function buildTablePanel(){
   const col = document.getElementById('tableCol');
   if(!col) return;
-  const counterPending = tableOrders['C'] && Object.keys(tableOrders['C'].order||{}).length>0;
+  const counterPending = _tableHasPending('C');
   let html = `
     <div class="table-btn ${currentTable==='C'?'active':''} ${counterPending?'pending':''}" onclick="selectTable('C')">
       <span class="tbl-name-span">🧾<br>Counter</span>
     </div>`;
   html += tableList.map(t=>{
-    const pending = tableOrders[t.id] && Object.keys(tableOrders[t.id].order||{}).length>0;
+    const pending = _tableHasPending(t.id);
     return `
     <div class="table-btn ${currentTable===t.id?'active':''} ${pending?'pending':''}" onclick="selectTable(${t.id})" oncontextmenu="event.preventDefault();_tableOptions(${t.id})">
       <span class="tbl-edit-ico" onclick="event.stopPropagation();_tableOptions(${t.id})" style="pointer-events:auto;">✏️</span>
@@ -4571,6 +4607,10 @@ function buildTablePanel(){
   }).join('');
   html += `<div class="table-add-btn" onclick="_addTable()">➕</div>`;
   col.innerHTML = html;
+  // بہت زیادہ ٹیبل ہوں تو بٹن تھوڑے تنگ کر دیں تاکہ سب فٹ ہو سکیں
+  const count = tableList.length + 1;
+  const w = count<=7 ? 72 : count<=10 ? 64 : count<=14 ? 58 : 52;
+  document.documentElement.style.setProperty('--table-col-w', w+'px');
 }
 
 function _firePressFx(e){
@@ -4649,6 +4689,31 @@ function _cardBodyTouch(id, e){
 // FAST CASH CHECKOUT — فوری پرنٹ، کوئی preview نہیں
 // پرنٹ ناکام ہو تو "Process / OK" بٹن بائیں طرف دکھاؤ
 // ============================================================
+// 🕓 Pending بٹن — ہمیشہ پریویو کھولے (پرنٹر ہو یا نہ ہو) تاکہ کسٹمر
+// نام/موبائل درج کر کے Cash یا Pending میں سے فیصلہ کیا جا سکے
+async function directToPreview(){
+  const o=getCurrentOrder();
+  const total=Object.entries(o).reduce((s,[id,q])=>s+(MENU.find(i=>i.id===+id)?.price||0)*q,0);
+  if(!total){ showToast('⚠️ پہلے آئٹم شامل کریں'); return; }
+  const items=Object.entries(o).map(([id,q])=>{
+    const item=MENU.find(i=>i.id===+id);
+    return {id:+id,name:item.name,qty:q,price:item.price,total:item.price*q};
+  });
+  const sale={
+    id:Date.now(),
+    invNo:state.sales.length+1,
+    table:currentTable,
+    time:new Date().toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit',hour12:true}),
+    dateStr:new Date().toLocaleDateString('en-PK'),
+    items,total,
+    mode:null,
+    customerName:'', customerMobile:'',
+    _editable:true,
+  };
+  pendingSale = sale;
+  _showFallbackPreview(sale);
+}
+
 async function directPrint(){
   const o=getCurrentOrder();
   const total=Object.entries(o).reduce((s,[id,q])=>s+(MENU.find(i=>i.id===+id)?.price||0)*q,0);
@@ -4765,6 +4830,32 @@ function _showFallbackPreview(sale){
   const fb=document.getElementById('fallbackCompleteRow');
   if(fb) fb.style.display='flex';
   document.getElementById('billPreviewModal').classList.add('open');
+}
+
+function fallbackPending(){
+  if(!pendingSale){ return; }
+  const bill = {...pendingSale, mode:'pending', createdAt:Date.now()};
+  pendingBills.push(bill);
+  savePendingBills();
+  // ٹیبل کی کارٹ صاف کریں — بل لاک ہو کر پینڈنگ میں چلا گیا
+  if(pendingSale.table != null){
+    if(!tableOrders[pendingSale.table]) tableOrders[pendingSale.table]={};
+    tableOrders[pendingSale.table].order={};
+    saveTableOrders();
+  }
+  pendingSale=null;
+  setCurrentOrder({});
+  renderItems(); buildTablePanel(); updatePayBtn();
+  document.getElementById('billPreviewModal').classList.remove('open');
+  document.getElementById('payModeBtns').style.display='grid';
+  document.getElementById('altRow').style.display='';
+  const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
+  const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
+  _showCustomerRow(false);
+  const pb=document.getElementById('bpfPrintBtn'); if(pb){ pb.style.display=''; pb.onclick=executePrint; }
+  _hideProcessBtn();
+  renderSummary();
+  showToast('🕓 بل پینڈنگ میں محفوظ — پیمنٹ آنے پر مکمل کریں');
 }
 
 function fallbackComplete(){
@@ -6602,6 +6693,38 @@ function renderSummary(){
 
   // ===== TRENDING SALES — مکمل ہٹا دیا گیا =====
 
+  // ===== PENDING BILLS — بل بن چکا مگر پیمنٹ باقی =====
+  {
+    const pbCard = document.getElementById('pendingBillsCard');
+    const pbList = document.getElementById('pendingBillsList');
+    if(pbCard && pbList){
+      if(pendingBills.length){
+        pbCard.style.display='block';
+        pbList.innerHTML = pendingBills.map((b,i)=>{
+          const bJson = JSON.stringify(b).replace(/'/g,"&#39;");
+          const tName = b.table==='C' ? 'Counter' : (getTableName(b.table)||('Table '+b.table));
+          const custLine = (b.customerName||b.customerMobile)
+            ? `<div style="font-size:10px;color:#e65100;font-weight:900;margin-top:1px;">${b.customerName?('👤 '+b.customerName):''}${(b.customerName&&b.customerMobile)?' | ':''}${b.customerMobile?('📱 '+b.customerMobile):''}</div>` : '';
+          return `<div class="hist-item" style="position:relative;overflow:hidden;border-left:3px solid #e65100;background:linear-gradient(90deg,rgba(230,81,0,0.09),transparent);padding:6px 4px;gap:3px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:5px;">
+                <span style="font-size:10px;color:#e65100;font-weight:900;flex-shrink:0;">${tName}</span>
+                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#1b3a1f;">${b.items.map(it=>it.name).join(', ')}</span>
+              </div>
+              ${custLine}
+            </div>
+            <span class="hist-amt" style="color:#e65100;font-size:12px;flex-shrink:0;">Rs.${b.total}</span>
+            <button onclick="event.stopPropagation();markPendingAsPaid(${i})" title="پیمنٹ وصول" style="background:#2e7d32;color:#fff;border:none;border-radius:5px;padding:4px 9px;font-size:11px;font-weight:900;cursor:pointer;flex-shrink:0;">💵 وصول</button>
+            <button onclick="event.stopPropagation();deletePendingBill(${i})" title="حذف" style="background:none;color:#c62828;border:1px solid #c62828;border-radius:4px;padding:3px 6px;font-size:11px;cursor:pointer;flex-shrink:0;">🗑</button>
+          </div>`;
+        }).join('');
+      } else {
+        pbCard.style.display='none';
+        pbList.innerHTML='';
+      }
+    }
+  }
+
     // ===== SALE HISTORY =====
   // paid bill rows — ✏️ edit + 🗑️ delete چھوٹے آئیکن
   const _paidRows = state.sales.length
@@ -6654,6 +6777,31 @@ function deleteSale(idx){
   saveState();
   renderSummary();
   showToast('🗑️ Bill deleted');
+}
+
+// پینڈنگ بل کی پیمنٹ وصول ہو گئی — اب یہ Cash sale بن جائے گا
+function markPendingAsPaid(i){
+  const b = pendingBills[i];
+  if(!b) return;
+  const sale = {...b, mode:'cash', invNo: state.sales.length+1, paidAt: Date.now()};
+  delete sale.createdAt;
+  state.sales.push(sale);
+  saveState();
+  pendingBills.splice(i,1);
+  savePendingBills();
+  buildTablePanel();
+  renderSummary();
+  showToast('✅ پیمنٹ وصول — بل مکمل ہو گیا');
+}
+
+// پینڈنگ بل حذف کریں (غلطی سے بنا ہو تو)
+function deletePendingBill(i){
+  if(!confirm('⚠️ کیا یہ پینڈنگ بل حذف کرنا چاہتے ہیں؟')) return;
+  pendingBills.splice(i,1);
+  savePendingBills();
+  buildTablePanel();
+  renderSummary();
+  showToast('🗑️ پینڈنگ بل حذف ہو گیا');
 }
 
 // Reprint from history (preview, then print)
@@ -7856,7 +8004,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug0528am';
+const APP_VERSION = '12aug0534am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
