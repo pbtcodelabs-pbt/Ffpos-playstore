@@ -1966,7 +1966,7 @@
         <div class="pmodal-led st-off" id="pmLed"></div>
       </div>
       <div class="pmodal-name" id="pmName">Not Connected</div>
-      <div class="pmodal-sub" id="pmSub">Bluetooth پرنٹر کنیکٹ کرنے کے لیے نیچے بٹن دبائیں</div>
+      <div class="pmodal-sub" id="pmSub" style="font-weight:700;">📶 پہلے موبائل کی Bluetooth آن کریں اور پرنٹر آن (Power On) کریں — پھر نیچے بٹن دبائیں</div>
 
       <button class="pmodal-btn pm-connect" id="pmBtnConnect" onclick="connectNewPrinter()">🔵 <span>Connect New Printer</span></button>
       <button class="pmodal-btn pm-recon" id="pmBtnRecon" style="display:none;" onclick="reconnectSavedPrinter()">🔄 <span>Reconnect</span></button>
@@ -2934,7 +2934,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug0731am';
+const FF_APP_VERSION = '12aug0739am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -6407,7 +6407,7 @@ async function getWritableChar(server){
 }
 
 async function connectNewPrinter(){
-  if(!navigator.bluetooth){ showToast('❌ Browser does not support Bluetooth'); return; }
+  if(!navigator.bluetooth){ showToast('📶 پہلے موبائل کی Bluetooth آن کریں اور پرنٹر آن کریں، پھر دوبارہ کوشش کریں'); return; }
   _userDisconnected = false;  // نیا connect — flag reset
   try{
     showToast('🔵 Searching for printer...');
@@ -6422,7 +6422,7 @@ async function connectNewPrinter(){
 }
 
 async function reconnectSavedPrinter(){
-  if(!navigator.bluetooth){ showToast('❌ Bluetooth not supported'); return; }
+  if(!navigator.bluetooth){ showToast('📶 پہلے موبائل کی Bluetooth آن کریں اور پرنٹر آن کریں، پھر دوبارہ کوشش کریں'); return; }
   _userDisconnected = false;  // flag reset
   showToast('🔄 Reconnecting...');
   setPrinterAttemptInProgress(true);
@@ -6564,7 +6564,7 @@ function refreshSettingsUI(){
   } else {
     setRingState('off');
     if(pmName) pmName.textContent = 'Not Connected';
-    if(pmSub)  pmSub.textContent  = 'Bluetooth پرنٹر کنیکٹ کرنے کے لیے نیچے بٹن دبائیں';
+    if(pmSub)  pmSub.textContent  = '📶 پہلے موبائل کی Bluetooth آن کریں اور پرنٹر آن (Power On) کریں — پھر نیچے بٹن دبائیں';
     if(btnConnect) btnConnect.style.display='flex';
     if(btnRecon) btnRecon.style.display='none';
     if(btnDiscon) btnDiscon.style.display='none';
@@ -8435,7 +8435,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug0731am';
+const APP_VERSION = '12aug0739am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
