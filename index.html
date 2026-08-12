@@ -2959,7 +2959,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug1149am';
+const FF_APP_VERSION = '12aug1214pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -7384,6 +7384,7 @@ function renderSummary(){
           <span onclick='reprintBill(${sJson})' style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 3px;color:#1b3a1f;font-size:11px;cursor:pointer;">${s.items.map(i=>i.name).join(', ')}</span>
           <span class="hist-amt" style="color:#2e7d32;font-size:12px;flex-shrink:0;">Rs.${s.total}</span>
           <button onclick="event.stopPropagation();reprintBill(${sJson})" title="ایڈٹ" style="background:none;color:#1565c0;border:1px solid #1565c0;border-radius:4px;padding:1px 5px;font-size:11px;cursor:pointer;flex-shrink:0;line-height:1.3;">✏️</button>
+          <button onclick="event.stopPropagation();revertSaleToPending(${realIdx})" title="غلطی سے Cash ہو گیا؟ واپس Pending کریں" style="background:none;color:#e65100;border:1px solid #e65100;border-radius:4px;padding:1px 5px;font-size:11px;cursor:pointer;flex-shrink:0;line-height:1.3;">🕓</button>
           <button onclick="event.stopPropagation();deleteSale(${realIdx})" title="ڈیلیٹ" style="background:none;color:#c62828;border:1px solid #c62828;border-radius:4px;padding:1px 5px;font-size:11px;cursor:pointer;flex-shrink:0;line-height:1.3;">🗑</button>
         </div>`;
       }).join('')
@@ -7425,6 +7426,22 @@ function deleteSale(idx){
   saveState();
   renderSummary();
   showToast('🗑️ Bill deleted');
+}
+
+// غلطی سے "Cash Received" دب گیا؟ اس بل کو واپس Pending میں بھیج دیں
+function revertSaleToPending(idx){
+  const s = state.sales[idx];
+  if(!s) return;
+  if(!confirm('⚠️ یہ بل واپس Pending میں چلا جائے گا (Cash History سے نکل جائے گا)۔ جاری رکھیں؟')) return;
+  const bill = {...s, mode:'pending', createdAt:Date.now()};
+  delete bill.paidAt;
+  pendingBills.push(bill);
+  savePendingBills();
+  state.sales.splice(idx,1);
+  saveState();
+  buildTablePanel();
+  renderSummary();
+  showToast('🕓 بل واپس Pending میں چلا گیا');
 }
 
 // پینڈنگ بل کی پیمنٹ وصول ہو گئی — اب یہ Cash sale بن جائے گا
@@ -8243,12 +8260,15 @@ function printEndOfDayReport(){
   const crd   = 0;
   const exp   = state.expenses.reduce((s,e)=>s+e.amt,0);
   const bal   = (state.opening||0)+csh-exp;
+  // 🕓 پینڈنگ بلوں کی مجموعی رقم — یہ ابھی ہاتھ میں نہیں آئی، اس لیے Cash In Hand میں شامل نہیں
+  const pendingTotal = pendingBills.reduce((s,b)=>s+(b.total||0),0);
+  const pendingCount = pendingBills.length;
   const top10 = getTopSoldItems(10);
   const now   = new Date();
   const dateStr = now.toLocaleDateString('en-PK',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   const timeStr = now.toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit',hour12:true});
 
-  _eodReportData = { cfg, csh, crd, tot, exp, bal, top10, dateStr, timeStr, now };
+  _eodReportData = { cfg, csh, crd, tot, exp, bal, pendingTotal, pendingCount, top10, dateStr, timeStr, now };
 
   // Header date label
   const dl = document.getElementById('eodDateLabel');
@@ -8365,7 +8385,7 @@ function _buildEodHtml(d){
 }
 
 // ===== EOD Canvas (WhatsApp/Save) =====
-function _buildEodCanvas(d){
+function _buildEodCanvas(d, printWidthPx){
   return new Promise(resolve=>{
     const billTheme = localStorage.getItem('ff_bill_theme')||'classic';
     const _CT = {
@@ -8383,9 +8403,9 @@ function _buildEodCanvas(d){
       ? document.fonts.load('700 16px "Noto Nastaliq Urdu"').catch(()=>{}) : Promise.resolve();
 
     fontPromise.then(()=>{
-      const W=640, PAD=24, iW=W-PAD*2;
+      const W = printWidthPx || 640, PAD = printWidthPx ? Math.round(24*(printWidthPx/640)) : 24, iW=W-PAD*2;
       const top10 = d.top10||[];
-      const H = 180 + 220 + 60 + 130 + top10.length*40 + 80 + PAD*2;
+      const H = 180 + 220 + 60 + 130 + top10.length*40 + 80 + (d.pendingCount>0?70:0) + PAD*2;
       const canvas=document.createElement('canvas');
       canvas.width=W; canvas.height=H;
       const ctx=canvas.getContext('2d');
@@ -8478,6 +8498,21 @@ function _buildEodCanvas(d){
       ctx.fillText('Opening '+(state.opening||0)+' + Sales '+d.csh+' − Exp '+d.exp,W/2,y+82);
       y+=bh+14;
 
+      // 🕓 PENDING — ہاتھ میں نہیں آئی، اس لیے اوپر Cash In Hand سے خارج
+      if(d.pendingCount>0){
+        const ph=54;
+        const pg=ctx.createLinearGradient(PAD,y,PAD,y+ph);
+        pg.addColorStop(0,'#f9a825'); pg.addColorStop(1,'#e65100');
+        ctx.fillStyle=pg;
+        const pr=10;
+        ctx.beginPath(); ctx.moveTo(PAD+pr,y); ctx.lineTo(W-PAD-pr,y); ctx.quadraticCurveTo(W-PAD,y,W-PAD,y+pr); ctx.lineTo(W-PAD,y+ph-pr); ctx.quadraticCurveTo(W-PAD,y+ph,W-PAD-pr,y+ph); ctx.lineTo(PAD+pr,y+ph); ctx.quadraticCurveTo(PAD,y+ph,PAD,y+ph-pr); ctx.lineTo(PAD,y+pr); ctx.quadraticCurveTo(PAD,y,PAD+pr,y); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.textAlign='left'; ctx.font=`900 11px ${fontFam}`;
+        ctx.fillText('🕓 PENDING ('+d.pendingCount+' bills — ابھی ہاتھ میں نہیں)',PAD+10,y+ph/2-6);
+        ctx.fillStyle='#fff'; ctx.textAlign='right'; ctx.font=`900 16px ${fontFam}`;
+        ctx.fillText('Rs. '+d.pendingTotal,W-PAD-10,y+ph/2-8);
+        y+=ph+14;
+      }
+
       // Best sellers
       if(top10.length){
         const barColors=['#ef6c00','#f57c00','#ff9800','#1565c0','#2e7d32','#6a1b9a','#c62828','#00695c','#e65100','#4a148c'];
@@ -8506,7 +8541,7 @@ function _buildEodCanvas(d){
       ctx.strokeStyle='#ddd'; ctx.lineWidth=1;
       ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); y+=10;
       ctx.fillStyle='rgba(150,150,150,0.7)'; ctx.textAlign='center'; ctx.font=`400 10px Arial,sans-serif`;
-      ctx.fillText('Generated by FFPOS — '+APP_VERSION+' | '+d.timeStr,W/2,y);
+      ctx.fillText('📲 For Mobile App: 0320-6793793',W/2,y);
 
       resolve(canvas);
     });
@@ -8558,80 +8593,40 @@ async function printEodViaBluetooth(){
     showToast('❌ پرنٹر کنیکٹ نہیں — Settings سے جوڑیں');
     return;
   }
+  if(_printInProgress){ showToast('⏳ پرنٹ پہلے سے جاری ہے، انتظار کریں'); return; }
+  _printInProgress = true;
   const d=_eodReportData;
   const btn=document.getElementById('eodPrintBtn');
   const lbl=document.getElementById('eodPrintLabel');
   if(btn) btn.disabled=true; if(lbl) lbl.textContent='🖨️ پرنٹ ہو رہا ہے...';
 
   try{
-    const enc=new TextEncoder();
-    const W=PRINT_WIDTH;
-    const ESC=0x1B, GS=0x1D;
-    const parts=[];
-    const ab=arr=>parts.push(new Uint8Array(arr));
-    const at=s=>parts.push(enc.encode(s));
-    const line=()=>{ at('-'.repeat(W)); at('\n'); };
-    const center=s=>_center(s,W);
+    // اب EOD رپورٹ بھی بل جیسی خوبصورت، رنگین، برانڈڈ راسٹر تصویر کی شکل میں پرنٹ ہوتی ہے —
+    // پرانا سادہ ESC/POS متن مکمل طور پر ہٹا دیا گیا
+    const cfg = getBillCfg();
+    const paperWidthMM = cfg.paperWidth || 58;
+    const targetWidthPx = paperWidthMM === 80 ? 576 : 384;
+    const eodCanvas = await _buildEodCanvas(d, targetWidthPx);
+    const gray = canvasToGrayscale(eodCanvas);
+    const out = canvasToEscPosRaster(gray, paperWidthMM);
 
-    ab([ESC,0x40]);           // reset
-    ab([ESC,0x61,0x01]);      // center — سب کچھ center
-    ab([ESC,0x45,0x01]);      // bold
-    ab([ESC,0x21,0x10]);      // double height
-    at(center(d.cfg.shopName||'FAST FOOD POS')); at('\n');
-    ab([ESC,0x21,0x00]);
-    ab([ESC,0x45,0x00]);
-    at(center('END OF DAY REPORT')); at('\n');
-    at(center(d.dateStr)); at('\n');
-    at(center(d.timeStr||'')); at('\n');
-    line();
-    ab([ESC,0x61,0x00]);      // left
-    ab([ESC,0x45,0x01]);
-    at('CASH SUMMARY\n');
-    ab([ESC,0x45,0x00]);
-    const pad=(a,b)=>{ const sp=W-a.length-b.length; return a+' '.repeat(Math.max(1,sp))+b+'\n'; };
-    at(pad('Opening Cash','Rs.'+( state.opening||0)));
-    at(pad('Cash Sales','Rs.'+d.csh));
-      line();
-    ab([ESC,0x45,0x01]); at('EXPENDITURES\n'); ab([ESC,0x45,0x00]);
-    if(state.expenses.length){
-      state.expenses.forEach(e=>{ at(pad(e.desc,'Rs.'+e.amt)); });
-    } else { ab([ESC,0x61,0x01]); at('(no expenses)\n'); ab([ESC,0x61,0x00]); }
-    at(pad('Total Exp:','Rs.'+d.exp));
-    line();
-    ab([ESC,0x61,0x01]);
-    ab([ESC,0x21,0x30]); ab([ESC,0x45,0x01]);
-    at('NET CASH\n');
-    ab([ESC,0x21,0x10]);
-    at('Rs. '+d.bal+'\n');
-    ab([ESC,0x21,0x00]); ab([ESC,0x45,0x00]);
-    if(d.top10&&d.top10.length){
-      ab([ESC,0x61,0x00]); line();
-      ab([ESC,0x45,0x01]); at('TOP SELLERS\n'); ab([ESC,0x45,0x00]);
-      d.top10.slice(0,5).forEach((it,i)=>{
-        at(pad((i+1)+'. '+String(it.name).slice(0,16),it.qty+'x Rs.'+it.revenue));
-      });
-    }
-    line();
-    ab([ESC,0x61,0x01]);
-    at(center('FFPOS — '+APP_VERSION)); at('\n');
-    at('\n\n\n\n');
-    ab([GS,0x56,0x00]); // cut
-
-    let total=0; parts.forEach(p=>total+=p.length);
-    const out=new Uint8Array(total);
-    let offset=0; parts.forEach(p=>{ out.set(p,offset); offset+=p.length; });
-    const CHUNK=20,DELAY_MS=80;
-    const useConf=!!(thermalChar.properties&&thermalChar.properties.write);
+    const useConfirmed = !!(thermalChar.properties && thermalChar.properties.write);
+    const CHUNK = useConfirmed ? 180 : 20;
+    const DELAY_MS = useConfirmed ? 15 : 80;
+    let anySent = false;
     for(let i=0;i<out.length;i+=CHUNK){
       const chunk=out.slice(i,i+CHUNK);
-      if(useConf){ await thermalChar.writeValue(chunk); }
+      if(useConfirmed){ await thermalChar.writeValue(chunk); }
       else { await thermalChar.writeValueWithoutResponse(chunk); }
+      anySent = true;
       await new Promise(r=>setTimeout(r,DELAY_MS));
     }
     showToast('🖨️ EOD رپورٹ پرنٹ ہو گئی!');
   }catch(e){
-    showToast('❌ پرنٹ ناکام — پرنٹر چیک کریں');
+    thermalChar=null; refreshSettingsUI();
+    showToast('⚠️ پرنٹ ادھورا/ناکام — دوبارہ کوشش کریں');
   }
+  _printInProgress = false;
   if(btn){ btn.disabled=false; } if(lbl){ lbl.textContent='🖨️ PRINT NOW'; }
 }
 
@@ -8658,7 +8653,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug1149am';
+const APP_VERSION = '12aug1214pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
