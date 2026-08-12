@@ -2365,9 +2365,9 @@
       </div>
     </div>
     <div class="bill-preview-body" id="billPreviewContent"></div>
-    <div id="billEditRow" style="display:none;gap:8px;padding:0 2px 8px;">
-      <button type="button" onclick="_editBillGoBack()" style="flex:1;padding:11px 4px;border:none;border-radius:10px;background:linear-gradient(160deg,#1565c0,#0d47a1);color:#fff;font-weight:900;font-size:13px;box-shadow:0 3px 8px rgba(13,71,161,0.3);">✏️ ترمیم کریں</button>
-      <button type="button" onclick="_deleteWholeBill()" style="flex:1;padding:11px 4px;border:none;border-radius:10px;background:linear-gradient(160deg,#c62828,#b71c1c);color:#fff;font-weight:900;font-size:13px;box-shadow:0 3px 8px rgba(183,28,28,0.3);">🗑️ پورا بل حذف</button>
+    <div id="billEditRow" style="display:none;gap:7px;padding:0 2px 6px;">
+      <button type="button" onclick="_editBillGoBack()" style="flex:1;padding:9px 4px;border:none;border-radius:9px;background:linear-gradient(160deg,#1565c0,#0d47a1);color:#fff;font-weight:900;font-size:12.5px;box-shadow:0 3px 8px rgba(13,71,161,0.3);">✏️ ترمیم کریں</button>
+      <button type="button" onclick="_deleteWholeBill()" style="flex:1;padding:9px 4px;border:none;border-radius:9px;background:linear-gradient(160deg,#c62828,#b71c1c);color:#fff;font-weight:900;font-size:12.5px;box-shadow:0 3px 8px rgba(183,28,28,0.3);">🗑️ پورا بل حذف</button>
     </div>
     <div class="pay-mode-btns" id="payModeBtns">
       <button class="pay-mode-btn cash" id="pmbCash" onclick="selectPayMode('cash')" style="width:100%;">💵 CASH RECEIVED</button>
@@ -2379,39 +2379,30 @@
       <!-- Fallback complete row — صرف process/ok flow میں دکھے -->
       <div id="fallbackCompleteRow" style="display:none;flex-direction:row;gap:7px;">
         <button onclick="fallbackPending()" style="
-          flex:1;padding:14px 4px;border:none;border-radius:11px;
+          flex:1;padding:11px 4px;border:none;border-radius:10px;
           background:linear-gradient(160deg,#f9a825,#e65100);
-          color:#fff;font-size:14px;font-family:var(--font-black);font-weight:900;
-          cursor:pointer;box-shadow:0 3px 10px rgba(230,81,0,0.4);
+          color:#fff;font-size:13px;font-family:var(--font-black);font-weight:900;
+          cursor:pointer;box-shadow:0 3px 8px rgba(230,81,0,0.35);
           display:flex;align-items:center;justify-content:center;gap:6px;">
           🕓 <span id="fbPendingBtnLabel">Pending</span>
         </button>
         <button onclick="fallbackComplete()" style="
-          flex:1;padding:14px 4px;border:none;border-radius:11px;
+          flex:1;padding:11px 4px;border:none;border-radius:10px;
           background:linear-gradient(160deg,#2e7d32,#1b5e20);
-          color:#fff;font-size:14px;font-family:var(--font-black);font-weight:900;
-          cursor:pointer;box-shadow:0 3px 10px rgba(46,125,50,0.4);
+          color:#fff;font-size:13px;font-family:var(--font-black);font-weight:900;
+          cursor:pointer;box-shadow:0 3px 8px rgba(46,125,50,0.35);
           display:flex;align-items:center;justify-content:center;gap:6px;">
           💰 <span>Cash Received</span>
         </button>
       </div>
-      <!-- 🛵 Delivery بلوں کے لیے — کسٹمر کو WhatsApp پر بل کی اطلاع بھیجیں -->
-      <button type="button" id="bpWaCustomerBtn" onclick="_shareBillImageToCustomer()" style="display:none;
-        width:100%;padding:10px 4px;border:none;border-radius:10px;margin-top:6px;
+      <!-- 🟢 WhatsApp Share — ایک ہی بٹن، کمپیکٹ (Android کی حد کی وجہ سے نمبر پر براہ راست چیٹ کھولنا ممکن نہیں) -->
+      <button type="button" id="bpWaShareBtn" onclick="shareOnWhatsApp()" style="display:none;
+        width:100%;padding:9px 4px;border:none;border-radius:10px;margin-top:5px;
         background:linear-gradient(160deg,#25d366,#128c7e);
         color:#fff;font-size:12.5px;font-family:var(--font-black);font-weight:900;
         cursor:pointer;box-shadow:0 3px 8px rgba(37,211,102,0.4);
         display:flex;align-items:center;justify-content:center;gap:6px;">
-        📤 <span>کسٹمر کو بل کی تصویر WhatsApp پر بھیجیں</span>
-      </button>
-      <!-- 🌐 مکمل بل کی تصویر شیئر کریں — کسی بھی ایپ کو، نمبر کی ضرورت نہیں -->
-      <button type="button" id="bpWaImageBtn" onclick="shareOnWhatsApp()" style="display:none;
-        width:100%;padding:10px 4px;border:none;border-radius:10px;margin-top:6px;
-        background:linear-gradient(160deg,#0288d1,#01579b);
-        color:#fff;font-size:12.5px;font-family:var(--font-black);font-weight:900;
-        cursor:pointer;box-shadow:0 3px 8px rgba(2,136,209,0.4);
-        display:flex;align-items:center;justify-content:center;gap:6px;">
-        🖼️ <span>مکمل بل کی تصویر شیئر کریں</span>
+        <span>💬 WhatsApp Share</span>
       </button>
       <!-- مین پرنٹ بٹن — پوری چوڑائی (پرنٹر موجود ہو) -->
       <button type="button" class="bpf-print" id="bpfPrintBtn" onclick="executePrint()" disabled>
@@ -2943,7 +2934,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug0711am';
+const FF_APP_VERSION = '12aug0731am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -5018,11 +5009,9 @@ function _showFallbackPreview(sale){
 
 // WhatsApp بٹن دکھائیں/چھپائیں — کسٹمر نمبر لکھتے وقت بھی فوری اپڈیٹ ہو
 function _refreshWaButtons(sale){
-  const waBtn = document.getElementById('bpWaCustomerBtn');
-  const imgBtn = document.getElementById('bpWaImageBtn');
+  const waBtn = document.getElementById('bpWaShareBtn');
   const isDelivery = sale && sale.table==='D';
-  if(waBtn) waBtn.style.display = (isDelivery && sale.customerMobile) ? 'flex' : 'none';
-  if(imgBtn) imgBtn.style.display = isDelivery ? 'flex' : 'none';
+  if(waBtn) waBtn.style.display = isDelivery ? 'flex' : 'none';
 }
 
 // صرف پرنٹ کریں — بل کی حالت (Pending/Cash) کو ہاتھ نہیں لگاتا
@@ -5414,6 +5403,9 @@ function buildBillHtml(sale){
       </table>
       <div style="background:${bt.footerBg};border-radius:8px;padding:8px 10px;text-align:center;margin-top:2px;">
         <div style="font-family:${_billFont};font-weight:900;font-size:9.5px;color:${bt.footerText};line-height:1.6;">${footerLines}</div>
+      </div>
+      <div style="text-align:center;padding:6px 0 0;">
+        <div style="font-family:Arial,sans-serif;font-weight:700;font-size:9px;color:#888;">📲 For Mobile App: 0320-6793793</div>
       </div>
     </div>`;
 }
@@ -5908,51 +5900,78 @@ function _buildBillCanvas(sale, forPrint, lightMode){
     ctx.fillText(dateStr, W/2, my);
     my += S(18);
 
-    // کسٹمر نام / موبائل نمبر — اگر درج کیا گیا ہو تو نمایاں سیاہ بینر میں پرنٹ کریں
+    // خوبصورت رنگین بینر ڈرائنگ ہیلپر — رنگین شیئر امیج پر گریڈیئنٹ + ہلکا شیڈو (تھری ڈی لُک)،
+    // مگر پرنٹ پر صرف صاف سفید باکس + پتلا بارڈر لائن (تاکہ تھرمل پرنٹر گہرا/دھیمی پرنٹ نہ کرے)
+    function _drawInfoBanner(y, h, gradFrom, gradTo){
+      ctx.save();
+      if(forPrint){
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 1.3;
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(PAD, y, W-PAD*2, h, 8); else ctx.rect(PAD, y, W-PAD*2, h);
+        ctx.fill(); ctx.stroke();
+      } else {
+        ctx.shadowColor = 'rgba(0,0,0,0.22)';
+        ctx.shadowBlur = 7;
+        ctx.shadowOffsetY = 3;
+        const grad = ctx.createLinearGradient(PAD, y, PAD, y+h);
+        grad.addColorStop(0, gradFrom);
+        grad.addColorStop(1, gradTo);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(PAD, y, W-PAD*2, h, 13); else ctx.rect(PAD, y, W-PAD*2, h);
+        ctx.fill();
+        ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+        // اوپری ہلکی چمک — ابھرا ہوا (embossed) احساس
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(PAD+1, y+1, W-PAD*2-2, h-2, 12);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // کسٹمر نام / موبائل نمبر — خوبصورت رنگین راؤنڈڈ بینر (پرنٹ پر صاف سفید+بارڈر)
     if(sale.customerName || sale.customerMobile){
       const bannerPadY = S(6);
       const nameH = sale.customerName ? S(22) : 0;
       const mobH  = sale.customerMobile ? S(24) : 0;
       const bannerH = bannerPadY*2 + nameH + mobH;
-      ctx.fillStyle = '#000';
-      ctx.beginPath();
-      if(ctx.roundRect) ctx.roundRect(PAD, my, W-PAD*2, bannerH, 8); else ctx.rect(PAD, my, W-PAD*2, bannerH);
-      ctx.fill();
+      _drawInfoBanner(my, bannerH, ATC.totBg1, ATC.totBg2);
       let cy = my + bannerPadY + S(15);
       ctx.textAlign = 'center';
       if(sale.customerName){
         ctx.font = `900 ${S(17)}px ${fontFam}`;
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = useLightBgText ? '#111' : '#fff';
         ctx.fillText('👤 '+sale.customerName, W/2, cy);
         cy += mobH ? S(22) : 0;
       }
       if(sale.customerMobile){
         ctx.font = `900 ${S(18)}px ${fontFam}`;
-        ctx.fillStyle = '#ffeb3b';
+        ctx.fillStyle = useLightBgText ? '#111' : '#ffe082';
         ctx.fillText('📱 '+sale.customerMobile, W/2, cy);
       }
       my += bannerH + S(10);
     }
 
-    // 🛵 Delivery حالت (COD/Payment Received) + ڈلیوری بوائے — صرف Delivery بلوں پر
+    // 🛵 Delivery حالت (COD/Payment Received) + ڈلیوری بوائے — خوبصورت رنگین بینر
     if(sale.table==='D'){
       const statusText = sale.advancePaid ? '💰 Payment Received' : '🕓 COD — Cash on Delivery';
       const boyLine = sale.deliveryBoyName ? ('🛵 '+sale.deliveryBoyName+(sale.deliveryBoyMobile?(' — '+sale.deliveryBoyMobile):'')) : '';
       const dLines = boyLine ? 2 : 1;
       const dH = S(12) + dLines*S(22);
-      ctx.fillStyle = '#5e35b1';
-      ctx.beginPath();
-      if(ctx.roundRect) ctx.roundRect(PAD, my, W-PAD*2, dH, 8); else ctx.rect(PAD, my, W-PAD*2, dH);
-      ctx.fill();
+      _drawInfoBanner(my, dH, '#7c4dff', '#5e35b1');
       let cy2 = my + S(6) + S(15);
       ctx.textAlign = 'center';
       ctx.font = `900 ${S(15)}px ${fontFam}`;
-      ctx.fillStyle = '#fff';
+      ctx.fillStyle = useLightBgText ? '#111' : '#fff';
       ctx.fillText(statusText, W/2, cy2);
       if(boyLine){
         cy2 += S(22);
         ctx.font = `900 ${S(15)}px ${fontFam}`;
-        ctx.fillStyle = '#ffe082';
+        ctx.fillStyle = useLightBgText ? '#333' : '#ffe082';
         ctx.fillText(boyLine, W/2, cy2);
       }
       my += dH + S(10);
@@ -6146,10 +6165,10 @@ function _buildBillCanvas(sale, forPrint, lightMode){
       ctx.fillText(fl, W/2, ftStart + i*S(24));
     });
 
-    // ===== نیچے App watermark =====
-    ctx.fillStyle = useLightBgText ? '#999' : 'rgba(255,255,255,0.55)';
-    ctx.font = `400 11px Arial, sans-serif`;
-    ctx.fillText('Generated by FFPOS', W/2, H - 10);
+    // ===== نیچے App watermark — موبائل ایپ کے لیے رابطہ نمبر =====
+    ctx.fillStyle = useLightBgText ? '#777' : 'rgba(255,255,255,0.65)';
+    ctx.font = `700 11px Arial, sans-serif`;
+    ctx.fillText('📲 For Mobile App: 0320-6793793', W/2, H - 10);
 
     resolve(canvas);
     }); // fontPromise end
@@ -6693,6 +6712,8 @@ function encodeEscPos(sale){
   (cfg.footer||'THANK YOU! VISIT AGAIN').split('\n').forEach(line=>{
     addText(_center(line.slice(0,W),W)); newLine();
   });
+  newLine();
+  addText(_center('For Mobile App: 0320-6793793',W)); newLine();
 
   newLine(4);
   addBytes(CMD_CUT);
@@ -8414,7 +8435,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug0711am';
+const APP_VERSION = '12aug0731am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
