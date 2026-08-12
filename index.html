@@ -2476,6 +2476,14 @@
       <button type="button" class="bp-theme-swatch" data-th="coffee" onclick="setBillTheme('coffee');printEndOfDayReport();" title="Coffee" style="width:22px;height:22px;border-radius:50%;border:2px solid transparent;background:linear-gradient(135deg,#a1887f,#4e342e);cursor:pointer;padding:0;"></button>
     </div>
 
+    <!-- 🔍 پرنٹ سائز — صرف پرنٹ آؤٹ پٹ کے ٹیکسٹ/لائن سائز کو بڑا/چھوٹا کرتا ہے -->
+    <div class="bp-zoom-row" style="gap:4px;padding:0 8px;">
+      <span style="font-size:12px;">🖨️🔍</span>
+      <input type="range" id="eodZoomSlider" class="bp-zoom-slider" min="70" max="180" step="5"
+        value="100" oninput="_onEodPrintZoomSlider(this.value)" title="Print Size — پرنٹ کا سائز بڑا/چھوٹا کریں" style="flex:1;">
+      <span id="eodZoomVal" style="font-size:10px;font-weight:900;color:var(--green-dk,#1b5e20);min-width:32px;text-align:right;font-family:var(--font-black);">100%</span>
+    </div>
+
     <!-- Body — report content -->
     <div id="eodReportContent" class="bill-preview-body" style="padding:0;"></div>
 
@@ -2499,20 +2507,55 @@
           <span style="font-size:8px;color:rgba(255,255,255,0.7);font-family:'Arial Black',Arial,sans-serif;">Saved in Gallery</span>
         </button>
       </div>
-      <!-- Bluetooth Print -->
-      <button id="eodPrintBtn" onclick="printEodViaBluetooth()" style="
+      <!-- Bluetooth Print — پہلے پریویو دکھائیں، پھر یوزر کنفرم کر کے پرنٹ کرے -->
+      <button id="eodPrintBtn" onclick="eodPrintPreview()" style="
         width:100%;padding:16px;border:none;border-radius:13px;
         font-size:16px;font-family:var(--font-black);font-weight:900;
         cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
         background:linear-gradient(160deg,#2e7d32,#1b5e20);
         color:#fff;box-shadow:0 5px 18px rgba(46,125,50,0.45);">
-        <span>🖨️</span><span id="eodPrintLabel">PRINT NOW</span>
+        <span>🖨️</span><span id="eodPrintLabel">PRINT PREVIEW</span>
       </button>
       <button onclick="closeEodModal()" style="
         width:100%;padding:11px;border:none;border-radius:10px;
         font-size:14px;font-family:var(--font-black);font-weight:900;
         cursor:pointer;background:#f0f0f0;color:#555;">
         ✕ بند کریں
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 🖨️ EOD پرنٹ پریویو — اصل پرنٹ جیسی سیاہ/سفید تصویر، سائز سلائیڈر کے ساتھ -->
+<div class="bill-preview-modal" id="eodPrintPreviewModal">
+  <div class="bill-preview-box" style="width:min(360px,96vw);max-height:92vh;">
+    <div class="bill-preview-header" style="background:linear-gradient(135deg,#263238,#000);">
+      <span>🖨️ PRINT PREVIEW</span>
+      <span style="font-size:10px;opacity:.8;">جیسا پرنٹ ہوگا</span>
+    </div>
+    <div class="bp-zoom-row" style="gap:4px;padding:6px 8px;">
+      <span style="font-size:12px;">🔍</span>
+      <input type="range" id="eodZoomSlider2" class="bp-zoom-slider" min="70" max="180" step="5"
+        value="100" oninput="document.getElementById('eodZoomSlider').value=this.value;document.getElementById('eodZoomVal2').textContent=this.value+'%';_onEodPrintZoomSliderLive(this.value);" title="Print Size" style="flex:1;">
+      <span id="eodZoomVal2" style="font-size:10px;font-weight:900;color:#1b5e20;min-width:32px;text-align:right;font-family:var(--font-black);">100%</span>
+    </div>
+    <div class="bill-preview-body" style="padding:8px;background:#eceff1;text-align:center;">
+      <img id="eodPreviewImg" style="max-width:100%;border:1px solid #999;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+    </div>
+    <div class="bill-preview-footer" style="gap:6px;">
+      <button onclick="printEodViaBluetooth()" style="
+        width:100%;padding:16px;border:none;border-radius:13px;
+        font-size:16px;font-family:var(--font-black);font-weight:900;
+        cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+        background:linear-gradient(160deg,#2e7d32,#1b5e20);
+        color:#fff;box-shadow:0 5px 18px rgba(46,125,50,0.45);">
+        <span>🖨️</span><span id="eodPrintLabel2">PRINT NOW</span>
+      </button>
+      <button onclick="closeEodPrintPreview()" style="
+        width:100%;padding:11px;border:none;border-radius:10px;
+        font-size:14px;font-family:var(--font-black);font-weight:900;
+        cursor:pointer;background:#f0f0f0;color:#555;">
+        ✕ واپس
       </button>
     </div>
   </div>
@@ -2968,7 +3011,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug0119pm';
+const FF_APP_VERSION = '12aug0300pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -6722,6 +6765,37 @@ async function _silentReconnect(device, attempt){
   setTimeout(()=>_silentReconnect(device, attempt+1), delay);
 }
 
+// ═══ خودکار Auto-Reconnect — ایپ minimize/resume ہو یا بیک گراؤنڈ سے واپس آئے،
+// پرنٹر خود بخود دوبارہ جڑ جائے، بار بار الگ سے "Connect" کرنے کی ضرورت نہ پڑے ═══
+async function _autoReconnectPrinterOnResume(){
+  if(_userDisconnected) return;                 // یوزر نے خود بند کیا تھا — دخل نہ دیں
+  if(thermalChar) return;                       // پہلے سے کنیکٹڈ — کچھ کرنے کی ضرورت نہیں
+  if(_printerAttemptInProgress) return;          // پہلے سے کوشش جاری
+  const savedName = localStorage.getItem(LS_PRINTER_NM);
+  if(!savedName) return;                         // کبھی کوئی پرنٹر جوڑا ہی نہیں
+  if(!navigator.bluetooth || !navigator.bluetooth.getDevices) return;
+  try{
+    const devices = await navigator.bluetooth.getDevices();
+    const savedId = localStorage.getItem(LS_PRINTER_ID);
+    const found = savedId ? devices.find(d=>d.id===savedId) : devices[0];
+    if(found){
+      setPrinterAttemptInProgress(true);
+      await doConnect(found);   // silent-ish — کنیکٹ ہوتے ہی ایک چھوٹا toast دکھائے گا
+    }
+  }catch(e){
+    setPrinterAttemptInProgress(false);
+  }
+}
+// ایپ فوکس میں واپس آتے ہی فوراً کوشش کریں
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible') _autoReconnectPrinterOnResume();
+});
+// اور جب تک ایپ کھلی/فوکس میں ہے، ہر 20 سیکنڈ بعد خاموشی سے چیک کرتے رہیں
+// (پرنٹر بند تھا اب آن ہوا، یا وائی فائی/بلوٹوتھ ابھی ابھی آن ہوئی — تو خود جڑ جائے)
+setInterval(()=>{
+  if(document.visibilityState==='visible') _autoReconnectPrinterOnResume();
+}, 20000);
+
 function refreshSettingsUI(){
   const savedName=localStorage.getItem(LS_PRINTER_NM)||'';
   const connected=!!(thermalChar);
@@ -8286,6 +8360,10 @@ function printEndOfDayReport(){
   // Build HTML content
   document.getElementById('eodReportContent').innerHTML = _buildEodHtml(_eodReportData);
 
+  // 🔍 پرنٹ زوم سلائیڈر — پچھلی محفوظ شدہ ویلیو دکھائیں
+  const zs = document.getElementById('eodZoomSlider'); const zv = document.getElementById('eodZoomVal');
+  if(zs){ zs.value = _eodPrintScale; } if(zv){ zv.textContent = _eodPrintScale+'%'; }
+
   // Open modal
   document.getElementById('eodReportModal').classList.add('open');
 }
@@ -8297,10 +8375,12 @@ function closeEodModal(){
 function _buildEodHtml(d){
   const billTheme = localStorage.getItem('ff_bill_theme')||'classic';
   const BT = {
-    classic: { headBg:'linear-gradient(135deg,#333,#111)',   headText:'#fff', secBg:'#fff',    secBorder:'#ddd',    secTitle:'#333',  rowBorder:'#eee',  totalBg:'linear-gradient(135deg,#1b5e20,#2e7d32)', totalText:'#fff', bodyBg:'#f5f5f5' },
-    saffron: { headBg:'linear-gradient(135deg,#ef6c00,#e65100)', headText:'#fff', secBg:'#fff8f0', secBorder:'#ffcc80', secTitle:'#e65100', rowBorder:'#ffe0b2', totalBg:'linear-gradient(135deg,#bf360c,#e65100)', totalText:'#fff', bodyBg:'#fff3e0' },
-    emerald: { headBg:'linear-gradient(135deg,#2e7d32,#1b5e20)', headText:'#fff', secBg:'#f1fff3', secBorder:'#a5d6a7', secTitle:'#1b5e20', rowBorder:'#c8e6c9', totalBg:'linear-gradient(135deg,#1b5e20,#2e7d32)', totalText:'#fff', bodyBg:'#e8f5e9' },
-    royal:   { headBg:'linear-gradient(135deg,#6a1b9a,#4a148c)', headText:'#fff', secBg:'#fdf0ff', secBorder:'#ce93d8', secTitle:'#4a148c', rowBorder:'#e1bee7', totalBg:'linear-gradient(135deg,#4a148c,#6a1b9a)', totalText:'#fff', bodyBg:'#f3e5f5' },
+    classic: { headBg:'linear-gradient(135deg,#333,#111)',   headText:'#fff', secBg:'#fff',    secBorder:'#ddd',    secTitle:'#333',  rowBorder:'#eee',  totalBg:'linear-gradient(135deg,#1b5e20,#2e7d32)', totalText:'#fff', bodyBg:'#f5f5f5', warnBg:'linear-gradient(135deg,#555,#333)' },
+    saffron: { headBg:'linear-gradient(135deg,#ef6c00,#e65100)', headText:'#fff', secBg:'#fff8f0', secBorder:'#ffcc80', secTitle:'#e65100', rowBorder:'#ffe0b2', totalBg:'linear-gradient(135deg,#bf360c,#e65100)', totalText:'#fff', bodyBg:'#fff3e0', warnBg:'linear-gradient(135deg,#e65100,#bf360c)' },
+    emerald: { headBg:'linear-gradient(135deg,#2e7d32,#1b5e20)', headText:'#fff', secBg:'#f1fff3', secBorder:'#a5d6a7', secTitle:'#1b5e20', rowBorder:'#c8e6c9', totalBg:'linear-gradient(135deg,#1b5e20,#2e7d32)', totalText:'#fff', bodyBg:'#e8f5e9', warnBg:'linear-gradient(135deg,#33691e,#1b5e20)' },
+    royal:   { headBg:'linear-gradient(135deg,#6a1b9a,#4a148c)', headText:'#fff', secBg:'#fdf0ff', secBorder:'#ce93d8', secTitle:'#4a148c', rowBorder:'#e1bee7', totalBg:'linear-gradient(135deg,#4a148c,#6a1b9a)', totalText:'#fff', bodyBg:'#f3e5f5', warnBg:'linear-gradient(135deg,#7b1fa2,#4a148c)' },
+    mint:    { headBg:'linear-gradient(135deg,#00897b,#00695c)', headText:'#fff', secBg:'#f1fbfa', secBorder:'#80cbc4', secTitle:'#00695c', rowBorder:'#b2dfdb', totalBg:'linear-gradient(135deg,#00695c,#00897b)', totalText:'#fff', bodyBg:'#e0f7f4', warnBg:'linear-gradient(135deg,#00796b,#004d40)' },
+    coffee:  { headBg:'linear-gradient(135deg,#6d4c41,#4e342e)', headText:'#fff', secBg:'#fdf8f2', secBorder:'#d7bb8d', secTitle:'#4e342e', rowBorder:'#e6d3b3', totalBg:'linear-gradient(135deg,#4e342e,#6d4c41)', totalText:'#fff', bodyBg:'#f5e6d3', warnBg:'linear-gradient(135deg,#5d4037,#3e2723)' },
   };
   const bt = BT[billTheme]||BT.classic;
   const fnt = _imgFont==='urdu' ? "'Noto Nastaliq Urdu',Arial,sans-serif"
@@ -8350,38 +8430,38 @@ function _buildEodHtml(d){
         <span style="font-size:12px;font-weight:900;color:#fff;font-family:'Arial Black',Arial,sans-serif;">Rs. ${state.opening||0}</span>
       </div>
 
-      <!-- Cash Sales — Blue (مین پیج جیسا) -->
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:8px;background:linear-gradient(135deg,#1565c0,#1976d2);margin-bottom:6px;">
+      <!-- Cash Sales — تھیم کے ہیڈر رنگ سے ہم آہنگ -->
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:8px;background:${bt.headBg};margin-bottom:6px;">
         <span style="font-size:10px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;color:rgba(255,255,255,0.85);letter-spacing:.5px;">📊 TOTAL SALE AMOUNT</span>
         <span style="font-size:12px;font-weight:900;color:#fff;font-family:'Arial Black',Arial,sans-serif;">Rs. ${d.csh}</span>
       </div>
 
     </div>
 
-    <!-- Expenditure — صرف ٹوٹل، تفصیل نہیں -->
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:10px;background:linear-gradient(135deg,#e65100,#ef6c00);margin-bottom:8px;box-shadow:0 3px 8px rgba(230,81,0,0.3);">
+    <!-- Expenditure — تھیم کے warn رنگ سے -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:10px;background:${bt.warnBg};margin-bottom:8px;box-shadow:0 3px 8px rgba(0,0,0,0.2);">
       <span style="font-size:10px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;color:rgba(255,255,255,0.9);letter-spacing:.5px;">💸 EXPENDITURE</span>
       <span style="font-size:14px;font-weight:900;color:#fff;font-family:'Arial Black',Arial,sans-serif;">Rs. ${d.exp}</span>
     </div>
 
-    <!-- Two Columns: Total Cash In | Total Cash Out -->
+    <!-- Two Columns: Total Cash In | Total Cash Out — تھیم کے مثبت/منفی رنگ سے -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
       <!-- Total Cash In -->
-      <div style="background:linear-gradient(135deg,#2e7d32,#388e3c);border-radius:10px;padding:10px 8px;text-align:center;box-shadow:0 3px 8px rgba(46,125,50,0.3);">
+      <div style="background:${bt.totalBg};border-radius:10px;padding:10px 8px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,0.2);">
         <div style="font-size:8px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;color:rgba(255,255,255,0.8);letter-spacing:.5px;margin-bottom:5px;">💵 TOTAL CASH IN</div>
         <div style="font-size:16px;font-weight:900;color:#fff;font-family:'Arial Black',Arial,sans-serif;">Rs. ${totalCashIn}</div>
         <div style="font-size:7px;color:rgba(255,255,255,0.65);margin-top:3px;font-family:'Arial Black',Arial,sans-serif;">Opening + Sales</div>
       </div>
       <!-- Total Cash Out -->
-      <div style="background:linear-gradient(135deg,#c62828,#b71c1c);border-radius:10px;padding:10px 8px;text-align:center;box-shadow:0 3px 8px rgba(198,40,40,0.3);">
+      <div style="background:${bt.warnBg};border-radius:10px;padding:10px 8px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,0.2);">
         <div style="font-size:8px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;color:rgba(255,255,255,0.8);letter-spacing:.5px;margin-bottom:5px;">💸 TOTAL CASH OUT</div>
         <div style="font-size:16px;font-weight:900;color:#fff;font-family:'Arial Black',Arial,sans-serif;">Rs. ${totalCashOut}</div>
         <div style="font-size:7px;color:rgba(255,255,255,0.65);margin-top:3px;font-family:'Arial Black',Arial,sans-serif;">Total Expenses</div>
       </div>
     </div>
 
-    <!-- Cash In Hand — بڑا باکس -->
-    <div style="background:linear-gradient(135deg,#2e7d32,#388e3c);border-radius:14px;padding:20px 14px;text-align:center;margin-bottom:10px;box-shadow:0 6px 20px rgba(46,125,50,0.4);">
+    <!-- Cash In Hand — بڑا باکس — تھیم کے مثبت رنگ سے -->
+    <div style="background:${bt.totalBg};border-radius:14px;padding:20px 14px;text-align:center;margin-bottom:10px;box-shadow:0 6px 20px rgba(0,0,0,0.3);">
       <div style="font-size:11px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;color:rgba(255,255,255,0.85);letter-spacing:1.5px;margin-bottom:6px;">🏦 CASH IN HAND</div>
       <div style="font-size:54px;font-weight:900;color:#fff;font-family:'Arial Black',Arial,sans-serif;line-height:1.0;letter-spacing:1px;text-shadow:0 2px 8px rgba(0,0,0,0.3);">Rs. ${d.bal}</div>
       <div style="font-size:9px;color:rgba(255,255,255,0.7);margin-top:6px;font-family:'Arial Black',Arial,sans-serif;">Opening ${state.opening||0} + Sales ${d.csh} − Exp ${d.exp}</div>
@@ -8398,8 +8478,10 @@ function _buildEodHtml(d){
 }
 
 // ===== EOD Canvas (WhatsApp/Save) =====
-function _buildEodCanvas(d, printWidthPx, forPrint){
+function _buildEodCanvas(d, printWidthPx, forPrint, scale){
   return new Promise(resolve=>{
+    scale = forPrint ? (Number(scale)||1) : 1;
+    const FS = n => Math.round(n*scale); // 🔍 پرنٹ زوم — فونٹ/قطار سائز بڑھانے کے لیے
     const billTheme = localStorage.getItem('ff_bill_theme')||'classic';
     const _CT = {
       classic: { h1:'#444', h2:'#222', hdrBg:'#333', hdrT:'#fff', alt:'#f0f0f0', tBg1:'#1b5e20', tBg2:'#2e7d32', tT:'#fff', fBg1:'#555', fBg2:'#333', fT:'#fff', body:'#f5f5f5', bdr:'#ccc', totLbl:'rgba(255,255,255,0.8)' },
@@ -8424,7 +8506,7 @@ function _buildEodCanvas(d, printWidthPx, forPrint){
     fontPromise.then(()=>{
       const W = printWidthPx || 640, PAD = printWidthPx ? Math.round(24*(printWidthPx/640)) : 24, iW=W-PAD*2;
       const top10 = d.top10||[];
-      const H = 180 + 220 + 60 + 130 + top10.length*40 + 80 + (d.pendingCount>0?70:0) + PAD*2;
+      const H = FS(180 + 220 + 60 + 130) + top10.length*FS(40) + FS(80) + (d.pendingCount>0?FS(70):0) + PAD*2;
       const canvas=document.createElement('canvas');
       canvas.width=W; canvas.height=H;
       const ctx=canvas.getContext('2d');
@@ -8436,11 +8518,11 @@ function _buildEodCanvas(d, printWidthPx, forPrint){
       // Header — پرنٹ پر رنگین باکس کی بجائے صرف صاف عنوان
       if(forPrint){
         ctx.fillStyle='#000'; ctx.textAlign='center'; ctx.textBaseline='top';
-        ctx.font=`900 24px ${fontFam}`; ctx.fillText(d.cfg.shopName||'FAST FOOD POS', W/2, 8);
-        ctx.font=`700 12px ${fontFam}`; ctx.fillText('END OF DAY REPORT', W/2, 40);
-        ctx.font=`400 10px ${fontFam}`; ctx.fillText(d.dateStr+' — '+d.timeStr, W/2, 58);
-        ctx.strokeStyle='#000'; ctx.lineWidth=1.5;
-        ctx.beginPath(); ctx.moveTo(PAD,80); ctx.lineTo(W-PAD,80); ctx.stroke();
+        ctx.font=`900 ${FS(24)}px ${fontFam}`; ctx.fillText(d.cfg.shopName||'FAST FOOD POS', W/2, FS(8));
+        ctx.font=`700 ${FS(12)}px ${fontFam}`; ctx.fillText('END OF DAY REPORT', W/2, FS(40));
+        ctx.font=`400 ${FS(10)}px ${fontFam}`; ctx.fillText(d.dateStr+' — '+d.timeStr, W/2, FS(58));
+        ctx.strokeStyle='#000'; ctx.lineWidth=1.5*scale;
+        ctx.beginPath(); ctx.moveTo(PAD,FS(80)); ctx.lineTo(W-PAD,FS(80)); ctx.stroke();
       } else {
         const hg=ctx.createLinearGradient(0,0,W,120);
         hg.addColorStop(0,TC.h1); hg.addColorStop(1,TC.h2);
@@ -8454,22 +8536,22 @@ function _buildEodCanvas(d, printWidthPx, forPrint){
         ctx.fillText(d.dateStr+' — '+d.timeStr,W/2,72);
       }
 
-      let y=130;
+      let y = forPrint ? FS(130) : 130;
 
       // ── CASH SUMMARY ──
-      ctx.fillStyle = forPrint ? '#000' : TC.h1; ctx.textAlign='left'; ctx.font=`900 12px ${fontFam}`;
-      ctx.fillText((forPrint?'':'💰 ')+'CASH SUMMARY',PAD,y); y+=16;
+      ctx.fillStyle = forPrint ? '#000' : TC.h1; ctx.textAlign='left'; ctx.font=`900 ${forPrint?FS(12):12}px ${fontFam}`;
+      ctx.fillText((forPrint?'':'💰 ')+'CASH SUMMARY',PAD,y); y+= forPrint?FS(16):16;
 
       // رنگین گریڈیئنٹ باکس (شیئر امیج) یا صاف سفید+بارڈر لائن (پرنٹ) — دونوں کے لیے ایک ہی فنکشن
       const drawColorRow=(label,val,bg1,bg2,lh)=>{
-        const rh=lh||36; const r=8;
+        const rh = forPrint ? FS(lh||36) : (lh||36); const r=8;
         if(forPrint){
-          ctx.strokeStyle='#000'; ctx.lineWidth=1.3;
+          ctx.strokeStyle='#000'; ctx.lineWidth=1.3*scale;
           ctx.beginPath(); ctx.moveTo(PAD+r,y); ctx.lineTo(W-PAD-r,y); ctx.quadraticCurveTo(W-PAD,y,W-PAD,y+r); ctx.lineTo(W-PAD,y+rh-r); ctx.quadraticCurveTo(W-PAD,y+rh,W-PAD-r,y+rh); ctx.lineTo(PAD+r,y+rh); ctx.quadraticCurveTo(PAD,y+rh,PAD,y+rh-r); ctx.lineTo(PAD,y+r); ctx.quadraticCurveTo(PAD,y,PAD+r,y); ctx.closePath(); ctx.stroke();
-          ctx.fillStyle='#000'; ctx.textAlign='left'; ctx.font=`700 11px ${fontFam}`;
-          ctx.fillText(label,PAD+10,y+rh/2-5);
-          ctx.fillStyle='#000'; ctx.textAlign='right'; ctx.font=`900 13px ${fontFam}`;
-          ctx.fillText(val,W-PAD-10,y+rh/2-5);
+          ctx.fillStyle='#000'; ctx.textAlign='left'; ctx.font=`700 ${FS(11)}px ${fontFam}`;
+          ctx.fillText(label,PAD+10,y+rh/2-FS(5));
+          ctx.fillStyle='#000'; ctx.textAlign='right'; ctx.font=`900 ${FS(13)}px ${fontFam}`;
+          ctx.fillText(val,W-PAD-10,y+rh/2-FS(5));
         } else {
           const rg=ctx.createLinearGradient(PAD,y,W-PAD,y);
           rg.addColorStop(0,bg1); rg.addColorStop(1,bg2);
@@ -8480,34 +8562,34 @@ function _buildEodCanvas(d, printWidthPx, forPrint){
           ctx.fillStyle='#fff'; ctx.textAlign='right'; ctx.font=`900 13px ${fontFam}`;
           ctx.fillText(val,W-PAD-10,y+rh/2-5);
         }
-        y+=rh+5;
+        y+= forPrint?(rh+FS(5)):(rh+5);
       };
 
       // Opening Cash
       drawColorRow((forPrint?'':'💰 ')+'OPENING CASH','Rs. '+(state.opening||0),'#616161','#757575');
-      // Total Sale
-      drawColorRow((forPrint?'':'📊 ')+'TOTAL SALE AMOUNT','Rs. '+d.csh,'#1565c0','#1976d2');
-      y+=6;
-      // EXPENDITURE
-      drawColorRow((forPrint?'':'💸 ')+'EXPENDITURE','Rs. '+d.exp,'#e65100','#ef6c00',38);
+      // Total Sale — تھیم کے ہیڈر رنگ سے ہم آہنگ
+      drawColorRow((forPrint?'':'📊 ')+'TOTAL SALE AMOUNT','Rs. '+d.csh,TC.tBg1,TC.tBg2);
+      y+= forPrint?FS(6):6;
+      // EXPENDITURE — تھیم کے warn رنگ سے
+      drawColorRow((forPrint?'':'💸 ')+'EXPENDITURE','Rs. '+d.exp,TC.fBg1,TC.fBg2,38);
 
-      y+=6;
+      y+= forPrint?FS(6):6;
       // ── TWO COLUMNS: CASH IN | CASH OUT ──
       const colW=(iW-10)/2;
       const totalCashIn=(state.opening||0)+d.csh;
       const totalCashOut=d.exp;
 
       const drawCol=(lbl,sub,val,bg1,bg2,x,w)=>{
-        const ch=80; const r=8;
+        const ch = forPrint ? FS(80) : 80; const r=8;
         if(forPrint){
-          ctx.strokeStyle='#000'; ctx.lineWidth=1.3;
+          ctx.strokeStyle='#000'; ctx.lineWidth=1.3*scale;
           ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+ch-r); ctx.quadraticCurveTo(x+w,y+ch,x+w-r,y+ch); ctx.lineTo(x+r,y+ch); ctx.quadraticCurveTo(x,y+ch,x,y+ch-r); ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath(); ctx.stroke();
-          ctx.fillStyle='#000'; ctx.textAlign='center'; ctx.font=`700 9px ${fontFam}`;
-          ctx.fillText(lbl,x+w/2,y+14);
-          ctx.fillStyle='#000'; ctx.font=`900 16px ${fontFam}`;
-          ctx.fillText(val,x+w/2,y+38);
-          ctx.fillStyle='#333'; ctx.font=`400 8px ${fontFam}`;
-          ctx.fillText(sub,x+w/2,y+58);
+          ctx.fillStyle='#000'; ctx.textAlign='center'; ctx.font=`700 ${FS(9)}px ${fontFam}`;
+          ctx.fillText(lbl,x+w/2,y+FS(14));
+          ctx.fillStyle='#000'; ctx.font=`900 ${FS(16)}px ${fontFam}`;
+          ctx.fillText(val,x+w/2,y+FS(38));
+          ctx.fillStyle='#333'; ctx.font=`400 ${FS(8)}px ${fontFam}`;
+          ctx.fillText(sub,x+w/2,y+FS(58));
         } else {
           const cg=ctx.createLinearGradient(x,y,x,y+ch);
           cg.addColorStop(0,bg1); cg.addColorStop(1,bg2);
@@ -8521,24 +8603,25 @@ function _buildEodCanvas(d, printWidthPx, forPrint){
           ctx.fillText(sub,x+w/2,y+58);
         }
       };
-      drawCol((forPrint?'':'💵 ')+'TOTAL CASH IN','Opening + Sales','Rs.'+totalCashIn,'#2e7d32','#388e3c',PAD,colW);
-      drawCol((forPrint?'':'💸 ')+'TOTAL CASH OUT','Total Expenses','Rs.'+totalCashOut,'#c62828','#b71c1c',PAD+colW+10,colW);
-      y+=90;
+      // تھیم رنگ — Cash In مثبت (tBg) اور Cash Out منفی (fBg) رنگ سے
+      drawCol((forPrint?'':'💵 ')+'TOTAL CASH IN','Opening + Sales','Rs.'+totalCashIn,TC.tBg1,TC.tBg2,PAD,colW);
+      drawCol((forPrint?'':'💸 ')+'TOTAL CASH OUT','Total Expenses','Rs.'+totalCashOut,TC.fBg1,TC.fBg2,PAD+colW+10,colW);
+      y+= forPrint?FS(90):90;
 
       // ── CASH IN HAND — Big Box ──
-      const bh=110; const tr=12;
+      const bh = forPrint ? FS(110) : 110; const tr=12;
       if(forPrint){
-        ctx.strokeStyle='#000'; ctx.lineWidth=2;
+        ctx.strokeStyle='#000'; ctx.lineWidth=2*scale;
         ctx.beginPath(); ctx.moveTo(PAD+tr,y); ctx.lineTo(W-PAD-tr,y); ctx.quadraticCurveTo(W-PAD,y,W-PAD,y+tr); ctx.lineTo(W-PAD,y+bh-tr); ctx.quadraticCurveTo(W-PAD,y+bh,W-PAD-tr,y+bh); ctx.lineTo(PAD+tr,y+bh); ctx.quadraticCurveTo(PAD,y+bh,PAD,y+bh-tr); ctx.lineTo(PAD,y+tr); ctx.quadraticCurveTo(PAD,y,PAD+tr,y); ctx.closePath(); ctx.stroke();
-        ctx.fillStyle='#000'; ctx.textAlign='center'; ctx.font=`900 13px ${fontFam}`;
-        ctx.fillText('CASH IN HAND',W/2,y+18);
-        ctx.fillStyle='#000'; ctx.font=`900 42px ${fontFam}`;
-        ctx.fillText('Rs. '+d.bal,W/2,y+58);
-        ctx.fillStyle='#333'; ctx.font=`400 10px ${fontFam}`;
-        ctx.fillText('Opening '+(state.opening||0)+' + Sales '+d.csh+' - Exp '+d.exp,W/2,y+82);
+        ctx.fillStyle='#000'; ctx.textAlign='center'; ctx.font=`900 ${FS(13)}px ${fontFam}`;
+        ctx.fillText('CASH IN HAND',W/2,y+FS(18));
+        ctx.fillStyle='#000'; ctx.font=`900 ${FS(42)}px ${fontFam}`;
+        ctx.fillText('Rs. '+d.bal,W/2,y+FS(58));
+        ctx.fillStyle='#333'; ctx.font=`400 ${FS(10)}px ${fontFam}`;
+        ctx.fillText('Opening '+(state.opening||0)+' + Sales '+d.csh+' - Exp '+d.exp,W/2,y+FS(82));
       } else {
         const tg=ctx.createLinearGradient(PAD,y,PAD,y+bh);
-        tg.addColorStop(0,'#2e7d32'); tg.addColorStop(1,'#388e3c');
+        tg.addColorStop(0,TC.tBg1); tg.addColorStop(1,TC.tBg2);
         ctx.fillStyle=tg;
         ctx.beginPath(); ctx.moveTo(PAD+tr,y); ctx.lineTo(W-PAD-tr,y); ctx.quadraticCurveTo(W-PAD,y,W-PAD,y+tr); ctx.lineTo(W-PAD,y+bh-tr); ctx.quadraticCurveTo(W-PAD,y+bh,W-PAD-tr,y+bh); ctx.lineTo(PAD+tr,y+bh); ctx.quadraticCurveTo(PAD,y+bh,PAD,y+bh-tr); ctx.lineTo(PAD,y+tr); ctx.quadraticCurveTo(PAD,y,PAD+tr,y); ctx.closePath(); ctx.fill();
         ctx.fillStyle='rgba(255,255,255,0.85)'; ctx.textAlign='center'; ctx.font=`900 13px ${fontFam}`;
@@ -8548,18 +8631,18 @@ function _buildEodCanvas(d, printWidthPx, forPrint){
         ctx.fillStyle='rgba(255,255,255,0.65)'; ctx.font=`400 10px ${fontFam}`;
         ctx.fillText('Opening '+(state.opening||0)+' + Sales '+d.csh+' − Exp '+d.exp,W/2,y+82);
       }
-      y+=bh+14;
+      y+= forPrint?(bh+FS(14)):(bh+14);
 
       // 🕓 PENDING — ہاتھ میں نہیں آئی، اس لیے اوپر Cash In Hand سے خارج
       if(d.pendingCount>0){
-        const ph=54; const pr=10;
+        const ph = forPrint ? FS(54) : 54; const pr=10;
         if(forPrint){
-          ctx.strokeStyle='#000'; ctx.lineWidth=1.5;
+          ctx.strokeStyle='#000'; ctx.lineWidth=1.5*scale;
           ctx.beginPath(); ctx.moveTo(PAD+pr,y); ctx.lineTo(W-PAD-pr,y); ctx.quadraticCurveTo(W-PAD,y,W-PAD,y+pr); ctx.lineTo(W-PAD,y+ph-pr); ctx.quadraticCurveTo(W-PAD,y+ph,W-PAD-pr,y+ph); ctx.lineTo(PAD+pr,y+ph); ctx.quadraticCurveTo(PAD,y+ph,PAD,y+ph-pr); ctx.lineTo(PAD,y+pr); ctx.quadraticCurveTo(PAD,y,PAD+pr,y); ctx.closePath(); ctx.stroke();
-          ctx.fillStyle='#000'; ctx.textAlign='left'; ctx.font=`700 11px ${fontFam}`;
-          ctx.fillText('PENDING ('+d.pendingCount+' bills — Not in hand yet)',PAD+10,y+ph/2-6);
-          ctx.fillStyle='#000'; ctx.textAlign='right'; ctx.font=`900 16px ${fontFam}`;
-          ctx.fillText('Rs. '+d.pendingTotal,W-PAD-10,y+ph/2-8);
+          ctx.fillStyle='#000'; ctx.textAlign='left'; ctx.font=`700 ${FS(11)}px ${fontFam}`;
+          ctx.fillText('PENDING ('+d.pendingCount+' bills — Not in hand yet)',PAD+10,y+ph/2-FS(6));
+          ctx.fillStyle='#000'; ctx.textAlign='right'; ctx.font=`900 ${FS(16)}px ${fontFam}`;
+          ctx.fillText('Rs. '+d.pendingTotal,W-PAD-10,y+ph/2-FS(8));
         } else {
           const pg=ctx.createLinearGradient(PAD,y,PAD,y+ph);
           pg.addColorStop(0,'#f9a825'); pg.addColorStop(1,'#e65100');
@@ -8570,35 +8653,35 @@ function _buildEodCanvas(d, printWidthPx, forPrint){
           ctx.fillStyle='#fff'; ctx.textAlign='right'; ctx.font=`900 16px ${fontFam}`;
           ctx.fillText('Rs. '+d.pendingTotal,W-PAD-10,y+ph/2-8);
         }
-        y+=ph+14;
+        y+= forPrint?(ph+FS(14)):(ph+14);
       }
 
       // Best sellers
       if(top10.length){
         const barColors=['#ef6c00','#f57c00','#ff9800','#1565c0','#2e7d32','#6a1b9a','#c62828','#00695c','#e65100','#4a148c'];
-        ctx.fillStyle = forPrint ? '#000' : TC.h1; ctx.textAlign='left'; ctx.font=`900 12px ${fontFam}`;
-        ctx.fillText((forPrint?'':'🏆 ')+'TOP BEST SELLERS',PAD,y); y+=22;
+        ctx.fillStyle = forPrint ? '#000' : TC.h1; ctx.textAlign='left'; ctx.font=`900 ${FS(12)}px ${fontFam}`;
+        ctx.fillText((forPrint?'':'🏆 ')+'TOP BEST SELLERS',PAD,y); y+= forPrint?FS(22):22;
         const maxQ=top10[0].qty||1;
         top10.forEach((it,i)=>{
           const pct=it.qty/maxQ; const clr= forPrint ? '#000' : (barColors[i]||'#ef6c00');
-          ctx.fillStyle= forPrint ? '#000' : '#999'; ctx.textAlign='right'; ctx.font=`bold 11px ${fontFam}`;
+          ctx.fillStyle= forPrint ? '#000' : '#999'; ctx.textAlign='right'; ctx.font=`bold ${FS(11)}px ${fontFam}`;
           ctx.fillText((i+1)+'.',PAD+18,y+2);
-          ctx.fillStyle='#000'; ctx.textAlign='left'; ctx.font=`900 11px ${fontFam}`;
+          ctx.fillStyle='#000'; ctx.textAlign='left'; ctx.font=`900 ${FS(11)}px ${fontFam}`;
           ctx.fillText(String(it.name).slice(0,28),PAD+24,y+2);
-          ctx.fillStyle='#000'; ctx.textAlign='right'; ctx.font=`900 11px ${fontFam}`;
+          ctx.fillStyle='#000'; ctx.textAlign='right'; ctx.font=`900 ${FS(11)}px ${fontFam}`;
           ctx.fillText('Rs.'+it.revenue,W-PAD,y+2);
           // bar
           if(forPrint){
-            ctx.strokeStyle='#000'; ctx.lineWidth=1;
-            ctx.strokeRect(PAD+24,y+14,iW-80,10);
-            ctx.fillStyle='#000'; ctx.fillRect(PAD+24,y+14,Math.max(4,(iW-80)*pct),10);
+            ctx.strokeStyle='#000'; ctx.lineWidth=1*scale;
+            ctx.strokeRect(PAD+24,y+FS(14),iW-80,FS(10));
+            ctx.fillStyle='#000'; ctx.fillRect(PAD+24,y+FS(14),Math.max(4,(iW-80)*pct),FS(10));
           } else {
             ctx.fillStyle='#e0e0e0'; ctx.fillRect(PAD+24,y+14,iW-80,10);
             ctx.fillStyle=clr; ctx.fillRect(PAD+24,y+14,Math.max(4,(iW-80)*pct),10);
           }
-          ctx.fillStyle= forPrint ? '#000' : clr; ctx.textAlign='left'; ctx.font=`bold 9px ${fontFam}`;
-          ctx.fillText(it.qty+' pcs',PAD+24+(iW-80)*pct+6,y+14);
-          y+=38;
+          ctx.fillStyle= forPrint ? '#000' : clr; ctx.textAlign='left'; ctx.font=`bold ${FS(9)}px ${fontFam}`;
+          ctx.fillText(it.qty+' pcs',PAD+24+(iW-80)*pct+6,y+FS(14));
+          y+= forPrint?FS(38):38;
         });
       }
 
@@ -8653,6 +8736,48 @@ async function saveEodImage(){
   }catch(e){ if(e.name!=='AbortError') showToast('✅ Saved in your Gallery'); }
 }
 
+// 🔍 EOD پرنٹ زوم — Text Size/Row Height سلائیڈر جیسا، صرف پرنٹ آؤٹ پٹ کو بڑا/چھوٹا کرتا ہے
+let _eodPrintScale = Number(localStorage.getItem('ff_eod_print_scale')) || 100;
+function _onEodPrintZoomSlider(v){
+  _eodPrintScale = Number(v);
+  localStorage.setItem('ff_eod_print_scale', String(_eodPrintScale));
+  const lbl=document.getElementById('eodZoomVal'); if(lbl) lbl.textContent=_eodPrintScale+'%';
+}
+
+// 🖨️ پرنٹ پریویو — اصل پرنٹ جیسی (سیاہ/سفید، فکسڈ چوڑائی) تصویر پہلے دکھائیں،
+// یوزر سائز دیکھ کر ٹھیک کرے، پھر ہی "پرنٹ کریں" دبائے
+async function eodPrintPreview(){
+  if(!_eodReportData){ showToast('⚠️ پہلے رپورٹ کھولیں'); return; }
+  if(!isPrinterLive()){
+    showToast('❌ پرنٹر کنیکٹ نہیں — Settings سے جوڑیں');
+    return;
+  }
+  const cfg = getBillCfg();
+  const paperWidthMM = cfg.paperWidth || 58;
+  const targetWidthPx = paperWidthMM === 80 ? 576 : 384;
+  const scale = (_eodPrintScale||100)/100;
+  const previewCanvas = await _buildEodCanvas(_eodReportData, targetWidthPx, true, scale);
+  const img = document.getElementById('eodPreviewImg');
+  if(img) img.src = previewCanvas.toDataURL('image/png');
+  document.getElementById('eodPrintPreviewModal').classList.add('open');
+}
+function closeEodPrintPreview(){
+  document.getElementById('eodPrintPreviewModal').classList.remove('open');
+}
+// سلائیڈر ہلتے ہی پریویو تصویر بھی فوراً اپڈیٹ ہو
+let _eodZoomDebounce=null;
+function _onEodPrintZoomSliderLive(v){
+  _onEodPrintZoomSlider(v);
+  clearTimeout(_eodZoomDebounce);
+  _eodZoomDebounce=setTimeout(async()=>{
+    if(!_eodReportData) return;
+    const cfg=getBillCfg(); const paperWidthMM=cfg.paperWidth||58;
+    const targetWidthPx = paperWidthMM===80?576:384;
+    const c = await _buildEodCanvas(_eodReportData, targetWidthPx, true, (_eodPrintScale||100)/100);
+    const img=document.getElementById('eodPreviewImg'); if(img) img.src=c.toDataURL('image/png');
+  },250);
+}
+
 async function printEodViaBluetooth(){
   if(!_eodReportData){ showToast('⚠️ ڈیٹا نہیں ملا'); return; }
   if(!isPrinterLive()){
@@ -8664,7 +8789,8 @@ async function printEodViaBluetooth(){
   const d=_eodReportData;
   const btn=document.getElementById('eodPrintBtn');
   const lbl=document.getElementById('eodPrintLabel');
-  if(btn) btn.disabled=true; if(lbl) lbl.textContent='🖨️ پرنٹ ہو رہا ہے...';
+  const lbl2=document.getElementById('eodPrintLabel2');
+  if(btn) btn.disabled=true; if(lbl) lbl.textContent='🖨️ پرنٹ ہو رہا ہے...'; if(lbl2) lbl2.textContent='🖨️ پرنٹ ہو رہا ہے...';
 
   try{
     // اب EOD رپورٹ بھی بل جیسی خوبصورت، رنگین، برانڈڈ راسٹر تصویر کی شکل میں پرنٹ ہوتی ہے —
@@ -8672,7 +8798,8 @@ async function printEodViaBluetooth(){
     const cfg = getBillCfg();
     const paperWidthMM = cfg.paperWidth || 58;
     const targetWidthPx = paperWidthMM === 80 ? 576 : 384;
-    const eodCanvas = await _buildEodCanvas(d, targetWidthPx, true);
+    const _scale = (_eodPrintScale||100)/100;
+    const eodCanvas = await _buildEodCanvas(d, targetWidthPx, true, _scale);
     const gray = canvasToGrayscale(eodCanvas);
     const out = canvasToEscPosRaster(gray, paperWidthMM);
 
@@ -8688,12 +8815,13 @@ async function printEodViaBluetooth(){
       await new Promise(r=>setTimeout(r,DELAY_MS));
     }
     showToast('🖨️ EOD رپورٹ پرنٹ ہو گئی!');
+    closeEodPrintPreview();
   }catch(e){
     thermalChar=null; refreshSettingsUI();
     showToast('⚠️ پرنٹ ادھورا/ناکام — دوبارہ کوشش کریں');
   }
   _printInProgress = false;
-  if(btn){ btn.disabled=false; } if(lbl){ lbl.textContent='🖨️ PRINT NOW'; }
+  if(btn){ btn.disabled=false; } if(lbl){ lbl.textContent='🖨️ PRINT PREVIEW'; } if(lbl2){ lbl2.textContent='🖨️ PRINT NOW'; }
 }
 
 // ============================================================
@@ -8719,7 +8847,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug0119pm';
+const APP_VERSION = '12aug0300pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
