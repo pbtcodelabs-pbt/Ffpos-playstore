@@ -41,7 +41,7 @@
     --white:     #fff8f0;
     --radius:    12px;
     --font-black: 'Arial Black', Arial, sans-serif;
-    --font-body:  Arial, Helvetica, sans-serif;
+    --font-body:  'Arial Narrow', Arial, sans-serif;
     --font-thin:  'Arial Narrow', Arial, sans-serif;
     --app-scale: 1;
   }
@@ -789,7 +789,7 @@
     color:var(--tpanel-border); margin-bottom:6px;
   }
   #logoutConfirmBox .lcm-sub {
-    font-family:Arial; font-size:13px; color:#6d4c41; margin-bottom:18px; line-height:1.5;
+    font-family:'Arial Narrow',Arial; font-size:13px; color:#6d4c41; margin-bottom:18px; line-height:1.5;
   }
   #logoutConfirmBox .lcm-btns { display:flex; gap:10px; }
   #logoutConfirmBox .lcm-yes {
@@ -1151,7 +1151,7 @@
     letter-spacing:1px;
   }
   .ff-ov-sub {
-    font-family:Arial; direction:ltr;
+    font-family:'Arial Narrow',Arial; direction:ltr;
     font-size:12px; color:#388e3c;
     letter-spacing:.5px; margin-bottom:14px; font-weight:600;
   }
@@ -1181,7 +1181,7 @@
 
   /* ===== MESSAGES ===== */
   .ff-ov-msg {
-    font-family:Arial; direction:ltr;
+    font-family:'Arial Narrow',Arial; direction:ltr;
     font-size:13px; font-weight:700; min-height:18px;
     margin-bottom:6px; line-height:1.4;
   }
@@ -1198,7 +1198,7 @@
     box-shadow:0 2px 8px rgba(0,0,0,0.08),0 1px 0 rgba(255,255,255,0.9) inset;
   }
   .uid-label {
-    font-family:Arial; direction:ltr;
+    font-family:'Arial Narrow',Arial; direction:ltr;
     font-size:10px; color:rgba(46,125,50,0.75); font-weight:700;
     letter-spacing:.5px; margin-bottom:2px;
   }
@@ -1220,11 +1220,11 @@
     transition:border-color .2s, background .2s;
   }
   .act-input:focus { border-color:rgba(46,125,50,0.6); background:#fff; }
-  .act-input::placeholder { color:rgba(46,125,50,0.4); font-size:11px; letter-spacing:1px; font-weight:normal; font-family:Arial; }
+  .act-input::placeholder { color:rgba(46,125,50,0.4); font-size:11px; letter-spacing:1px; font-weight:normal; font-family:'Arial Narrow',Arial; }
 
   /* ===== SECTION LABELS ===== */
   .setup-lbl {
-    font-family:Arial,sans-serif; direction:ltr;
+    font-family:'Arial Narrow',Arial,sans-serif; direction:ltr;
     font-size:13px; color:#1b5e20; font-weight:700;
     text-align:center; margin-bottom:3px; display:block;
   }
@@ -1543,7 +1543,7 @@
           0 4px 0 rgba(200,80,0,0.4),
           0 6px 12px rgba(0,0,0,0.5);
         margin-bottom:2px;">DELICIA</div>
-      <div style="font-size:11px;color:rgba(255,200,100,0.65);font-family:Arial,sans-serif;
+      <div style="font-size:11px;color:rgba(255,200,100,0.65);font-family:'Arial Narrow',Arial,sans-serif;
         letter-spacing:1.5px;margin-bottom:20px;">BY FFPOS &bull; POINT OF SALE</div>
 
       <!-- 7 Days Free Trial Banner -->
@@ -1559,7 +1559,7 @@
           color:#fff;letter-spacing:.5px;
           text-shadow:0 2px 6px rgba(0,0,0,0.4);">🎁 7 DAYS FREE TRIAL</div>
         <div style="font-size:11px;color:rgba(255,255,255,0.88);margin-top:3px;
-          font-family:Arial,sans-serif;">کوئی ادائیگی نہیں — ابھی شروع کریں</div>
+          font-family:'Arial Narrow',Arial,sans-serif;">کوئی ادائیگی نہیں — ابھی شروع کریں</div>
       </div>
 
       <!-- Unique User ID Box -->
@@ -1575,7 +1575,7 @@
           color:#ffd700;letter-spacing:5px;
           text-shadow:0 0 20px rgba(255,215,0,0.5),0 2px 6px rgba(0,0,0,0.4);">——</div>
         <div style="font-size:9px;color:rgba(255,255,255,0.38);margin-top:5px;
-          font-family:Arial,sans-serif;line-height:1.5;">
+          font-family:'Arial Narrow',Arial,sans-serif;line-height:1.5;">
           Activation Code کے لیے یہ ID Developer کو دیں
         </div>
       </div>
@@ -1621,7 +1621,7 @@
       <!-- Divider -->
       <div style="display:flex;align-items:center;gap:8px;margin:4px 0 10px;">
         <div style="flex:1;height:1px;background:rgba(255,255,255,0.1);"></div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.3);font-family:Arial,sans-serif;">یا</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);font-family:'Arial Narrow',Arial,sans-serif;">یا</div>
         <div style="flex:1;height:1px;background:rgba(255,255,255,0.1);"></div>
       </div>
 
@@ -1640,7 +1640,7 @@
 
       <!-- Message -->
       <div class="ff-ov-msg" id="setupMsg"
-        style="font-family:Arial,sans-serif;text-align:center;margin-top:10px;font-size:13px;min-height:20px;"></div>
+        style="font-family:'Arial Narrow',Arial,sans-serif;text-align:center;margin-top:10px;font-size:13px;min-height:20px;"></div>
 
     </div><!-- /card -->
   </div><!-- /wrapper -->
@@ -2329,36 +2329,45 @@
       <span>🧾 Bill Preview</span>
       <span id="bpTableLabel" style="font-size:11px;"></span>
     </div>
+    <!-- 🎨 بل ٹیمپلیٹ (رنگ) منتخب کریں — انتخاب اگلی بار کے لیے خودکار محفوظ رہتا ہے -->
+    <div id="bpThemeStrip" style="display:flex;gap:6px;padding:7px 8px 2px;justify-content:center;">
+      <button type="button" class="bp-theme-swatch" data-th="classic" onclick="setBillTheme('classic')" title="Classic" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#455a64,#263238);cursor:pointer;padding:0;"></button>
+      <button type="button" class="bp-theme-swatch" data-th="saffron" onclick="setBillTheme('saffron')" title="Saffron" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#ffb74d,#e65100);cursor:pointer;padding:0;"></button>
+      <button type="button" class="bp-theme-swatch" data-th="emerald" onclick="setBillTheme('emerald')" title="Emerald" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#66bb6a,#1b5e20);cursor:pointer;padding:0;"></button>
+      <button type="button" class="bp-theme-swatch" data-th="royal" onclick="setBillTheme('royal')" title="Royal" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#ba68c8,#4a148c);cursor:pointer;padding:0;"></button>
+      <button type="button" class="bp-theme-swatch" data-th="mint" onclick="setBillTheme('mint')" title="Mint" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#4db6ac,#00695c);cursor:pointer;padding:0;"></button>
+      <button type="button" class="bp-theme-swatch" data-th="coffee" onclick="setBillTheme('coffee')" title="Coffee" style="width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;background:linear-gradient(135deg,#a1887f,#4e342e);cursor:pointer;padding:0;"></button>
+    </div>
     <div id="bpCustomerRow" style="display:flex;gap:6px;padding:8px 8px 4px;">
       <input type="text" id="bpCustomerName" placeholder="👤 کسٹمر کا نام (اختیاری)"
         oninput="_updateCustomerInfo()"
-        style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:Arial,sans-serif;">
+        style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:'Arial Narrow',Arial,sans-serif;">
       <input type="tel" id="bpCustomerMobile" placeholder="📱 موبائل نمبر (اختیاری)"
         oninput="_updateCustomerInfo()"
-        style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:Arial,sans-serif;">
+        style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:'Arial Narrow',Arial,sans-serif;">
     </div>
     <!-- صرف 🛵 Delivery کے لیے — COD/Payment، پھر ڈلیوری چارجز، پھر ڈلیوری بوائے (ہر ایک الگ صاف لائن، کمپیکٹ) -->
     <div id="bpAdvanceRow" style="display:none;padding:0 8px 5px;">
       <div style="display:flex;gap:6px;">
         <label id="bpCodBox" onclick="_setCodMode(true)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;background:#ffebee;border:1.5px solid #c62828;border-radius:8px;padding:6px 4px;cursor:pointer;">
           <input type="checkbox" id="bpCodChk" style="width:14px;height:14px;accent-color:#c62828;pointer-events:none;">
-          <span style="font-size:10.5px;font-weight:900;color:#c62828;font-family:Arial,sans-serif;">🕓 COD</span>
+          <span style="font-size:10.5px;font-weight:900;color:#c62828;font-family:'Arial Narrow',Arial,sans-serif;">🕓 COD</span>
         </label>
         <label id="bpPaidBox" onclick="_setCodMode(false)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;background:#e8f5e9;border:1.5px solid #2e7d32;border-radius:8px;padding:6px 4px;cursor:pointer;">
           <input type="checkbox" id="bpPaidChk" style="width:14px;height:14px;accent-color:#2e7d32;pointer-events:none;">
-          <span style="font-size:10.5px;font-weight:900;color:#2e7d32;font-family:Arial,sans-serif;">💰 Payment Received</span>
+          <span style="font-size:10.5px;font-weight:900;color:#2e7d32;font-family:'Arial Narrow',Arial,sans-serif;">💰 Payment Received</span>
         </label>
       </div>
       <!-- 🚚 ڈلیوری چارجز — اپنی علیحدہ لائن، ڈلیوری بوائے سے کوئی تعلق نہیں -->
       <div style="margin-top:5px;">
         <input type="number" id="bpDeliveryCharge" placeholder="🚚 ڈلیوری چارجز — صرف رقم لکھیں (اختیاری)" min="0"
           oninput="_updateDeliveryCharge()"
-          style="width:100%;box-sizing:border-box;padding:7px 10px;border:1.5px solid #ccc;border-radius:8px;font-size:11.5px;font-family:Arial,sans-serif;">
+          style="width:100%;box-sizing:border-box;padding:7px 10px;border:1.5px solid #ccc;border-radius:8px;font-size:11.5px;font-family:'Arial Narrow',Arial,sans-serif;">
       </div>
       <!-- 🛵 ڈلیوری بوائے — علیحدہ لائن، ساتھ مینج (ترمیم/حذف) بٹن -->
       <div style="display:flex;gap:6px;margin-top:5px;">
         <select id="bpDeliveryBoy" onchange="_onDeliveryBoyChange()"
-          style="flex:1;min-width:0;padding:7px 6px;border:1.5px solid #ccc;border-radius:8px;font-size:11.5px;font-family:Arial,sans-serif;background:#fff;">
+          style="flex:1;min-width:0;padding:7px 6px;border:1.5px solid #ccc;border-radius:8px;font-size:11.5px;font-family:'Arial Narrow',Arial,sans-serif;background:#fff;">
           <option value="">🛵 ڈلیوری بوائے منتخب کریں</option>
         </select>
         <button type="button" onclick="_manageDeliveryBoys()" title="ڈلیوری بوائے ترمیم/حذف" style="flex:0 0 auto;padding:7px 12px;border:1.5px solid #7c4dff;border-radius:8px;background:#f3e5f5;color:#5e35b1;font-size:12px;font-weight:900;cursor:pointer;">✏️</button>
@@ -2934,7 +2943,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug0739am';
+const FF_APP_VERSION = '12aug0857am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -4979,6 +4988,15 @@ function _showFallbackPreview(sale){
   _billFontSize=parseInt(localStorage.getItem('ff_bill_font_size')||'11');
   document.getElementById('billPreviewContent').style.fontSize=_billFontSize+'px';
   {const _el_bpTableLabel=document.getElementById('bpTableLabel');if(_el_bpTableLabel)_el_bpTableLabel.textContent = sale.table==='C'?'Counter':(getTableName(sale.table)||('Table '+sale.table));}
+  // ٹیمپلیٹ سٹرپ کی ہائی لائٹ محفوظ شدہ انتخاب کے مطابق سیٹ کریں
+  const _savedTh = localStorage.getItem('ff_bill_theme')||'classic';
+  document.querySelectorAll('.bp-theme-swatch').forEach(b=>{
+    const tid=b.getAttribute('data-th');
+    const isActive = tid===_savedTh;
+    b.style.borderColor = isActive ? '#333' : 'transparent';
+    b.style.transform = isActive ? 'scale(1.18)' : 'scale(1)';
+    b.style.boxShadow = isActive ? '0 3px 10px rgba(0,0,0,0.35)' : '0 1px 4px rgba(0,0,0,0.15)';
+  });
   // یہ بل ابھی pending ہے — ترمیم/حذف بٹن دکھائیں
   if(pendingSale) pendingSale._editable = true;
   const editRow = document.getElementById('billEditRow');
@@ -5340,10 +5358,24 @@ function buildBillHtml(sale){
 
   // Bill theme styles
   const BT = {
-    classic: { shopBg:'#fff', shopText:'#000', shopSub:'#555', divider:'#999', metaBg:'transparent', metaText:'#333', headerBg:'#e8e8e8', headerText:'#111', rowBorder:'#ccc', rowEven:'#fff', rowOdd:'#f5f5f5', totalBoxBg:'#111', totalBoxText:'#fff', totalLabelClr:'rgba(255,255,255,0.8)', totalAmtClr:'#fff', footerBg:'#f0f0f0', footerText:'#333', bodyBg:'#fff' },
-    saffron: { shopBg:'linear-gradient(135deg,#e65100,#ef6c00)', shopText:'#fff', shopSub:'rgba(255,255,255,0.85)', divider:'#ffb74d', metaBg:'#fff3e0', metaText:'#bf360c', headerBg:'linear-gradient(90deg,#ef6c00,#f57c00)', headerText:'#fff', rowBorder:'#ffcc80', rowEven:'#fff8f0', rowOdd:'#fff3e0', totalBoxBg:'linear-gradient(135deg,#bf360c,#e65100)', totalBoxText:'#fff', totalLabelClr:'rgba(255,255,200,0.9)', totalAmtClr:'#fff', footerBg:'#fff3e0', footerText:'#bf360c', bodyBg:'#fff8f0' },
-    emerald: { shopBg:'linear-gradient(135deg,#1b5e20,#2e7d32)', shopText:'#fff', shopSub:'rgba(255,255,255,0.85)', divider:'#81c784', metaBg:'#e8f5e9', metaText:'#1b5e20', headerBg:'linear-gradient(90deg,#2e7d32,#388e3c)', headerText:'#fff', rowBorder:'#a5d6a7', rowEven:'#f1fff3', rowOdd:'#e8f5e9', totalBoxBg:'linear-gradient(135deg,#1b5e20,#2e7d32)', totalBoxText:'#fff', totalLabelClr:'rgba(200,255,200,0.9)', totalAmtClr:'#fff', footerBg:'#e8f5e9', footerText:'#1b5e20', bodyBg:'#f1fff3' },
-    royal:   { shopBg:'linear-gradient(135deg,#4a148c,#6a1b9a)', shopText:'#fff', shopSub:'rgba(255,255,255,0.85)', divider:'#ce93d8', metaBg:'#f3e5f5', metaText:'#4a148c', headerBg:'linear-gradient(90deg,#6a1b9a,#7b1fa2)', headerText:'#fff', rowBorder:'#ce93d8', rowEven:'#fdf0ff', rowOdd:'#f3e5f5', totalBoxBg:'linear-gradient(135deg,#4a148c,#6a1b9a)', totalBoxText:'#fff', totalLabelClr:'rgba(220,180,255,0.9)', totalAmtClr:'#fff', footerBg:'#f3e5f5', footerText:'#4a148c', bodyBg:'#fdf0ff' },
+    classic: { shopBg:'#fff', shopText:'#000', shopSub:'#555', divider:'#999', metaBg:'transparent', metaText:'#333', headerBg:'#e8e8e8', headerText:'#111', rowBorder:'#ccc', rowEven:'#fff', rowOdd:'#f5f5f5', totalBoxBg:'#111', totalBoxText:'#fff', totalLabelClr:'rgba(255,255,255,0.8)', totalAmtClr:'#fff', footerBg:'#f0f0f0', footerText:'#333', bodyBg:'#fff',
+      bannerBg1:'#455a64', bannerBg2:'#37474f', bannerBorder:'#90a4ae', bannerNameText:'#ffffff', bannerMobileText:'#ffd54f',
+      delivBg1:'#546e7a', delivBg2:'#455a64', delivBorder:'#b0bec5', delivText:'#ffffff', delivSub:'#ffe082' },
+    saffron: { shopBg:'linear-gradient(135deg,#e65100,#ef6c00)', shopText:'#fff', shopSub:'rgba(255,255,255,0.85)', divider:'#ffb74d', metaBg:'#fff3e0', metaText:'#bf360c', headerBg:'linear-gradient(90deg,#ef6c00,#f57c00)', headerText:'#fff', rowBorder:'#ffcc80', rowEven:'#fff8f0', rowOdd:'#fff3e0', totalBoxBg:'linear-gradient(135deg,#bf360c,#e65100)', totalBoxText:'#fff', totalLabelClr:'rgba(255,255,200,0.9)', totalAmtClr:'#fff', footerBg:'#fff3e0', footerText:'#bf360c', bodyBg:'#fff8f0',
+      bannerBg1:'#fff3e0', bannerBg2:'#ffe0b2', bannerBorder:'#ef6c00', bannerNameText:'#bf360c', bannerMobileText:'#e65100',
+      delivBg1:'#ffe0b2', delivBg2:'#ffcc80', delivBorder:'#e65100', delivText:'#bf360c', delivSub:'#d84315' },
+    emerald: { shopBg:'linear-gradient(135deg,#1b5e20,#2e7d32)', shopText:'#fff', shopSub:'rgba(255,255,255,0.85)', divider:'#81c784', metaBg:'#e8f5e9', metaText:'#1b5e20', headerBg:'linear-gradient(90deg,#2e7d32,#388e3c)', headerText:'#fff', rowBorder:'#a5d6a7', rowEven:'#f1fff3', rowOdd:'#e8f5e9', totalBoxBg:'linear-gradient(135deg,#1b5e20,#2e7d32)', totalBoxText:'#fff', totalLabelClr:'rgba(200,255,200,0.9)', totalAmtClr:'#fff', footerBg:'#e8f5e9', footerText:'#1b5e20', bodyBg:'#f1fff3',
+      bannerBg1:'#e8f5e9', bannerBg2:'#c8e6c9', bannerBorder:'#2e7d32', bannerNameText:'#1b5e20', bannerMobileText:'#2e7d32',
+      delivBg1:'#c8e6c9', delivBg2:'#a5d6a7', delivBorder:'#1b5e20', delivText:'#1b5e20', delivSub:'#33691e' },
+    royal:   { shopBg:'linear-gradient(135deg,#4a148c,#6a1b9a)', shopText:'#fff', shopSub:'rgba(255,255,255,0.85)', divider:'#ce93d8', metaBg:'#f3e5f5', metaText:'#4a148c', headerBg:'linear-gradient(90deg,#6a1b9a,#7b1fa2)', headerText:'#fff', rowBorder:'#ce93d8', rowEven:'#fdf0ff', rowOdd:'#f3e5f5', totalBoxBg:'linear-gradient(135deg,#4a148c,#6a1b9a)', totalBoxText:'#fff', totalLabelClr:'rgba(220,180,255,0.9)', totalAmtClr:'#fff', footerBg:'#f3e5f5', footerText:'#4a148c', bodyBg:'#fdf0ff',
+      bannerBg1:'#f3e5f5', bannerBg2:'#e1bee7', bannerBorder:'#6a1b9a', bannerNameText:'#4a148c', bannerMobileText:'#6a1b9a',
+      delivBg1:'#e1bee7', delivBg2:'#ce93d8', delivBorder:'#4a148c', delivText:'#4a148c', delivSub:'#6a1b9a' },
+    mint:    { shopBg:'linear-gradient(135deg,#00897b,#26a69a)', shopText:'#fff', shopSub:'rgba(255,255,255,0.85)', divider:'#80cbc4', metaBg:'#e0f7f4', metaText:'#00695c', headerBg:'linear-gradient(90deg,#00897b,#26a69a)', headerText:'#fff', rowBorder:'#80cbc4', rowEven:'#f1fbfa', rowOdd:'#e0f7f4', totalBoxBg:'linear-gradient(135deg,#00695c,#00897b)', totalBoxText:'#fff', totalLabelClr:'rgba(200,255,240,0.9)', totalAmtClr:'#fff', footerBg:'#e0f7f4', footerText:'#004d40', bodyBg:'#f1fbfa',
+      bannerBg1:'#e0f7f4', bannerBg2:'#b2dfdb', bannerBorder:'#00897b', bannerNameText:'#004d40', bannerMobileText:'#00695c',
+      delivBg1:'#b2dfdb', delivBg2:'#80cbc4', delivBorder:'#00695c', delivText:'#004d40', delivSub:'#00796b' },
+    coffee:  { shopBg:'linear-gradient(135deg,#6d4c41,#8d6e63)', shopText:'#fff', shopSub:'rgba(255,255,255,0.85)', divider:'#d7bb8d', metaBg:'#f5e6d3', metaText:'#4e342e', headerBg:'linear-gradient(90deg,#6d4c41,#8d6e63)', headerText:'#fff', rowBorder:'#d7bb8d', rowEven:'#fdf8f2', rowOdd:'#f5e6d3', totalBoxBg:'linear-gradient(135deg,#4e342e,#6d4c41)', totalBoxText:'#fff', totalLabelClr:'rgba(255,235,205,0.9)', totalAmtClr:'#fff', footerBg:'#f5e6d3', footerText:'#4e342e', bodyBg:'#fdf8f2',
+      bannerBg1:'#f5e6d3', bannerBg2:'#e8d1ae', bannerBorder:'#8d6e63', bannerNameText:'#4e342e', bannerMobileText:'#6d4c41',
+      delivBg1:'#e8d1ae', delivBg2:'#d7bb8d', delivBorder:'#6d4c41', delivText:'#4e342e', delivSub:'#5d4037' },
   };
   const bt = BT[billTheme]||BT.classic;
 
@@ -5361,14 +5393,14 @@ function buildBillHtml(sale){
         <div style="font-family:${_billFont};font-size:9px;font-weight:bold;color:${bt.metaText};opacity:.8;">${dateStr||sale.dateStr}</div>
       </div>
       ${(sale.customerName||sale.customerMobile) ? `
-      <div style="background:#000;border-radius:8px;padding:6px 10px;margin-bottom:6px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.2);">
-        ${sale.customerName ? `<div style="font-family:${_billFont};font-size:16px;font-weight:900;color:#fff;letter-spacing:.3px;">👤 ${sale.customerName}</div>` : ''}
-        ${sale.customerMobile ? `<div style="font-family:${_billFont};font-size:17px;font-weight:900;color:#ffeb3b;letter-spacing:.5px;margin-top:${sale.customerName?'2px':'0'};">📱 ${sale.customerMobile}</div>` : ''}
+      <div style="background:linear-gradient(135deg,${bt.bannerBg1},${bt.bannerBg2});border:1.5px solid ${bt.bannerBorder};border-radius:12px;padding:7px 10px;margin-bottom:6px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.3);">
+        ${sale.customerName ? `<div style="font-family:${_billFont};font-size:16px;font-weight:900;color:${bt.bannerNameText};letter-spacing:.3px;">👤 ${sale.customerName}</div>` : ''}
+        ${sale.customerMobile ? `<div style="font-family:${_billFont};font-size:17px;font-weight:900;color:${bt.bannerMobileText};letter-spacing:.5px;margin-top:${sale.customerName?'2px':'0'};">📱 ${sale.customerMobile}</div>` : ''}
       </div>` : ''}
       ${sale.table==='D' ? `
-      <div style="background:#5e35b1;border-radius:8px;padding:5px 10px;margin-bottom:6px;text-align:center;">
-        <div style="font-family:${_billFont};font-size:11px;font-weight:900;color:#fff;">${sale.advancePaid ? '💰 Payment Received' : '🕓 COD — پیمنٹ ڈلیوری پر لینی ہے'}</div>
-        ${sale.deliveryBoyName ? `<div style="font-family:${_billFont};font-size:12px;font-weight:900;color:#ffe082;margin-top:2px;">🛵 ${sale.deliveryBoyName}${sale.deliveryBoyMobile?(' — 📞 '+sale.deliveryBoyMobile):''}</div>` : ''}
+      <div style="background:linear-gradient(135deg,${bt.delivBg1},${bt.delivBg2});border:1.5px solid ${bt.delivBorder};border-radius:12px;padding:6px 10px;margin-bottom:6px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.3);">
+        <div style="font-family:${_billFont};font-size:11px;font-weight:900;color:${bt.delivText};">${sale.advancePaid ? '💰 Payment Received' : '🕓 COD — پیمنٹ ڈلیوری پر لینی ہے'}</div>
+        ${sale.deliveryBoyName ? `<div style="font-family:${_billFont};font-size:12px;font-weight:900;color:${bt.delivSub};margin-top:2px;">🛵 ${sale.deliveryBoyName}${sale.deliveryBoyMobile?(' — 📞 '+sale.deliveryBoyMobile):''}</div>` : ''}
       </div>` : ''}
       <table style="width:100%;border-collapse:collapse;margin:0 0 6px;border:1.5px solid ${bt.rowBorder};border-radius:8px;overflow:hidden;">
         <tr style="background:${bt.headerBg};">
@@ -5405,7 +5437,7 @@ function buildBillHtml(sale){
         <div style="font-family:${_billFont};font-weight:900;font-size:9.5px;color:${bt.footerText};line-height:1.6;">${footerLines}</div>
       </div>
       <div style="text-align:center;padding:6px 0 0;">
-        <div style="font-family:Arial,sans-serif;font-weight:700;font-size:9px;color:#888;">📲 For Mobile App: 0320-6793793</div>
+        <div style="font-family:'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:9px;color:#888;">📲 For Mobile App: 0320-6793793</div>
       </div>
     </div>`;
 }
@@ -5671,16 +5703,28 @@ function setImgFont(id){
 // ============================================================
 function setBillTheme(themeId){
   localStorage.setItem('ff_bill_theme', themeId);
+  const tIds = ['classic','saffron','emerald','royal','mint','coffee'];
+  const activeBorders = { classic:'#263238', saffron:'#e65100', emerald:'#1b5e20', royal:'#4a148c', mint:'#00695c', coffee:'#4e342e' };
+  // مرکزی ٹیمپلیٹ سٹرپ (Bill Preview کے اندر) — منتخب رنگ پر روشن بارڈر + تھوڑا بڑا
+  document.querySelectorAll('.bp-theme-swatch').forEach(b=>{
+    const tid = b.getAttribute('data-th');
+    const isActive = tid === themeId;
+    b.style.borderColor = isActive ? (activeBorders[tid]||'#333') : 'transparent';
+    b.style.transform = isActive ? 'scale(1.18)' : 'scale(1)';
+    b.style.boxShadow = isActive ? '0 3px 10px rgba(0,0,0,0.35)' : '0 1px 4px rgba(0,0,0,0.15)';
+  });
+  // پرانا (Home/Settings) سٹرپ اگر موجود ہو
   const colors = {
     classic: { bg:'#fff',     text:'#333',    border:'#999',    activeBg:'#333',    activeText:'#fff' },
     saffron: { bg:'#fff3e0',  text:'#e65100', border:'#ffcc80', activeBg:'#e65100', activeText:'#fff' },
     emerald: { bg:'#e8f5e9',  text:'#1b5e20', border:'#a5d6a7', activeBg:'#1b5e20', activeText:'#fff' },
     royal:   { bg:'#f3e5f5',  text:'#4a148c', border:'#ce93d8', activeBg:'#4a148c', activeText:'#fff' },
+    mint:    { bg:'#e0f7f4',  text:'#00695c', border:'#80cbc4', activeBg:'#00695c', activeText:'#fff' },
+    coffee:  { bg:'#f5e6d3',  text:'#4e342e', border:'#d7bb8d', activeBg:'#4e342e', activeText:'#fff' },
   };
-  ['bthBtn0','bthBtn1','bthBtn2','bthBtn3'].forEach((bid,i)=>{
+  ['bthBtn0','bthBtn1','bthBtn2','bthBtn3','bthBtn4','bthBtn5'].forEach((bid,i)=>{
     const b = document.getElementById(bid);
     if(!b) return;
-    const tIds = ['classic','saffron','emerald','royal'];
     const tid = tIds[i];
     const c = colors[tid];
     const isActive = tid === themeId;
@@ -5691,7 +5735,7 @@ function setBillTheme(themeId){
     b.style.boxShadow    = isActive ? '0 3px 8px rgba(0,0,0,0.2)' : 'none';
   });
   // بل پری ویو — فوری ریفریش (فونٹ سائز بھی برقرار رہے)
-  if(pendingSale && pendingSale.mode){
+  if(pendingSale){
     document.getElementById('billPreviewContent').innerHTML = buildBillHtml(pendingSale);
     _applyBillFontSize();
   }
@@ -5747,7 +5791,7 @@ function _getFontFamily(id){
   if(id==='arial-black')  return "'Arial Black', Arial, sans-serif";
   if(id==='arial-narrow') return "'Arial Narrow', Arial, sans-serif";
   if(id==='urdu')         return "'Noto Nastaliq Urdu', Arial, sans-serif";
-  return "Arial, sans-serif";
+  return "'Arial Black', Arial, sans-serif";
 }
 
 // ============================================================
@@ -5787,10 +5831,18 @@ function _buildBillCanvas(sale, forPrint, lightMode){
     // بل تھیم رنگ پیلیٹ
     const billTheme = localStorage.getItem('ff_bill_theme')||'classic';
     const _CT = {
-      classic: { head1:'#444',    head2:'#222',    hdrBg:'#333',    hdrText:'#fff',    altRow:'#f0f0f0', totBg1:'#222',    totBg2:'#000',    totText:'#fff',   footBg1:'#555',  footBg2:'#333',   footText:'#fff',  bodyBg:'#f9f9f9', border:'#bbb',   totLabel:'rgba(255,255,255,0.8)' },
-      saffron: { head1:'#e65100', head2:'#bf360c', hdrBg:'#ef6c00', hdrText:'#fff',    altRow:'#fff3e0', totBg1:'#e65100', totBg2:'#bf360c', totText:'#fff',   footBg1:'#e65100',footBg2:'#bf360c',footText:'#fff',  bodyBg:'#fff8f0', border:'#ffb74d',totLabel:'rgba(255,220,100,0.95)' },
-      emerald: { head1:'#1b5e20', head2:'#2e7d32', hdrBg:'#2e7d32', hdrText:'#fff',    altRow:'#e8f5e9', totBg1:'#1b5e20', totBg2:'#2e7d32', totText:'#fff',   footBg1:'#1b5e20',footBg2:'#2e7d32',footText:'#fff',  bodyBg:'#f1fff3', border:'#a5d6a7',totLabel:'rgba(200,255,200,0.9)' },
-      royal:   { head1:'#4a148c', head2:'#6a1b9a', hdrBg:'#6a1b9a', hdrText:'#fff',    altRow:'#f3e5f5', totBg1:'#4a148c', totBg2:'#6a1b9a', totText:'#fff',   footBg1:'#4a148c',footBg2:'#6a1b9a',footText:'#fff',  bodyBg:'#fdf0ff', border:'#ce93d8',totLabel:'rgba(220,180,255,0.9)' },
+      classic: { head1:'#444',    head2:'#222',    hdrBg:'#333',    hdrText:'#fff',    altRow:'#f0f0f0', totBg1:'#222',    totBg2:'#000',    totText:'#fff',   footBg1:'#555',  footBg2:'#333',   footText:'#fff',  bodyBg:'#f9f9f9', border:'#bbb',   totLabel:'rgba(255,255,255,0.8)',
+        bnrBg1:'#455a64', bnrBg2:'#37474f', bnrBorder:'#90a4ae', bnrNameText:'#ffffff', bnrMobText:'#ffd54f', delBg1:'#546e7a', delBg2:'#455a64', delBorder:'#b0bec5', delText:'#ffffff', delSub:'#ffe082' },
+      saffron: { head1:'#e65100', head2:'#bf360c', hdrBg:'#ef6c00', hdrText:'#fff',    altRow:'#fff3e0', totBg1:'#e65100', totBg2:'#bf360c', totText:'#fff',   footBg1:'#e65100',footBg2:'#bf360c',footText:'#fff',  bodyBg:'#fff8f0', border:'#ffb74d',totLabel:'rgba(255,220,100,0.95)',
+        bnrBg1:'#fff3e0', bnrBg2:'#ffe0b2', bnrBorder:'#ef6c00', bnrNameText:'#bf360c', bnrMobText:'#e65100', delBg1:'#ffe0b2', delBg2:'#ffcc80', delBorder:'#e65100', delText:'#bf360c', delSub:'#d84315' },
+      emerald: { head1:'#1b5e20', head2:'#2e7d32', hdrBg:'#2e7d32', hdrText:'#fff',    altRow:'#e8f5e9', totBg1:'#1b5e20', totBg2:'#2e7d32', totText:'#fff',   footBg1:'#1b5e20',footBg2:'#2e7d32',footText:'#fff',  bodyBg:'#f1fff3', border:'#a5d6a7',totLabel:'rgba(200,255,200,0.9)',
+        bnrBg1:'#e8f5e9', bnrBg2:'#c8e6c9', bnrBorder:'#2e7d32', bnrNameText:'#1b5e20', bnrMobText:'#2e7d32', delBg1:'#c8e6c9', delBg2:'#a5d6a7', delBorder:'#1b5e20', delText:'#1b5e20', delSub:'#33691e' },
+      royal:   { head1:'#4a148c', head2:'#6a1b9a', hdrBg:'#6a1b9a', hdrText:'#fff',    altRow:'#f3e5f5', totBg1:'#4a148c', totBg2:'#6a1b9a', totText:'#fff',   footBg1:'#4a148c',footBg2:'#6a1b9a',footText:'#fff',  bodyBg:'#fdf0ff', border:'#ce93d8',totLabel:'rgba(220,180,255,0.9)',
+        bnrBg1:'#f3e5f5', bnrBg2:'#e1bee7', bnrBorder:'#6a1b9a', bnrNameText:'#4a148c', bnrMobText:'#6a1b9a', delBg1:'#e1bee7', delBg2:'#ce93d8', delBorder:'#4a148c', delText:'#4a148c', delSub:'#6a1b9a' },
+      mint:    { head1:'#00897b', head2:'#00695c', hdrBg:'#00897b', hdrText:'#fff',    altRow:'#e0f7f4', totBg1:'#00695c', totBg2:'#00897b', totText:'#fff',   footBg1:'#00695c',footBg2:'#00897b',footText:'#fff',  bodyBg:'#f1fbfa', border:'#80cbc4',totLabel:'rgba(200,255,240,0.9)',
+        bnrBg1:'#e0f7f4', bnrBg2:'#b2dfdb', bnrBorder:'#00897b', bnrNameText:'#004d40', bnrMobText:'#00695c', delBg1:'#b2dfdb', delBg2:'#80cbc4', delBorder:'#00695c', delText:'#004d40', delSub:'#00796b' },
+      coffee:  { head1:'#6d4c41', head2:'#4e342e', hdrBg:'#6d4c41', hdrText:'#fff',    altRow:'#f5e6d3', totBg1:'#4e342e', totBg2:'#6d4c41', totText:'#fff',   footBg1:'#4e342e',footBg2:'#6d4c41',footText:'#fff',  bodyBg:'#fdf8f2', border:'#d7bb8d',totLabel:'rgba(255,235,205,0.9)',
+        bnrBg1:'#f5e6d3', bnrBg2:'#e8d1ae', bnrBorder:'#8d6e63', bnrNameText:'#4e342e', bnrMobText:'#6d4c41', delBg1:'#e8d1ae', delBg2:'#d7bb8d', delBorder:'#6d4c41', delText:'#4e342e', delSub:'#5d4037' },
     };
     const TC = _CT[billTheme]||_CT.classic;
     // پرنٹ کے لیے — تھیم کے گہرے رنگ (dark gradient) کبھی استعمال نہ کریں، ورنہ تھرمل پرنٹ پر
@@ -5902,7 +5954,7 @@ function _buildBillCanvas(sale, forPrint, lightMode){
 
     // خوبصورت رنگین بینر ڈرائنگ ہیلپر — رنگین شیئر امیج پر گریڈیئنٹ + ہلکا شیڈو (تھری ڈی لُک)،
     // مگر پرنٹ پر صرف صاف سفید باکس + پتلا بارڈر لائن (تاکہ تھرمل پرنٹر گہرا/دھیمی پرنٹ نہ کرے)
-    function _drawInfoBanner(y, h, gradFrom, gradTo){
+    function _drawInfoBanner(y, h, gradFrom, gradTo, borderClr){
       ctx.save();
       if(forPrint){
         ctx.fillStyle = '#ffffff';
@@ -5912,7 +5964,7 @@ function _buildBillCanvas(sale, forPrint, lightMode){
         if(ctx.roundRect) ctx.roundRect(PAD, y, W-PAD*2, h, 8); else ctx.rect(PAD, y, W-PAD*2, h);
         ctx.fill(); ctx.stroke();
       } else {
-        ctx.shadowColor = 'rgba(0,0,0,0.22)';
+        ctx.shadowColor = 'rgba(0,0,0,0.18)';
         ctx.shadowBlur = 7;
         ctx.shadowOffsetY = 3;
         const grad = ctx.createLinearGradient(PAD, y, PAD, y+h);
@@ -5923,11 +5975,17 @@ function _buildBillCanvas(sale, forPrint, lightMode){
         if(ctx.roundRect) ctx.roundRect(PAD, y, W-PAD*2, h, 13); else ctx.rect(PAD, y, W-PAD*2, h);
         ctx.fill();
         ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+        // رنگین کنٹراسٹ بارڈر
+        ctx.strokeStyle = borderClr || 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(PAD, y, W-PAD*2, h, 13);
+        ctx.stroke();
         // اوپری ہلکی چمک — ابھرا ہوا (embossed) احساس
-        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        if(ctx.roundRect) ctx.roundRect(PAD+1, y+1, W-PAD*2-2, h-2, 12);
+        if(ctx.roundRect) ctx.roundRect(PAD+2, y+2, W-PAD*2-4, h-4, 11);
         ctx.stroke();
       }
       ctx.restore();
@@ -5939,18 +5997,18 @@ function _buildBillCanvas(sale, forPrint, lightMode){
       const nameH = sale.customerName ? S(22) : 0;
       const mobH  = sale.customerMobile ? S(24) : 0;
       const bannerH = bannerPadY*2 + nameH + mobH;
-      _drawInfoBanner(my, bannerH, ATC.totBg1, ATC.totBg2);
+      _drawInfoBanner(my, bannerH, TC.bnrBg1, TC.bnrBg2, TC.bnrBorder);
       let cy = my + bannerPadY + S(15);
       ctx.textAlign = 'center';
       if(sale.customerName){
         ctx.font = `900 ${S(17)}px ${fontFam}`;
-        ctx.fillStyle = useLightBgText ? '#111' : '#fff';
+        ctx.fillStyle = useLightBgText ? '#111' : TC.bnrNameText;
         ctx.fillText('👤 '+sale.customerName, W/2, cy);
         cy += mobH ? S(22) : 0;
       }
       if(sale.customerMobile){
         ctx.font = `900 ${S(18)}px ${fontFam}`;
-        ctx.fillStyle = useLightBgText ? '#111' : '#ffe082';
+        ctx.fillStyle = useLightBgText ? '#111' : TC.bnrMobText;
         ctx.fillText('📱 '+sale.customerMobile, W/2, cy);
       }
       my += bannerH + S(10);
@@ -5962,16 +6020,16 @@ function _buildBillCanvas(sale, forPrint, lightMode){
       const boyLine = sale.deliveryBoyName ? ('🛵 '+sale.deliveryBoyName+(sale.deliveryBoyMobile?(' — '+sale.deliveryBoyMobile):'')) : '';
       const dLines = boyLine ? 2 : 1;
       const dH = S(12) + dLines*S(22);
-      _drawInfoBanner(my, dH, '#7c4dff', '#5e35b1');
+      _drawInfoBanner(my, dH, TC.delBg1, TC.delBg2, TC.delBorder);
       let cy2 = my + S(6) + S(15);
       ctx.textAlign = 'center';
       ctx.font = `900 ${S(15)}px ${fontFam}`;
-      ctx.fillStyle = useLightBgText ? '#111' : '#fff';
+      ctx.fillStyle = useLightBgText ? '#111' : TC.delText;
       ctx.fillText(statusText, W/2, cy2);
       if(boyLine){
         cy2 += S(22);
         ctx.font = `900 ${S(15)}px ${fontFam}`;
-        ctx.fillStyle = useLightBgText ? '#333' : '#ffe082';
+        ctx.fillStyle = useLightBgText ? '#333' : TC.delSub;
         ctx.fillText(boyLine, W/2, cy2);
       }
       my += dH + S(10);
@@ -6185,15 +6243,17 @@ async function shareOnWhatsApp(){
     if(navigator.canShare && navigator.canShare({files:[file]})){
       // بہترین صورت — فون کی اپنی شیئر شیٹ کھلے گی، تصویر براہ راست WhatsApp کو منتخب کر کے بھیجیں
       await navigator.share({files:[file], title:'Bill'});
-    } else {
-      // یہ فون/براؤزر تصویر براہ راست شیئر نہیں کر سکتا —
-      // تصویر خودکار محفوظ کر کے WhatsApp کھولیں، وہاں 📎 سے منسلک کر دیں
-      const a = document.createElement('a');
-      a.href = canvas.toDataURL('image/png');
-      a.download = file.name;
-      a.click();
-      showToast('🖼️ بل کی تصویر محفوظ ہو گئی — WhatsApp میں 📎 سے منسلک کریں');
-      setTimeout(()=>{ window.open('https://wa.me/','_blank'); }, 600);
+      return;
+    }
+    // یہ فون/براؤزر تصویر براہ راست شیئر نہیں کر سکتا — تصویر خودکار محفوظ کریں
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = file.name;
+    a.click();
+    showToast('🖼️ بل کی تصویر محفوظ ہو گئی — WhatsApp کھول کر 📎 سے منسلک کریں');
+    // نمبر کے بغیر عام شیئر شیٹ کھولنے کی کوشش (wa.me لنک استعمال نہیں کرتے — وہ خرابی دیتا ہے)
+    if(navigator.share){
+      try{ await navigator.share({title:'Bill', text:'بل — Rs.'+pendingSale.total}); }catch(e2){}
     }
   }catch(e){
     if(e.name!=='AbortError') showToast('WhatsApp شیئر نہ ہو سکا');
@@ -7913,11 +7973,12 @@ const FONTS = [
 ];
 let currentFontId = localStorage.getItem('ff_font')||'arial';
 function applyFont(id){
-  // صرف Arial Black — سادہ، واضح
+  // صرف دو فونٹ استعمال ہوں گے — جہاں بولڈ/نمایاں ہونا چاہیے وہاں Arial Black،
+  // جہاں باریک/عام متن ہو وہاں Arial Narrow (پوری ایپ میں، بل پرنٹنگ سمیت)
   const r = document.documentElement.style;
-  r.setProperty('--font-body',  "'Arial Black', Arial, sans-serif");
+  r.setProperty('--font-body',  "'Arial Narrow', Arial, sans-serif");
   r.setProperty('--font-black', "'Arial Black', Arial, sans-serif");
-  r.setProperty('--font-thin',  "Arial, sans-serif");
+  r.setProperty('--font-thin',  "'Arial Narrow', Arial, sans-serif");
   currentFontId = 'arial_black';
   localStorage.setItem('ff_font','arial_black');
   document.getElementById('gfontLink').href='';
@@ -7930,8 +7991,10 @@ function renderBillThemeSettings(){
     saffron: { activeBg:'#e65100', activeBorder:'#e65100', inactiveBg:'#fff3e0', inactiveBorder:'#ffcc80' },
     emerald: { activeBg:'#1b5e20', activeBorder:'#1b5e20', inactiveBg:'#e8f5e9', inactiveBorder:'#a5d6a7' },
     royal:   { activeBg:'#4a148c', activeBorder:'#4a148c', inactiveBg:'#f3e5f5', inactiveBorder:'#ce93d8' },
+    mint:    { activeBg:'#00695c', activeBorder:'#00695c', inactiveBg:'#e0f7f4', inactiveBorder:'#80cbc4' },
+    coffee:  { activeBg:'#4e342e', activeBorder:'#4e342e', inactiveBg:'#f5e6d3', inactiveBorder:'#d7bb8d' },
   };
-  const ids = ['classic','saffron','emerald','royal'];
+  const ids = ['classic','saffron','emerald','royal','mint','coffee'];
   ids.forEach((tid,i)=>{
     const btn = document.getElementById('bthS'+i);
     if(!btn) return;
@@ -8152,6 +8215,8 @@ function _buildEodCanvas(d){
       saffron: { h1:'#e65100', h2:'#bf360c', hdrBg:'#ef6c00', hdrT:'#fff', alt:'#fff3e0', tBg1:'#e65100', tBg2:'#bf360c', tT:'#fff', fBg1:'#e65100', fBg2:'#bf360c', fT:'#fff', body:'#fff8f0', bdr:'#ffb74d', totLbl:'rgba(255,220,100,0.95)' },
       emerald: { h1:'#1b5e20', h2:'#2e7d32', hdrBg:'#2e7d32', hdrT:'#fff', alt:'#e8f5e9', tBg1:'#1b5e20', tBg2:'#2e7d32', tT:'#fff', fBg1:'#1b5e20', fBg2:'#2e7d32', fT:'#fff', body:'#f1fff3', bdr:'#a5d6a7', totLbl:'rgba(200,255,200,0.9)' },
       royal:   { h1:'#4a148c', h2:'#6a1b9a', hdrBg:'#6a1b9a', hdrT:'#fff', alt:'#f3e5f5', tBg1:'#4a148c', tBg2:'#6a1b9a', tT:'#fff', fBg1:'#4a148c', fBg2:'#6a1b9a', fT:'#fff', body:'#fdf0ff', bdr:'#ce93d8', totLbl:'rgba(220,180,255,0.9)' },
+      mint:    { h1:'#00897b', h2:'#00695c', hdrBg:'#00897b', hdrT:'#fff', alt:'#e0f7f4', tBg1:'#00695c', tBg2:'#00897b', tT:'#fff', fBg1:'#00695c', fBg2:'#00897b', fT:'#fff', body:'#f1fbfa', bdr:'#80cbc4', totLbl:'rgba(200,255,240,0.9)' },
+      coffee:  { h1:'#6d4c41', h2:'#4e342e', hdrBg:'#6d4c41', hdrT:'#fff', alt:'#f5e6d3', tBg1:'#4e342e', tBg2:'#6d4c41', tT:'#fff', fBg1:'#4e342e', fBg2:'#6d4c41', fT:'#fff', body:'#fdf8f2', bdr:'#d7bb8d', totLbl:'rgba(255,235,205,0.9)' },
     };
     const TC = _CT[billTheme]||_CT.classic;
     const isUrdu = _imgFont==='urdu';
@@ -8435,7 +8500,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug0739am';
+const APP_VERSION = '12aug0857am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
