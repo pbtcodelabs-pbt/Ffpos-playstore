@@ -2337,12 +2337,27 @@
         oninput="_updateCustomerInfo()"
         style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:Arial,sans-serif;">
     </div>
-    <!-- صرف 🛵 Delivery کے لیے — ایڈوانس پیمنٹ کا ٹوگل -->
+    <!-- صرف 🛵 Delivery کے لیے — COD یا Payment Received (دو علیحدہ چھوٹے باکس) -->
     <div id="bpAdvanceRow" style="display:none;padding:0 8px 6px;">
-      <label style="display:flex;align-items:center;gap:7px;background:#f3e5f5;border:1.5px solid #ce93d8;border-radius:9px;padding:8px 10px;cursor:pointer;">
-        <input type="checkbox" id="bpAdvancePaid" onchange="_updateCustomerInfo()" style="width:18px;height:18px;accent-color:#7c4dff;flex-shrink:0;">
-        <span style="font-size:12px;font-weight:900;color:#4a148c;font-family:Arial,sans-serif;">💰 ایڈوانس پیمنٹ مل چکی ہے (نہیں تو خالی چھوڑیں — COD)</span>
-      </label>
+      <div style="display:flex;gap:6px;">
+        <label id="bpCodBox" onclick="_setCodMode(true)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:#ffebee;border:2px solid #c62828;border-radius:9px;padding:8px 6px;cursor:pointer;">
+          <input type="checkbox" id="bpCodChk" style="width:16px;height:16px;accent-color:#c62828;pointer-events:none;">
+          <span style="font-size:11px;font-weight:900;color:#c62828;font-family:Arial,sans-serif;">🕓 COD (کیش آن ڈلیوری)</span>
+        </label>
+        <label id="bpPaidBox" onclick="_setCodMode(false)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:#e8f5e9;border:2px solid #2e7d32;border-radius:9px;padding:8px 6px;cursor:pointer;">
+          <input type="checkbox" id="bpPaidChk" style="width:16px;height:16px;accent-color:#2e7d32;pointer-events:none;">
+          <span style="font-size:11px;font-weight:900;color:#2e7d32;font-family:Arial,sans-serif;">💰 Payment Received</span>
+        </label>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <input type="number" id="bpDeliveryCharge" placeholder="🚚 ڈلیوری چارجز (اختیاری)" min="0"
+          oninput="_updateDeliveryCharge()"
+          style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:Arial,sans-serif;">
+        <select id="bpDeliveryBoy" onchange="_onDeliveryBoyChange()"
+          style="flex:1;min-width:0;padding:9px 6px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:Arial,sans-serif;background:#fff;">
+          <option value="">🛵 ڈلیوری بوائے منتخب کریں</option>
+        </select>
+      </div>
     </div>
     <div class="bill-preview-body" id="billPreviewContent"></div>
     <div id="billEditRow" style="display:none;gap:8px;padding:0 2px 8px;">
@@ -2364,7 +2379,7 @@
           color:#fff;font-size:14px;font-family:var(--font-black);font-weight:900;
           cursor:pointer;box-shadow:0 3px 10px rgba(230,81,0,0.4);
           display:flex;align-items:center;justify-content:center;gap:6px;">
-          🕓 <span>Pending</span>
+          🕓 <span id="fbPendingBtnLabel">Pending</span>
         </button>
         <button onclick="fallbackComplete()" style="
           flex:1;padding:14px 4px;border:none;border-radius:11px;
@@ -2375,6 +2390,15 @@
           💰 <span>Cash Received</span>
         </button>
       </div>
+      <!-- 🛵 Delivery بلوں کے لیے — کسٹمر کو WhatsApp پر بل کی اطلاع بھیجیں -->
+      <button type="button" id="bpWaCustomerBtn" onclick="_shareToCustomerWhatsApp()" style="display:none;
+        width:100%;padding:10px 4px;border:none;border-radius:10px;margin-top:6px;
+        background:linear-gradient(160deg,#25d366,#128c7e);
+        color:#fff;font-size:12.5px;font-family:var(--font-black);font-weight:900;
+        cursor:pointer;box-shadow:0 3px 8px rgba(37,211,102,0.4);
+        display:flex;align-items:center;justify-content:center;gap:6px;">
+        📤 <span>کسٹمر کو WhatsApp پر بل بھیجیں</span>
+      </button>
       <!-- مین پرنٹ بٹن — پوری چوڑائی (پرنٹر موجود ہو) -->
       <button type="button" class="bpf-print" id="bpfPrintBtn" onclick="executePrint()" disabled>
         <span>🖨️</span>
@@ -2905,7 +2929,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug0615am';
+const FF_APP_VERSION = '12aug0643am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -4736,6 +4760,7 @@ async function directToPreview(){
     items,total,
     mode:null,
     customerName:'', customerMobile:'', advancePaid:false,
+    itemsTotal:total, deliveryCharge:0, deliveryBoyName:'', deliveryBoyMobile:'',
     _editable:true,
   };
   pendingSale = sale;
@@ -4761,6 +4786,7 @@ async function directPrint(){
     items,total,
     mode:'cash',
     customerName:'', customerMobile:'', advancePaid:false,
+    itemsTotal:total, deliveryCharge:0, deliveryBoyName:'', deliveryBoyMobile:'',
   };
 
   // auto-reconnect اگر پرنٹر saved ہو
@@ -4812,6 +4838,60 @@ function _hideProcessBtn(){
 // ============================================================
 // کسٹمر نام / موبائل نمبر — بل کے ساتھ محفوظ (ڈیلیوری رابطے کے لیے)
 // ============================================================
+// ============================================================
+// 🛵 ڈلیوری بوائے لسٹ — نام + موبائل نمبر، خودکار محفوظ
+// ============================================================
+let deliveryBoys = JSON.parse(localStorage.getItem('ff_delivery_boys')||'[]');
+function saveDeliveryBoys(){ localStorage.setItem('ff_delivery_boys', JSON.stringify(deliveryBoys)); }
+function _populateDeliveryBoySelect(sale){
+  const sel = document.getElementById('bpDeliveryBoy');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">🛵 ڈلیوری بوائے منتخب کریں</option>'
+    + deliveryBoys.map(b=>`<option value="${b.id}">${b.name} — ${b.mobile}</option>`).join('')
+    + '<option value="__add__">➕ نیا ڈلیوری بوائے شامل کریں</option>';
+  const match = sale && sale.deliveryBoyMobile ? deliveryBoys.find(b=>b.mobile===sale.deliveryBoyMobile) : null;
+  sel.value = match ? match.id : '';
+}
+function _onDeliveryBoyChange(){
+  const sel = document.getElementById('bpDeliveryBoy');
+  if(!sel || !pendingSale) return;
+  if(sel.value==='__add__'){
+    const name = prompt('ڈلیوری بوائے کا نام:',''); if(name===null){ sel.value=''; return; }
+    const mobile = prompt('موبائل نمبر:',''); if(mobile===null){ sel.value=''; return; }
+    if(!name.trim()||!mobile.trim()){ showToast('⚠️ نام اور نمبر دونوں درکار ہیں'); sel.value=''; return; }
+    const nb = {id:Date.now(), name:name.trim(), mobile:mobile.trim()};
+    deliveryBoys.push(nb); saveDeliveryBoys();
+    _populateDeliveryBoySelect(pendingSale);
+    sel.value = nb.id;
+    pendingSale.deliveryBoyName = nb.name;
+    pendingSale.deliveryBoyMobile = nb.mobile;
+  } else {
+    const b = deliveryBoys.find(x=>String(x.id)===sel.value);
+    pendingSale.deliveryBoyName = b ? b.name : '';
+    pendingSale.deliveryBoyMobile = b ? b.mobile : '';
+  }
+  const body = document.getElementById('billPreviewContent');
+  if(body) body.innerHTML = buildBillHtml(pendingSale);
+  _applyBillFontSize();
+}
+
+// COD یا Payment Received — دو باکس، ایک وقت میں صرف ایک منتخب
+function _setCodMode(isCod){
+  if(!pendingSale) return;
+  pendingSale.advancePaid = !isCod;
+  _refreshCodBoxes();
+  const body = document.getElementById('billPreviewContent');
+  if(body) body.innerHTML = buildBillHtml(pendingSale);
+  _applyBillFontSize();
+}
+function _refreshCodBoxes(){
+  const codChk = document.getElementById('bpCodChk');
+  const paidChk = document.getElementById('bpPaidChk');
+  const isPaid = !!(pendingSale && pendingSale.advancePaid);
+  if(codChk) codChk.checked = !isPaid;
+  if(paidChk) paidChk.checked = isPaid;
+}
+
 function _showCustomerRow(show, sale){
   const row = document.getElementById('bpCustomerRow');
   if(!row) return;
@@ -4823,24 +4903,38 @@ function _showCustomerRow(show, sale){
   const editable = !sale || sale._editable !== false;
   if(nameEl) nameEl.disabled = !editable;
   if(mobEl)  mobEl.disabled  = !editable;
-  // 🛵 صرف Delivery کے لیے ایڈوانس پیمنٹ ٹوگل دکھائیں
+  // 🛵 صرف Delivery کے لیے COD/Payment ٹوگل، ڈلیوری چارجز، ڈلیوری بوائے دکھائیں
   const advRow = document.getElementById('bpAdvanceRow');
-  const advChk = document.getElementById('bpAdvancePaid');
   if(advRow){
     const isDelivery = show && sale && sale.table==='D';
     advRow.style.display = isDelivery ? 'block' : 'none';
-    if(advChk){ advChk.checked = !!(sale && sale.advancePaid); advChk.disabled = !editable; }
+    if(isDelivery){
+      _refreshCodBoxes();
+      const dcEl = document.getElementById('bpDeliveryCharge');
+      if(dcEl) dcEl.value = (sale && sale.deliveryCharge) ? sale.deliveryCharge : '';
+      _populateDeliveryBoySelect(sale);
+    }
   }
 }
 function _updateCustomerInfo(){
   if(!pendingSale) return;
   const nameEl = document.getElementById('bpCustomerName');
   const mobEl  = document.getElementById('bpCustomerMobile');
-  const advEl  = document.getElementById('bpAdvancePaid');
   pendingSale.customerName   = nameEl ? nameEl.value.trim() : '';
   pendingSale.customerMobile = mobEl  ? mobEl.value.trim()  : '';
-  pendingSale.advancePaid    = (pendingSale.table==='D' && advEl) ? advEl.checked : false;
   // پریویو میں فوری اپڈیٹ دکھائیں
+  const body = document.getElementById('billPreviewContent');
+  if(body) body.innerHTML = buildBillHtml(pendingSale);
+  _applyBillFontSize();
+}
+// ڈلیوری چارجز — ٹوٹل میں شامل، مگر بل پر علیحدہ سے صاف نظر آئیں
+function _updateDeliveryCharge(){
+  if(!pendingSale) return;
+  const dcEl = document.getElementById('bpDeliveryCharge');
+  const dc = dcEl ? (+dcEl.value||0) : 0;
+  if(pendingSale.itemsTotal==null) pendingSale.itemsTotal = pendingSale.total - (pendingSale.deliveryCharge||0);
+  pendingSale.deliveryCharge = dc;
+  pendingSale.total = pendingSale.itemsTotal + dc;
   const body = document.getElementById('billPreviewContent');
   if(body) body.innerHTML = buildBillHtml(pendingSale);
   _applyBillFontSize();
@@ -4874,6 +4968,11 @@ function _showFallbackPreview(sale){
   // فٹر میں صرف "مکمل" بٹن
   const fb=document.getElementById('fallbackCompleteRow');
   if(fb) fb.style.display='flex';
+  const pendLbl = document.getElementById('fbPendingBtnLabel');
+  if(pendLbl) pendLbl.textContent = (sale._pendingIndex!=null) ? 'Update' : 'Pending';
+  // 🛵 Delivery ہو اور موبائل نمبر موجود ہو تو WhatsApp بٹن دکھائیں
+  const waBtn = document.getElementById('bpWaCustomerBtn');
+  if(waBtn) waBtn.style.display = (sale.table==='D' && sale.customerMobile) ? 'flex' : 'none';
   document.getElementById('billPreviewModal').classList.add('open');
 }
 
@@ -4918,17 +5017,23 @@ function fallbackPending(){
   // 🕓 PENDING واٹر مارک فوراً بل کے نیچے دکھائیں
   const pendingPreviewSale = {...pendingSale, mode:'pending', _watermark:'PENDING'};
   document.getElementById('billPreviewContent').innerHTML = buildBillHtml(pendingPreviewSale);
-  const bill = {...pendingSale, mode:'pending', createdAt:Date.now()};
-  pendingBills.push(bill);
-  savePendingBills();
-  // ٹیبل کی کارٹ صاف کریں — بل لاک ہو کر پینڈنگ میں چلا گیا
-  if(pendingSale.table != null){
-    if(!tableOrders[pendingSale.table]) tableOrders[pendingSale.table]={};
-    tableOrders[pendingSale.table].order={};
-    saveTableOrders();
+  const bill = {...pendingSale, mode:'pending', createdAt: pendingSale.createdAt || Date.now()};
+  delete bill._pendingIndex; delete bill._editable; delete bill._watermark;
+  if(pendingSale._pendingIndex!=null && pendingBills[pendingSale._pendingIndex]){
+    // پہلے سے موجود پینڈنگ بل — صرف اپڈیٹ کریں (نئی انٹری نہیں بنے گی)
+    pendingBills[pendingSale._pendingIndex] = bill;
+  } else {
+    pendingBills.push(bill);
+    // ٹیبل کی کارٹ صاف کریں — بل لاک ہو کر پینڈنگ میں چلا گیا (صرف نئے بل پر لاگو)
+    if(pendingSale.table != null){
+      if(!tableOrders[pendingSale.table]) tableOrders[pendingSale.table]={};
+      tableOrders[pendingSale.table].order={};
+      saveTableOrders();
+    }
+    setCurrentOrder({});
   }
+  savePendingBills();
   pendingSale=null;
-  setCurrentOrder({});
   renderItems(); buildTablePanel(); updatePayBtn();
   renderSummary();
   showToast('🕓 بل پینڈنگ میں محفوظ — پیمنٹ آنے پر مکمل کریں');
@@ -4945,15 +5050,51 @@ function fallbackPending(){
   }, 1500);
 }
 
+// 🛵 ڈلیوری کسٹمر کو WhatsApp پر بل کی تفصیل بھیجیں (متن کی صورت میں، فوری)
+function _shareToCustomerWhatsApp(){
+  if(!pendingSale || !pendingSale.customerMobile){ showToast('⚠️ پہلے موبائل نمبر درج کریں'); return; }
+  let num = pendingSale.customerMobile.replace(/[^0-9]/g,'');
+  if(num.startsWith('0')) num = '92' + num.slice(1); // پاکستانی نمبر فارمیٹ
+  const lines = [];
+  const _cfg = getBillCfg();
+  lines.push('🍔 *'+ (_cfg.shopName||'FFPOS') +'* — بل تفصیل');
+  lines.push('');
+  pendingSale.items.forEach(it=>{ lines.push(it.qty+' x '+it.name+' — Rs.'+it.total); });
+  if(pendingSale.deliveryCharge){
+    lines.push('');
+    lines.push('Subtotal: Rs.'+(pendingSale.itemsTotal!=null?pendingSale.itemsTotal:(pendingSale.total-pendingSale.deliveryCharge)));
+    lines.push('🚚 Delivery Charges: Rs.'+pendingSale.deliveryCharge);
+  }
+  lines.push('');
+  lines.push('💰 *Total: Rs.'+pendingSale.total+'*');
+  if(pendingSale.advancePaid){ lines.push('✅ Payment Received'); } else { lines.push('🕓 Cash on Delivery (COD)'); }
+  if(pendingSale.deliveryBoyName){ lines.push(''); lines.push('🛵 Delivery Boy: '+pendingSale.deliveryBoyName+' — '+pendingSale.deliveryBoyMobile); }
+  lines.push('');
+  lines.push('شکریہ! 🙏');
+  const text = encodeURIComponent(lines.join('\n'));
+  window.open('https://wa.me/'+num+'?text='+text, '_blank');
+}
+
 function fallbackComplete(){
   // PAID واٹر مارک دکھاؤ پھر بند کرو
   if(pendingSale){
     const paidSale = {...pendingSale, mode: pendingSale.mode||'cash', _watermark:'PAID'};
     document.getElementById('billPreviewContent').innerHTML = buildBillHtml(paidSale);
-    state.sales.push(pendingSale);
+    const finalSale = {...pendingSale};
+    delete finalSale._pendingIndex; delete finalSale._editable; delete finalSale._watermark;
+    finalSale.mode = 'cash';
+    state.sales.push(finalSale);
     saveState();
-    // pending table order صاف کریں — بل paid میں جائے گا
-    if(pendingSale.table != null){ if(!tableOrders[pendingSale.table])tableOrders[pendingSale.table]={}; tableOrders[pendingSale.table].order={}; saveTableOrders(); }
+    if(pendingSale._pendingIndex!=null && pendingBills[pendingSale._pendingIndex]){
+      // یہ پہلے سے پینڈنگ لسٹ میں تھا — اب وہاں سے ہٹا دیں
+      pendingBills.splice(pendingSale._pendingIndex,1);
+      savePendingBills();
+    } else if(pendingSale.table != null){
+      // نیا/تازہ بل — اس ٹیبل کی کارٹ صاف کریں
+      if(!tableOrders[pendingSale.table])tableOrders[pendingSale.table]={};
+      tableOrders[pendingSale.table].order={};
+      saveTableOrders();
+    }
   }
   pendingSale=null;
   setCurrentOrder({});
@@ -4971,6 +5112,14 @@ function fallbackComplete(){
     renderSummary();
     showToast('✅ پیمنٹ وصول — اگلا گاہک');
   }, 1200);
+}
+
+// پینڈنگ لسٹ میں سے بل پر ٹیپ کریں — پورا بل کھلے، ترمیم/COD/Payment/Print سب دستیاب ہوں
+function openPendingBillPreview(i){
+  const b = pendingBills[i];
+  if(!b) return;
+  pendingSale = {...b, _editable:true, _pendingIndex:i};
+  _showFallbackPreview(pendingSale);
 }
 
 
@@ -4993,6 +5142,7 @@ function openPayModal(){
     dateStr:new Date().toLocaleDateString('en-PK'),
     items,total,mode:null,_editable:true,
     customerName:'', customerMobile:'', advancePaid:false,
+    itemsTotal:total, deliveryCharge:0, deliveryBoyName:'', deliveryBoyMobile:'',
   };
   showBillPreview(pendingSale);
 }
@@ -5177,6 +5327,11 @@ function buildBillHtml(sale){
         ${sale.customerName ? `<div style="font-family:${_billFont};font-size:16px;font-weight:900;color:#fff;letter-spacing:.3px;">👤 ${sale.customerName}</div>` : ''}
         ${sale.customerMobile ? `<div style="font-family:${_billFont};font-size:17px;font-weight:900;color:#ffeb3b;letter-spacing:.5px;margin-top:${sale.customerName?'2px':'0'};">📱 ${sale.customerMobile}</div>` : ''}
       </div>` : ''}
+      ${sale.table==='D' ? `
+      <div style="background:#5e35b1;border-radius:8px;padding:5px 10px;margin-bottom:6px;text-align:center;">
+        <div style="font-family:${_billFont};font-size:11px;font-weight:900;color:#fff;">${sale.advancePaid ? '💰 Payment Received' : '🕓 COD — پیمنٹ ڈلیوری پر لینی ہے'}</div>
+        ${sale.deliveryBoyName ? `<div style="font-family:${_billFont};font-size:12px;font-weight:900;color:#ffe082;margin-top:2px;">🛵 ${sale.deliveryBoyName}${sale.deliveryBoyMobile?(' — 📞 '+sale.deliveryBoyMobile):''}</div>` : ''}
+      </div>` : ''}
       <table style="width:100%;border-collapse:collapse;margin:0 0 6px;border:1.5px solid ${bt.rowBorder};border-radius:8px;overflow:hidden;">
         <tr style="background:${bt.headerBg};">
           <th style="font-family:${_billFont};font-weight:900;font-size:9px;padding:5px 3px;text-align:center;color:${bt.headerText};border:1px solid ${bt.rowBorder};width:18px;">${snoLabel}</th>
@@ -5193,6 +5348,15 @@ function buildBillHtml(sale){
             <td style="font-family:${_billFont};font-size:13px;font-weight:900;padding:5px 3px;text-align:center;color:#333;border:1px solid ${bt.rowBorder};">${i.price}</td>
             <td style="font-family:${_billFont};font-size:14px;font-weight:900;padding:5px 3px;text-align:center;color:#000;border:1px solid ${bt.rowBorder};">${i.total}</td>
           </tr>`).join('')}
+        ${sale.deliveryCharge ? `
+        <tr style="background:${bt.rowOdd};">
+          <td colspan="4" style="font-family:${_billFont};font-size:11px;font-weight:900;padding:5px 6px;text-align:left;color:${bt.metaText};border:1px solid ${bt.rowBorder};">Subtotal</td>
+          <td style="font-family:${_billFont};font-size:12px;font-weight:900;padding:5px 3px;text-align:center;color:#333;border:1px solid ${bt.rowBorder};">${sale.itemsTotal!=null?sale.itemsTotal:(sale.total-sale.deliveryCharge)}</td>
+        </tr>
+        <tr style="background:${bt.rowEven};">
+          <td colspan="4" style="font-family:${_billFont};font-size:11px;font-weight:900;padding:5px 6px;text-align:left;color:${bt.metaText};border:1px solid ${bt.rowBorder};">🚚 Delivery Charges</td>
+          <td style="font-family:${_billFont};font-size:12px;font-weight:900;padding:5px 3px;text-align:center;color:#333;border:1px solid ${bt.rowBorder};">${sale.deliveryCharge}</td>
+        </tr>` : ''}
         <!-- TOTAL row — label بائیں، رقم دائیں موٹی، اندر کوئی vertical border نہیں -->
         <tr style="background:${bt.rowEven};">
           <td colspan="3" style="font-family:${_billFont};font-size:11px;font-weight:900;padding:9px 6px;text-align:left;color:${bt.metaText};border-top:2px solid ${bt.rowBorder};border-bottom:1.5px solid ${bt.rowBorder};border-left:1.5px solid ${bt.rowBorder};border-right:none;">${totalAmtLabel}</td>
@@ -5223,6 +5387,17 @@ function _editBillGoBack(){
   const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
   const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
   _showCustomerRow(false);
+  // اگر یہ پہلے سے محفوظ پینڈنگ بل تھا (لسٹ سے دوبارہ کھولا گیا) تو اس کے
+  // آئٹمز واپس اسی ٹیبل کے کارٹ میں لوڈ کریں تاکہ کارڈز سے ترمیم ممکن ہو
+  if(pendingSale._pendingIndex!=null && pendingBills[pendingSale._pendingIndex]){
+    const o={};
+    pendingSale.items.forEach(it=>{ o[it.id]=(o[it.id]||0)+it.qty; });
+    currentTable = pendingSale.table;
+    setCurrentOrder(o);
+    pendingBills.splice(pendingSale._pendingIndex,1);
+    savePendingBills();
+    renderItems(); buildTablePanel(); updatePayBtn(); renderSummary();
+  }
   // pendingSale خالی کر دیں — اگلی بار "Pay" دبانے پر تازہ ترین کارٹ سے نیا بل بنے گا
   pendingSale = null;
 }
@@ -5232,7 +5407,11 @@ function _deleteWholeBill(){
   if(!confirm('⚠️ کیا واقعی پورا بل حذف کرنا چاہتے ہیں؟\nیہ عمل واپس نہیں ہو سکتا۔')) return;
   const sale = pendingSale;
   pendingSale = null;
-  if(sale.table != null){
+  if(sale._pendingIndex!=null && pendingBills[sale._pendingIndex]){
+    // پہلے سے محفوظ پینڈنگ بل — لسٹ سے نکال دیں
+    pendingBills.splice(sale._pendingIndex,1);
+    savePendingBills();
+  } else if(sale.table != null){
     if(!tableOrders[sale.table]) tableOrders[sale.table]={};
     tableOrders[sale.table].order={};
     saveTableOrders(); updatePendingTabBadge();
@@ -6801,7 +6980,7 @@ function renderSummary(){
           const actionBtn = (isDelivery && b.advancePaid)
             ? `<button onclick="event.stopPropagation();markPendingAsPaid(${i})" title="ڈیلیور ہو گیا" style="background:#2e7d32;color:#fff;border:none;border-radius:5px;padding:4px 9px;font-size:11px;font-weight:900;cursor:pointer;flex-shrink:0;">✅ Delivered</button>`
             : `<button onclick="event.stopPropagation();markPendingAsPaid(${i})" title="پیمنٹ وصول" style="background:#2e7d32;color:#fff;border:none;border-radius:5px;padding:4px 9px;font-size:11px;font-weight:900;cursor:pointer;flex-shrink:0;">💵 وصول</button>`;
-          return `<div class="hist-item" style="position:relative;overflow:hidden;border-left:3px solid ${isDelivery?'#7c4dff':'#e65100'};background:linear-gradient(90deg,${isDelivery?'rgba(124,77,255,0.09)':'rgba(230,81,0,0.09)'},transparent);padding:6px 4px;gap:3px;flex-wrap:wrap;">
+          return `<div class="hist-item" onclick="openPendingBillPreview(${i})" style="cursor:pointer;position:relative;overflow:hidden;border-left:3px solid ${isDelivery?'#7c4dff':'#e65100'};background:linear-gradient(90deg,${isDelivery?'rgba(124,77,255,0.09)':'rgba(230,81,0,0.09)'},transparent);padding:6px 4px;gap:3px;flex-wrap:wrap;">
             <div style="flex:1;min-width:0;">
               <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
                 <span style="font-size:10px;color:${isDelivery?'#5e35b1':'#e65100'};font-weight:900;flex-shrink:0;">${tName}</span>
@@ -8101,7 +8280,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug0615am';
+const APP_VERSION = '12aug0643am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
