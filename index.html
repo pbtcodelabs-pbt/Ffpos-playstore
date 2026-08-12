@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>FFPOS</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -233,55 +236,65 @@
   .screen.active { display:flex; flex-direction:column; }
 
   /* ===== POS LAYOUT ===== */
-  .pos-layout { display:grid; grid-template-columns:1fr 72px; flex:1; overflow:hidden; }
+  .pos-layout { display:grid; grid-template-columns:1fr var(--table-col-w,72px); flex:1; overflow:hidden; }
 
   /* ===== TABLE COLUMN — دائیں سائیڈ، اوپر سے نیچے تک ===== */
+  /* رنگ ہمیشہ فکس رہتا ہے — کسی بھی تھیم سے مختلف اور نمایاں (ٹیبل کالم کی اپنی الگ شناخت) */
   .table-col {
-    display:flex; flex-direction:column; gap:7px;
-    padding:8px 6px; overflow-y:auto; overflow-x:hidden;
-    background:var(--tpanel-bg,#e65100); border-left:2px solid var(--tpanel-border,#bf360c);
+    display:flex; flex-direction:column; gap:6px;
+    padding:8px 5px; overflow-y:auto; overflow-x:hidden;
+    background:linear-gradient(180deg,#263238 0%,#10181c 100%);
+    border-left:2.5px solid #00bcd4;
     -webkit-overflow-scrolling:touch;
   }
   .table-btn {
     position:relative; width:100%; aspect-ratio:1/1; flex-shrink:0;
-    border-radius:11px; border:2px solid var(--accent-lt);
-    background:#fff; color:var(--accent);
+    border-radius:11px; border:2px solid #546e7a;
+    background:#37474f; color:#eceff1;
     display:flex; align-items:center; justify-content:center; text-align:center;
     font-family:var(--font-black); font-weight:900; font-size:10.5px; line-height:1.15;
     padding:4px 3px; overflow:hidden; word-break:break-word;
     cursor:pointer; -webkit-tap-highlight-color:transparent;
-    box-shadow:0 2px 5px rgba(0,0,0,0.08);
+    box-shadow:0 2px 5px rgba(0,0,0,0.25);
     transition:transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
   }
   .table-btn .tbl-name-span { pointer-events:none; }
   .table-btn.active {
-    background:var(--accent); color:#fff; border-color:var(--accent);
-    box-shadow:0 0 0 2px rgba(0,0,0,0.05), 0 3px 10px rgba(0,0,0,0.2);
+    background:linear-gradient(160deg,#00bcd4,#00838f); color:#fff; border-color:#18ffff;
+    box-shadow:0 0 0 2px rgba(0,0,0,0.15), 0 3px 12px rgba(0,188,212,0.5);
   }
-  /* پینڈنگ بل والا ٹیبل — گلو، مختلف رنگ، تھوڑا اوپر اٹھا ہوا اور آگے نکلا ہوا */
+  /* پینڈنگ بل والا ٹیبل — ہلکا ہلکا مسلسل گلو، رنگ آہستہ آہستہ بدلتا، تھوڑا سا آگے نکلا ہوا */
   .table-btn.pending {
-    background:linear-gradient(160deg,#ff7043,#e64a19);
-    border-color:#bf360c; color:#fff;
-    transform:translateX(-7px) scale(1.08);
-    box-shadow:0 0 14px rgba(230,74,25,0.75), 0 4px 12px rgba(0,0,0,0.3);
-    z-index:5; animation:tblPendingPulse 1.6s ease-in-out infinite;
+    background:linear-gradient(120deg,#ffb300,#ff6f00,#ffb300,#ff8f00);
+    background-size:300% 300%;
+    border-color:#ffd54f; color:#fff;
+    transform:translateX(-5px) scale(1.05);
+    box-shadow:0 0 10px rgba(255,179,0,0.55), 0 3px 10px rgba(0,0,0,0.3);
+    z-index:5;
+    animation:tblPendingPulse 2.4s ease-in-out infinite, tblPendingShift 5s ease-in-out infinite;
   }
   .table-btn.pending.active {
-    background:linear-gradient(160deg,#ffab00,#ff6f00);
-    border-color:#e65100;
+    background:linear-gradient(120deg,#00e5ff,#00bcd4,#ffb300,#00e5ff);
+    background-size:300% 300%;
+    border-color:#18ffff;
+    animation:tblPendingPulse 2.4s ease-in-out infinite, tblPendingShift 4s ease-in-out infinite;
   }
   @keyframes tblPendingPulse {
-    0%,100% { box-shadow:0 0 14px rgba(230,74,25,0.75), 0 4px 12px rgba(0,0,0,0.3); }
-    50%     { box-shadow:0 0 20px rgba(230,74,25,0.95), 0 4px 14px rgba(0,0,0,0.35); }
+    0%,100% { box-shadow:0 0 10px rgba(255,179,0,0.5), 0 3px 10px rgba(0,0,0,0.3); }
+    50%     { box-shadow:0 0 16px rgba(255,179,0,0.8), 0 3px 12px rgba(0,0,0,0.35); }
+  }
+  @keyframes tblPendingShift {
+    0%,100% { background-position:0% 50%; }
+    50%     { background-position:100% 50%; }
   }
   .table-btn .tbl-edit-ico {
-    position:absolute; top:1px; right:2px; font-size:8px; opacity:.55;
+    position:absolute; top:1px; right:2px; font-size:8px; opacity:.65;
     pointer-events:none;
   }
   .table-add-btn {
     width:100%; aspect-ratio:1/1; flex-shrink:0;
-    border-radius:11px; border:2px dashed var(--accent);
-    background:transparent; color:var(--accent);
+    border-radius:11px; border:2px dashed #00bcd4;
+    background:transparent; color:#00bcd4;
     display:flex; align-items:center; justify-content:center;
     font-size:20px; font-weight:900; cursor:pointer;
     -webkit-tap-highlight-color:transparent;
@@ -2856,7 +2869,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '11aug0745pm';
+const FF_APP_VERSION = '12aug0528am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -2865,6 +2878,44 @@ const FF_APP_VERSION = '11aug0745pm';
   // براؤزر ٹیب کا عنوان بھی ہمیشہ تازہ ترین ورژن کے ساتھ اپڈیٹ رکھیں
   document.title = 'FFPOS — ' + FF_APP_VERSION;
 })();
+
+// ============================================================
+// خودکار ورژن چیک — پرانا کیشڈ ورژن کھلے تو ایپ خود بخود تازہ ترین
+// ورژن لوڈ کر لے، صارف کو دستی 🔄 بٹن دبانے کی ضرورت نہ رہے۔
+// نیٹ ورک سے بغیر کیش کے ایک بار index.html منگوا کر ورژن نمبر
+// موازنہ کرتے ہیں — فرق ہو تو خاموشی سے ایک بار تازہ لوڈ کریں۔
+// ============================================================
+(function _autoVersionCheck(){
+  try{
+    if(sessionStorage.getItem('ff_auto_refreshed')) return; // ایک سیشن میں صرف ایک بار
+    fetch(location.pathname + '?_chk=' + Date.now(), {cache:'no-store'})
+      .then(r=>r.text())
+      .then(text=>{
+        const m = text.match(/FF_APP_VERSION\s*=\s*'([^']+)'/);
+        if(m && m[1] && m[1] !== FF_APP_VERSION){
+          sessionStorage.setItem('ff_auto_refreshed','1');
+          _hardRefreshApp();
+        }
+      })
+      .catch(()=>{});
+  }catch(e){}
+})();
+
+async function _hardRefreshApp(){
+  try{
+    if('serviceWorker' in navigator){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for(const r of regs){ await r.unregister(); }
+    }
+    if(window.caches && caches.keys){
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k=>caches.delete(k)));
+    }
+  }catch(e){}
+  const url = new URL(window.location.href);
+  url.searchParams.set('_v', Date.now());
+  window.location.replace(url.toString());
+}
 
 
 function unlockApp(){
@@ -4942,8 +4993,12 @@ function buildBillHtml(sale){
       <div style="background:${bt.metaBg};border-radius:7px;padding:5px 10px;margin-bottom:6px;text-align:center;">
         <div style="font-family:${_billFont};font-size:10px;font-weight:900;color:${bt.metaText};">${invLabel} ${sale.invNo} &nbsp;|&nbsp; ${tableName}</div>
         <div style="font-family:${_billFont};font-size:9px;font-weight:bold;color:${bt.metaText};opacity:.8;">${dateStr||sale.dateStr}</div>
-        ${(sale.customerName||sale.customerMobile) ? `<div style="font-family:${_billFont};font-size:9.5px;font-weight:900;color:${bt.metaText};margin-top:3px;">${sale.customerName?('👤 '+sale.customerName):''}${(sale.customerName&&sale.customerMobile)?' &nbsp;|&nbsp; ':''}${sale.customerMobile?('📱 '+sale.customerMobile):''}</div>` : ''}
       </div>
+      ${(sale.customerName||sale.customerMobile) ? `
+      <div style="background:#000;border-radius:8px;padding:6px 10px;margin-bottom:6px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+        ${sale.customerName ? `<div style="font-family:${_billFont};font-size:16px;font-weight:900;color:#fff;letter-spacing:.3px;">👤 ${sale.customerName}</div>` : ''}
+        ${sale.customerMobile ? `<div style="font-family:${_billFont};font-size:17px;font-weight:900;color:#ffeb3b;letter-spacing:.5px;margin-top:${sale.customerName?'2px':'0'};">📱 ${sale.customerMobile}</div>` : ''}
+      </div>` : ''}
       <table style="width:100%;border-collapse:collapse;margin:0 0 6px;border:1.5px solid ${bt.rowBorder};border-radius:8px;overflow:hidden;">
         <tr style="background:${bt.headerBg};">
           <th style="font-family:${_billFont};font-weight:900;font-size:9px;padding:5px 3px;text-align:center;color:${bt.headerText};border:1px solid ${bt.rowBorder};width:18px;">${snoLabel}</th>
@@ -5444,15 +5499,30 @@ function _buildBillCanvas(sale, forPrint, lightMode){
     ctx.fillText(dateStr, W/2, my);
     my += S(18);
 
-    // کسٹمر نام / موبائل نمبر — اگر درج کیا گیا ہو تو پرنٹ پر بھی دکھائیں
+    // کسٹمر نام / موبائل نمبر — اگر درج کیا گیا ہو تو نمایاں سیاہ بینر میں پرنٹ کریں
     if(sale.customerName || sale.customerMobile){
-      ctx.font = `700 ${S(14)}px ${fontFam}`;
-      ctx.fillStyle = C_DARK;
-      const custParts = [];
-      if(sale.customerName) custParts.push('👤 '+sale.customerName);
-      if(sale.customerMobile) custParts.push('📱 '+sale.customerMobile);
-      ctx.fillText(custParts.join('   |   '), W/2, my);
-      my += S(20);
+      const bannerPadY = S(6);
+      const nameH = sale.customerName ? S(22) : 0;
+      const mobH  = sale.customerMobile ? S(24) : 0;
+      const bannerH = bannerPadY*2 + nameH + mobH;
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      if(ctx.roundRect) ctx.roundRect(PAD, my, W-PAD*2, bannerH, 8); else ctx.rect(PAD, my, W-PAD*2, bannerH);
+      ctx.fill();
+      let cy = my + bannerPadY + S(15);
+      ctx.textAlign = 'center';
+      if(sale.customerName){
+        ctx.font = `900 ${S(17)}px ${fontFam}`;
+        ctx.fillStyle = '#fff';
+        ctx.fillText('👤 '+sale.customerName, W/2, cy);
+        cy += mobH ? S(22) : 0;
+      }
+      if(sale.customerMobile){
+        ctx.font = `900 ${S(18)}px ${fontFam}`;
+        ctx.fillStyle = '#ffeb3b';
+        ctx.fillText('📱 '+sale.customerMobile, W/2, cy);
+      }
+      my += bannerH + S(10);
     }
 
     // thin separator
@@ -6092,8 +6162,10 @@ function encodeEscPos(sale){
   addText(_center(sale.dateStr||'',W)); newLine();
   addText(_center(sale.time||'',W)); newLine();
   if(sale.customerName || sale.customerMobile){
-    const custLine = [sale.customerName?('Name: '+sale.customerName):'', sale.customerMobile?('Ph: '+sale.customerMobile):''].filter(Boolean).join('  ');
-    addText(_center(custLine.slice(0,W),W)); newLine();
+    addBytes(CMD_BOLD_ON); addBytes(CMD_DBLSIZE_ON);
+    if(sale.customerName)   { addText(_center(('Name:'+sale.customerName).slice(0,W),W)); newLine(); }
+    if(sale.customerMobile) { addText(_center(('Ph:'+sale.customerMobile).slice(0,W),W)); newLine(); }
+    addBytes(CMD_DBLSIZE_OFF); addBytes(CMD_BOLD_OFF);
   }
   newLine();
 
@@ -7784,7 +7856,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '11aug0745pm';
+const APP_VERSION = '12aug0528am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
@@ -7809,19 +7881,7 @@ document.addEventListener('DOMContentLoaded', updateNetStatus);
 // پرانا Service Worker + کیشے صاف کر کے، cache-busting کے ساتھ ری لوڈ —
 // تاکہ GitHub پر نئی فائل اپلوڈ ہونے کے بعد یوزر کو فوراً لیٹسٹ ورژن نظر آئے
 async function refreshAppVersion(){
-  try{
-    if('serviceWorker' in navigator){
-      const regs = await navigator.serviceWorker.getRegistrations();
-      for(const r of regs){ await r.unregister(); }
-    }
-    if(window.caches && caches.keys){
-      const keys = await caches.keys();
-      await Promise.all(keys.map(k=>caches.delete(k)));
-    }
-  }catch(e){}
-  const url = new URL(window.location.href);
-  url.searchParams.set('_v', Date.now());
-  window.location.href = url.toString();
+  await _hardRefreshApp();
 }
 
 
@@ -8204,8 +8264,23 @@ document.addEventListener('keydown', e => {
 });
 // ---------- Service Worker رجسٹر کریں — آف لائن سپورٹ اور کیشے مینجمنٹ کے لیے ----------
 if ('serviceWorker' in navigator) {
+  let _swRefreshing = false;
+  // نیا سروس ورکر ایکٹو ہوتے ہی ایک بار خودکار ریفریش — کھولتے ہی تازہ ترین ورژن ملے،
+  // "برش" بٹن دبانے کی ضرورت نہ رہے
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (_swRefreshing) return;
+    _swRefreshing = true;
+    window.location.reload();
+  });
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      // فوراً اپڈیٹ چیک کریں
+      reg.update();
+      // ہر بار ایپ فوکس میں آئے تو بھی چیک کریں (موبائل ایپ کھلتے وقت)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') reg.update();
+      });
+    }).catch(() => {});
   });
 }
 </script>
