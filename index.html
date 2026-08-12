@@ -2476,14 +2476,6 @@
       <button type="button" class="bp-theme-swatch" data-th="coffee" onclick="setBillTheme('coffee');printEndOfDayReport();" title="Coffee" style="width:22px;height:22px;border-radius:50%;border:2px solid transparent;background:linear-gradient(135deg,#a1887f,#4e342e);cursor:pointer;padding:0;"></button>
     </div>
 
-    <!-- 🔍 پرنٹ سائز — صرف پرنٹ آؤٹ پٹ کے ٹیکسٹ/لائن سائز کو بڑا/چھوٹا کرتا ہے -->
-    <div class="bp-zoom-row" style="gap:4px;padding:0 8px;">
-      <span style="font-size:12px;">🖨️🔍</span>
-      <input type="range" id="eodZoomSlider" class="bp-zoom-slider" min="70" max="180" step="5"
-        value="100" oninput="_onEodPrintZoomSlider(this.value)" title="Print Size — پرنٹ کا سائز بڑا/چھوٹا کریں" style="flex:1;">
-      <span id="eodZoomVal" style="font-size:10px;font-weight:900;color:var(--green-dk,#1b5e20);min-width:32px;text-align:right;font-family:var(--font-black);">100%</span>
-    </div>
-
     <!-- Body — report content -->
     <div id="eodReportContent" class="bill-preview-body" style="padding:0;"></div>
 
@@ -2536,7 +2528,7 @@
     <div class="bp-zoom-row" style="gap:4px;padding:6px 8px;">
       <span style="font-size:12px;">🔍</span>
       <input type="range" id="eodZoomSlider2" class="bp-zoom-slider" min="70" max="180" step="5"
-        value="100" oninput="document.getElementById('eodZoomSlider').value=this.value;document.getElementById('eodZoomVal2').textContent=this.value+'%';_onEodPrintZoomSliderLive(this.value);" title="Print Size" style="flex:1;">
+        value="100" oninput="document.getElementById('eodZoomVal2').textContent=this.value+'%';_onEodPrintZoomSliderLive(this.value);" title="Print Size" style="flex:1;">
       <span id="eodZoomVal2" style="font-size:10px;font-weight:900;color:#1b5e20;min-width:32px;text-align:right;font-family:var(--font-black);">100%</span>
     </div>
     <div class="bill-preview-body" style="padding:8px;background:#eceff1;text-align:center;">
@@ -3011,7 +3003,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug0300pm';
+const FF_APP_VERSION = '12aug0330pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -8360,10 +8352,6 @@ function printEndOfDayReport(){
   // Build HTML content
   document.getElementById('eodReportContent').innerHTML = _buildEodHtml(_eodReportData);
 
-  // 🔍 پرنٹ زوم سلائیڈر — پچھلی محفوظ شدہ ویلیو دکھائیں
-  const zs = document.getElementById('eodZoomSlider'); const zv = document.getElementById('eodZoomVal');
-  if(zs){ zs.value = _eodPrintScale; } if(zv){ zv.textContent = _eodPrintScale+'%'; }
-
   // Open modal
   document.getElementById('eodReportModal').classList.add('open');
 }
@@ -8741,17 +8729,12 @@ let _eodPrintScale = Number(localStorage.getItem('ff_eod_print_scale')) || 100;
 function _onEodPrintZoomSlider(v){
   _eodPrintScale = Number(v);
   localStorage.setItem('ff_eod_print_scale', String(_eodPrintScale));
-  const lbl=document.getElementById('eodZoomVal'); if(lbl) lbl.textContent=_eodPrintScale+'%';
 }
 
-// 🖨️ پرنٹ پریویو — اصل پرنٹ جیسی (سیاہ/سفید، فکسڈ چوڑائی) تصویر پہلے دکھائیں،
-// یوزر سائز دیکھ کر ٹھیک کرے، پھر ہی "پرنٹ کریں" دبائے
+// 🖨️ پرنٹ پریویو — اصل پرنٹ جیسی (سیاہ/سفید، فکسڈ چوڑائی) سادہ تصویر پہلے دکھائیں،
+// یوزر یہیں سائز سلائیڈر سے بڑا/چھوٹا کر کے دیکھے، پھر ہی "پرنٹ کریں" دبائے
 async function eodPrintPreview(){
   if(!_eodReportData){ showToast('⚠️ پہلے رپورٹ کھولیں'); return; }
-  if(!isPrinterLive()){
-    showToast('❌ پرنٹر کنیکٹ نہیں — Settings سے جوڑیں');
-    return;
-  }
   const cfg = getBillCfg();
   const paperWidthMM = cfg.paperWidth || 58;
   const targetWidthPx = paperWidthMM === 80 ? 576 : 384;
@@ -8759,6 +8742,10 @@ async function eodPrintPreview(){
   const previewCanvas = await _buildEodCanvas(_eodReportData, targetWidthPx, true, scale);
   const img = document.getElementById('eodPreviewImg');
   if(img) img.src = previewCanvas.toDataURL('image/png');
+  // سلائیڈر کو پچھلی محفوظ شدہ ویلیو پر سیٹ کریں
+  const zs2 = document.getElementById('eodZoomSlider2'); const zv2 = document.getElementById('eodZoomVal2');
+  if(zs2) zs2.value = _eodPrintScale; if(zv2) zv2.textContent = _eodPrintScale+'%';
+  if(!isPrinterLive()) showToast('ℹ️ پرنٹر کنیکٹ نہیں — پہلے سائز دیکھ لیں، پرنٹ کے لیے Settings سے جوڑیں');
   document.getElementById('eodPrintPreviewModal').classList.add('open');
 }
 function closeEodPrintPreview(){
@@ -8847,7 +8834,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug0300pm';
+const APP_VERSION = '12aug0330pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
