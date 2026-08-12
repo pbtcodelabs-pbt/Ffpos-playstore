@@ -2396,13 +2396,13 @@
         </button>
       </div>
       <!-- 🛵 Delivery بلوں کے لیے — کسٹمر کو WhatsApp پر بل کی اطلاع بھیجیں -->
-      <button type="button" id="bpWaCustomerBtn" onclick="_shareToCustomerWhatsApp()" style="display:none;
+      <button type="button" id="bpWaCustomerBtn" onclick="_shareBillImageToCustomer()" style="display:none;
         width:100%;padding:10px 4px;border:none;border-radius:10px;margin-top:6px;
         background:linear-gradient(160deg,#25d366,#128c7e);
         color:#fff;font-size:12.5px;font-family:var(--font-black);font-weight:900;
         cursor:pointer;box-shadow:0 3px 8px rgba(37,211,102,0.4);
         display:flex;align-items:center;justify-content:center;gap:6px;">
-        📤 <span>کسٹمر کے نمبر پر WhatsApp چیٹ کھولیں (بل کی تفصیل کے ساتھ)</span>
+        📤 <span>کسٹمر کو بل کی تصویر WhatsApp پر بھیجیں</span>
       </button>
       <!-- 🌐 مکمل بل کی تصویر شیئر کریں — کسی بھی ایپ کو، نمبر کی ضرورت نہیں -->
       <button type="button" id="bpWaImageBtn" onclick="shareOnWhatsApp()" style="display:none;
@@ -2943,7 +2943,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug0701am';
+const FF_APP_VERSION = '12aug0711am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -5822,10 +5822,13 @@ function _buildBillCanvas(sale, forPrint, lightMode){
     const ROW_H   = S(38);
     const HEAD_H  = S(isUrdu ? 160 : 140);
     const META_H  = S(60);
-    const TBL_H   = ROW_H * (items.length + 1) + S(16);
+    const extraRows = sale.deliveryCharge ? 2 : 0;
+    const TBL_H   = ROW_H * (items.length + 1 + extraRows) + S(16);
     const TOT_H   = S(90);
     const FOOT_H  = S(80);
-    const H = HEAD_H + META_H + TBL_H + TOT_H + FOOT_H + PAD*2;
+    const deliveryBannerLines = sale.table==='D' ? (sale.deliveryBoyName ? 2 : 1) : 0;
+    const DELIVERY_BANNER_H = deliveryBannerLines ? (S(12) + deliveryBannerLines*S(22) + S(10)) : 0;
+    const H = HEAD_H + META_H + DELIVERY_BANNER_H + TBL_H + TOT_H + FOOT_H + PAD*2;
 
     const canvas = document.createElement('canvas');
     canvas.width  = W;
@@ -5931,6 +5934,30 @@ function _buildBillCanvas(sale, forPrint, lightMode){
       my += bannerH + S(10);
     }
 
+    // 🛵 Delivery حالت (COD/Payment Received) + ڈلیوری بوائے — صرف Delivery بلوں پر
+    if(sale.table==='D'){
+      const statusText = sale.advancePaid ? '💰 Payment Received' : '🕓 COD — Cash on Delivery';
+      const boyLine = sale.deliveryBoyName ? ('🛵 '+sale.deliveryBoyName+(sale.deliveryBoyMobile?(' — '+sale.deliveryBoyMobile):'')) : '';
+      const dLines = boyLine ? 2 : 1;
+      const dH = S(12) + dLines*S(22);
+      ctx.fillStyle = '#5e35b1';
+      ctx.beginPath();
+      if(ctx.roundRect) ctx.roundRect(PAD, my, W-PAD*2, dH, 8); else ctx.rect(PAD, my, W-PAD*2, dH);
+      ctx.fill();
+      let cy2 = my + S(6) + S(15);
+      ctx.textAlign = 'center';
+      ctx.font = `900 ${S(15)}px ${fontFam}`;
+      ctx.fillStyle = '#fff';
+      ctx.fillText(statusText, W/2, cy2);
+      if(boyLine){
+        cy2 += S(22);
+        ctx.font = `900 ${S(15)}px ${fontFam}`;
+        ctx.fillStyle = '#ffe082';
+        ctx.fillText(boyLine, W/2, cy2);
+      }
+      my += dH + S(10);
+    }
+
     // thin separator
     ctx.strokeStyle = '#ddd';
     ctx.lineWidth = 1;
@@ -6006,6 +6033,29 @@ function _buildBillCanvas(sale, forPrint, lightMode){
 
       ty += ROW_H;
     });
+
+    // 🚚 Subtotal + Delivery Charges rows — اگر ڈلیوری چارجز درج ہوں
+    if(sale.deliveryCharge){
+      const subT = sale.itemsTotal!=null ? sale.itemsTotal : (sale.total - sale.deliveryCharge);
+      const extraRowsData = [
+        [isUrdu?'ذیلی کل':'Subtotal', 'Rs.'+subT],
+        [isUrdu?'ڈلیوری چارجز':'🚚 Delivery Charges', 'Rs.'+sale.deliveryCharge]
+      ];
+      extraRowsData.forEach(([label,val],ei)=>{
+        const rowTop = ty;
+        ctx.fillStyle = ei%2===0 ? C_WHITE : C_GREEN_LT;
+        ctx.fillRect(PAD, rowTop, iW, ROW_H);
+        ctx.fillStyle = C_DARK;
+        ctx.font = isUrdu ? `700 ${S(14)}px ${fontFam}` : `900 ${S(13)}px ${fontFam}`;
+        ctx.textAlign = isUrdu ? 'right' : 'left';
+        ctx.fillText(label, isUrdu ? W-PAD-8 : PAD+8, rowTop + ROW_H/2 - S(7));
+        ctx.textAlign = isUrdu ? 'left' : 'right';
+        ctx.fillText(val, isUrdu ? PAD+8 : W-PAD-8, rowTop + ROW_H/2 - S(7));
+        ctx.strokeStyle = C_BORDER; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(PAD, rowTop+ROW_H); ctx.lineTo(W-PAD, rowTop+ROW_H); ctx.stroke();
+        ty += ROW_H;
+      });
+    }
 
     // Table outer border
     const tblH = ty - (my+S(8));
@@ -6112,13 +6162,47 @@ async function shareOnWhatsApp(){
     const shareSale = {...pendingSale, mode: pendingSale.mode || 'cash'};
     const canvas = await _buildBillCanvas(shareSale);
     const blob = await new Promise(r=>canvas.toBlob(r,'image/png'));
-    const file = new File([blob],'bill.png',{type:'image/png'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({files:[file], title:'Bill', text:''});
+    const file = new File([blob],'Bill_'+(pendingSale.invNo||Date.now())+'.png',{type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      // بہترین صورت — فون کی اپنی شیئر شیٹ کھلے گی، تصویر براہ راست WhatsApp کو منتخب کر کے بھیجیں
+      await navigator.share({files:[file], title:'Bill'});
     } else {
-      // fallback — صرف WhatsApp لنک
-      const text = encodeURIComponent('بل منسلک ہے — '+pendingSale.total+' Rs.');
-      window.open('https://wa.me/?text='+text,'_blank');
+      // یہ فون/براؤزر تصویر براہ راست شیئر نہیں کر سکتا —
+      // تصویر خودکار محفوظ کر کے WhatsApp کھولیں، وہاں 📎 سے منسلک کر دیں
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = file.name;
+      a.click();
+      showToast('🖼️ بل کی تصویر محفوظ ہو گئی — WhatsApp میں 📎 سے منسلک کریں');
+      setTimeout(()=>{ window.open('https://wa.me/','_blank'); }, 600);
+    }
+  }catch(e){
+    if(e.name!=='AbortError') showToast('WhatsApp شیئر نہ ہو سکا');
+  }
+}
+
+// 🛵 کسٹمر کے مخصوص نمبر پر بل کی تصویر — چیٹ کھلے گی، تصویر خودکار محفوظ ہو گی
+// (WhatsApp لنک کے ذریعے تصویر خودکار منسلک کرنا فنی طور پر ممکن نہیں — اس لیے تصویر
+// پہلے محفوظ کر کے پھر اسی نمبر کی چیٹ کھولی جاتی ہے تاکہ صرف 📎 سے منسلک کرنا پڑے)
+async function _shareBillImageToCustomer(){
+  if(!pendingSale || !pendingSale.customerMobile){ showToast('⚠️ پہلے موبائل نمبر درج کریں'); return; }
+  try{
+    const shareSale = {...pendingSale, mode: pendingSale.mode || 'cash'};
+    const canvas = await _buildBillCanvas(shareSale);
+    const blob = await new Promise(r=>canvas.toBlob(r,'image/png'));
+    const file = new File([blob],'Bill_'+(pendingSale.invNo||Date.now())+'.png',{type:'image/png'});
+    let num = pendingSale.customerMobile.replace(/[^0-9]/g,'');
+    if(num.startsWith('0')) num = '92' + num.slice(1);
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:'Bill'});
+      showToast('📤 اب شیئر شیٹ سے '+ (pendingSale.customerName||'کسٹمر') +' کی WhatsApp چیٹ منتخب کریں');
+    } else {
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = file.name;
+      a.click();
+      showToast('🖼️ تصویر محفوظ ہو گئی — اگلی سکرین پر 📎 سے منسلک کر دیں');
+      setTimeout(()=>{ window.open('https://wa.me/'+num, '_blank'); }, 600);
     }
   }catch(e){
     if(e.name!=='AbortError') showToast('WhatsApp شیئر نہ ہو سکا');
@@ -8330,7 +8414,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug0701am';
+const APP_VERSION = '12aug0711am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
