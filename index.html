@@ -263,6 +263,12 @@
     background:linear-gradient(160deg,#00bcd4,#00838f); color:#fff; border-color:#18ffff;
     box-shadow:0 0 0 2px rgba(0,0,0,0.15), 0 3px 12px rgba(0,188,212,0.5);
   }
+  /* 🛵 Delivery بٹن — کاؤنٹر سے الگ رنگ، ٹیبل سلیکشن جیسا نہیں */
+  .table-btn.tbl-delivery { border-color:#7c4dff; }
+  .table-btn.tbl-delivery.active {
+    background:linear-gradient(160deg,#7c4dff,#5e35b1); color:#fff; border-color:#b388ff;
+    box-shadow:0 0 0 2px rgba(0,0,0,0.15), 0 3px 12px rgba(124,77,255,0.55);
+  }
   /* پینڈنگ بل والا ٹیبل — ہلکا ہلکا مسلسل گلو، رنگ آہستہ آہستہ بدلتا، تھوڑا سا آگے نکلا ہوا */
   .table-btn.pending {
     background:linear-gradient(120deg,#ffb300,#ff6f00,#ffb300,#ff8f00);
@@ -2006,41 +2012,41 @@
 
       <div class="items-grid" id="itemsGrid"></div>
       <div class="pay-section">
-        <div style="display:flex;gap:8px;align-items:stretch;">
+        <div style="display:flex;gap:6px;align-items:stretch;">
           <!-- کارٹ صاف کریں — موجودہ آرڈر (ابھی تک بل نہیں بنا) ری سیٹ کرے -->
           <button id="mainClearCartBtn" onclick="_clearCurrentCart()" title="🗑️ کارٹ صاف کریں" style="
-            flex:0 0 auto;width:52px;border:none;border-radius:16px;
+            flex:0 0 auto;width:42px;border:none;border-radius:13px;
             background:linear-gradient(160deg,#c62828,#8e0000);
-            color:#fff;font-size:22px;cursor:pointer;
-            box-shadow:0 8px 0 rgba(0,0,0,0.28),0 10px 24px rgba(142,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.25);
+            color:#fff;font-size:18px;cursor:pointer;
+            box-shadow:0 6px 0 rgba(0,0,0,0.28),0 8px 18px rgba(142,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.25);
             -webkit-tap-highlight-color:transparent;">🗑️</button>
           <!-- پینڈنگ کے طور پر بل بنائیں — کسٹمر نام/موبائل درج کر کے پرنٹ/محفوظ کریں، پیمنٹ بعد میں -->
           <button id="mainPendingBtn" onclick="directToPreview()" title="🕓 Pending بل بنائیں" style="
-            flex:0 0 auto;width:52px;border:none;border-radius:16px;
+            flex:0 0 auto;width:42px;border:none;border-radius:13px;
             background:linear-gradient(160deg,#f9a825,#e65100);
-            color:#fff;font-size:22px;cursor:pointer;
-            box-shadow:0 8px 0 rgba(0,0,0,0.28),0 10px 24px rgba(230,81,0,0.45),inset 0 1px 0 rgba(255,255,255,0.25);
+            color:#fff;font-size:18px;cursor:pointer;
+            box-shadow:0 6px 0 rgba(0,0,0,0.28),0 8px 18px rgba(230,81,0,0.45),inset 0 1px 0 rgba(255,255,255,0.25);
             -webkit-tap-highlight-color:transparent;">🕓</button>
           <!-- PAYMENT/PRINT button — full width, horizontal layout: printer left, amount box right -->
           <button id="mainPayBtn" onclick="directPrint()" style="
-            flex:1;min-width:0;padding:0;border:none;border-radius:16px;
+            flex:1;min-width:0;padding:0;border:none;border-radius:13px;
             background:linear-gradient(175deg,#43a047 0%,#2e7d32 50%,#1b5e20 100%);
             color:#fff;font-family:var(--font-black);
             font-weight:900;cursor:pointer;
             box-shadow:
-              0 8px 0 rgba(0,0,0,0.28),
-              0 10px 24px rgba(46,125,50,0.55),
+              0 6px 0 rgba(0,0,0,0.28),
+              0 8px 18px rgba(46,125,50,0.55),
               inset 0 1px 0 rgba(255,255,255,0.3),
               inset 0 -4px 0 rgba(0,0,0,0.2);
             display:flex;flex-direction:row;align-items:stretch;overflow:hidden;
-            min-height:72px;
+            min-height:60px;
             transition:transform .1s,box-shadow .1s;
             -webkit-tap-highlight-color:transparent;">
             <!-- بائیں: آئیکن + بڑا ✓ -->
-            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 18px;flex:0 0 auto;">
-              <span style="font-size:26px;flex-shrink:0;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.4));line-height:1;">🖨️</span>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 10px;flex:0 0 auto;">
+              <span style="font-size:18px;flex-shrink:0;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.4));line-height:1;">🖨️</span>
               <span id="mainPayLabel" style="
-                font-size:34px;font-weight:900;line-height:1;
+                font-size:24px;font-weight:900;line-height:1;
                 color:#fff;
                 text-shadow:
                   0 2px 0 rgba(0,0,0,0.5),
@@ -2048,15 +2054,15 @@
                   0 0 18px rgba(180,255,180,0.6);
                 display:block;">✓</span>
             </div>
-            <!-- دائیں: رقم — علیحدہ گہرا بیک گراؤنڈ، بہت بڑے حروف میں -->
+            <!-- دائیں: رقم — علیحدہ گہرا بیک گراؤنڈ، صاف نظر آنے والے سائز میں (زیادہ ڈیجٹ ہوں تو خودکار چھوٹا) -->
             <div id="mainPayTotal" style="
               background:linear-gradient(135deg,#7f0000,#c62828,#e53935);
               border-left:3px solid rgba(255,255,255,0.25);
-              padding:10px 18px;
+              padding:6px 10px;
               display:flex;align-items:center;justify-content:center;
-              flex:1;
-              font-size:36px;font-weight:900;color:#fff;
-              letter-spacing:1px;white-space:nowrap;
+              flex:1;min-width:0;
+              font-size:26px;font-weight:900;color:#fff;
+              letter-spacing:.3px;white-space:nowrap;overflow:hidden;
               text-shadow:0 3px 10px rgba(0,0,0,0.55);">Rs. 0</div>
           </button>
         </div>
@@ -2330,6 +2336,13 @@
       <input type="tel" id="bpCustomerMobile" placeholder="📱 موبائل نمبر (اختیاری)"
         oninput="_updateCustomerInfo()"
         style="flex:1;min-width:0;padding:9px 10px;border:1.5px solid #ccc;border-radius:9px;font-size:12px;font-family:Arial,sans-serif;">
+    </div>
+    <!-- صرف 🛵 Delivery کے لیے — ایڈوانس پیمنٹ کا ٹوگل -->
+    <div id="bpAdvanceRow" style="display:none;padding:0 8px 6px;">
+      <label style="display:flex;align-items:center;gap:7px;background:#f3e5f5;border:1.5px solid #ce93d8;border-radius:9px;padding:8px 10px;cursor:pointer;">
+        <input type="checkbox" id="bpAdvancePaid" onchange="_updateCustomerInfo()" style="width:18px;height:18px;accent-color:#7c4dff;flex-shrink:0;">
+        <span style="font-size:12px;font-weight:900;color:#4a148c;font-family:Arial,sans-serif;">💰 ایڈوانس پیمنٹ مل چکی ہے (نہیں تو خالی چھوڑیں — COD)</span>
+      </label>
     </div>
     <div class="bill-preview-body" id="billPreviewContent"></div>
     <div id="billEditRow" style="display:none;gap:8px;padding:0 2px 8px;">
@@ -2892,7 +2905,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug0534am';
+const FF_APP_VERSION = '12aug0615am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -3413,7 +3426,12 @@ function updatePayBtn(){
   const o=getCurrentOrder();
   const total=Object.entries(o).reduce((s,[id,q])=>s+(MENU.find(i=>i.id===+id)?.price||0)*q,0);
   const el=document.getElementById('mainPayTotal');
-  if(el) el.textContent='Rs. '+total;
+  if(el){
+    el.textContent='Rs. '+total;
+    // بڑی رقم (زیادہ ڈجٹ) ہو تو فونٹ خودکار تھوڑا چھوٹا کریں تاکہ کبھی نہ کٹے
+    const digits = String(total).length;
+    el.style.fontSize = digits>=7 ? '17px' : digits>=6 ? '20px' : digits>=5 ? '23px' : '26px';
+  }
   const btn=document.getElementById('mainPayBtn');
   if(btn) btn.style.boxShadow=total>0
     ?'0 5px 20px rgba(46,125,50,0.6),0 2px 4px rgba(0,0,0,0.2)'
@@ -4544,6 +4562,7 @@ function _tableHasPending(t){
 
 function getTableName(t){
   if(t==='C') return 'Counter';
+  if(t==='D') return 'Delivery';
   const tbl = tableList.find(x=>x.id===+t);
   return tbl ? tbl.name : ('Table '+t);
 }
@@ -4593,9 +4612,18 @@ function buildTablePanel(){
   const col = document.getElementById('tableCol');
   if(!col) return;
   const counterPending = _tableHasPending('C');
+  const deliveryPending = _tableHasPending('D');
+  const deliveryOutCount = pendingBills.filter(b=>b.table==='D').length;
+  const deliveryBadge = deliveryOutCount>0
+    ? `<span style="position:absolute;top:-5px;right:-5px;background:#c62828;color:#fff;border-radius:50%;min-width:18px;height:18px;padding:0 3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;border:2px solid #10181c;box-shadow:0 2px 5px rgba(0,0,0,0.4);z-index:6;">${deliveryOutCount}</span>`
+    : '';
   let html = `
     <div class="table-btn ${currentTable==='C'?'active':''} ${counterPending?'pending':''}" onclick="selectTable('C')">
       <span class="tbl-name-span">🧾<br>Counter</span>
+    </div>
+    <div class="table-btn tbl-delivery ${currentTable==='D'?'active':''} ${deliveryPending?'pending':''}" onclick="selectTable('D')">
+      ${deliveryBadge}
+      <span class="tbl-name-span">🛵<br>Delivery</span>
     </div>`;
   html += tableList.map(t=>{
     const pending = _tableHasPending(t.id);
@@ -4608,7 +4636,7 @@ function buildTablePanel(){
   html += `<div class="table-add-btn" onclick="_addTable()">➕</div>`;
   col.innerHTML = html;
   // بہت زیادہ ٹیبل ہوں تو بٹن تھوڑے تنگ کر دیں تاکہ سب فٹ ہو سکیں
-  const count = tableList.length + 1;
+  const count = tableList.length + 2;
   const w = count<=7 ? 72 : count<=10 ? 64 : count<=14 ? 58 : 52;
   document.documentElement.style.setProperty('--table-col-w', w+'px');
 }
@@ -4707,7 +4735,7 @@ async function directToPreview(){
     dateStr:new Date().toLocaleDateString('en-PK'),
     items,total,
     mode:null,
-    customerName:'', customerMobile:'',
+    customerName:'', customerMobile:'', advancePaid:false,
     _editable:true,
   };
   pendingSale = sale;
@@ -4732,7 +4760,7 @@ async function directPrint(){
     dateStr:new Date().toLocaleDateString('en-PK'),
     items,total,
     mode:'cash',
-    customerName:'', customerMobile:'',
+    customerName:'', customerMobile:'', advancePaid:false,
   };
 
   // auto-reconnect اگر پرنٹر saved ہو
@@ -4795,13 +4823,23 @@ function _showCustomerRow(show, sale){
   const editable = !sale || sale._editable !== false;
   if(nameEl) nameEl.disabled = !editable;
   if(mobEl)  mobEl.disabled  = !editable;
+  // 🛵 صرف Delivery کے لیے ایڈوانس پیمنٹ ٹوگل دکھائیں
+  const advRow = document.getElementById('bpAdvanceRow');
+  const advChk = document.getElementById('bpAdvancePaid');
+  if(advRow){
+    const isDelivery = show && sale && sale.table==='D';
+    advRow.style.display = isDelivery ? 'block' : 'none';
+    if(advChk){ advChk.checked = !!(sale && sale.advancePaid); advChk.disabled = !editable; }
+  }
 }
 function _updateCustomerInfo(){
   if(!pendingSale) return;
   const nameEl = document.getElementById('bpCustomerName');
   const mobEl  = document.getElementById('bpCustomerMobile');
+  const advEl  = document.getElementById('bpAdvancePaid');
   pendingSale.customerName   = nameEl ? nameEl.value.trim() : '';
   pendingSale.customerMobile = mobEl  ? mobEl.value.trim()  : '';
+  pendingSale.advancePaid    = (pendingSale.table==='D' && advEl) ? advEl.checked : false;
   // پریویو میں فوری اپڈیٹ دکھائیں
   const body = document.getElementById('billPreviewContent');
   if(body) body.innerHTML = buildBillHtml(pendingSale);
@@ -4822,8 +4860,15 @@ function _showFallbackPreview(sale){
   // Pay mode بٹن چھپاؤ، صرف "مکمل" بٹن دکھاؤ
   document.getElementById('payModeBtns').style.display='none';
   document.getElementById('altRow').style.display='none';
-  // Print btn چھپاؤ
-  const pb=document.getElementById('bpfPrintBtn'); if(pb) pb.style.display='none';
+  // پرنٹ بٹن — یہاں بھی دستیاب رکھیں تاکہ Pending بل بھی پرنٹ ہو سکے
+  const pb=document.getElementById('bpfPrintBtn');
+  if(pb){
+    pb.style.display='';
+    pb.disabled=false;
+    pb.onclick=_previewPrintOnly;
+    const lbl=document.getElementById('bpfPrintLabel');
+    if(lbl) lbl.textContent = isPrinterLive() ? '🖨️ PRINT BILL' : '🖨️ PRINT (پرنٹر جوڑیں)';
+  }
   // NoPrinterRow بھی چھپاؤ
   const nr=document.getElementById('noPrinterRow'); if(nr) nr.style.display='none';
   // فٹر میں صرف "مکمل" بٹن
@@ -4832,8 +4877,47 @@ function _showFallbackPreview(sale){
   document.getElementById('billPreviewModal').classList.add('open');
 }
 
+// صرف پرنٹ کریں — بل کی حالت (Pending/Cash) کو ہاتھ نہیں لگاتا
+// تاکہ Pending بل بھی جتنی بار چاہیں پرنٹ ہو سکے (ڈلیوری کاپی وغیرہ)
+async function _previewPrintOnly(){
+  if(!pendingSale){ showToast('⚠️ کوئی بل موجود نہیں'); return; }
+  const btn=document.getElementById('bpfPrintBtn');
+  const lbl=document.getElementById('bpfPrintLabel');
+  // auto-reconnect اگر پرنٹر saved ہو مگر لائیو نہ ہو
+  if(!isPrinterLive()){
+    const savedId=localStorage.getItem(LS_PRINTER_ID);
+    if(savedId && navigator.bluetooth && navigator.bluetooth.getDevices){
+      if(btn){ btn.disabled=true; } if(lbl) lbl.textContent='🔄 پرنٹر سے جوڑ رہے ہیں...';
+      setPrinterAttemptInProgress(true);
+      try{
+        const devices=await navigator.bluetooth.getDevices();
+        const found=devices.find(d=>d.id===savedId);
+        if(found) await doConnect(found);
+      }catch(e){}
+      setPrinterAttemptInProgress(false);
+      if(btn) btn.disabled=false;
+    }
+  }
+  if(!isPrinterLive()){
+    showToast('⚠️ پرنٹر کنیکٹ نہیں — پہلے Settings سے پرنٹر جوڑیں');
+    if(lbl) lbl.textContent='🖨️ PRINT (پرنٹر جوڑیں)';
+    return;
+  }
+  if(lbl) lbl.textContent='🖨️ پرنٹ ہو رہا ہے...';
+  const ok = await sendToBluetooth(pendingSale);
+  if(ok){
+    showToast('🖨️ بل پرنٹ ہو گیا');
+  } else {
+    showToast('❌ پرنٹ نہیں ہوا — پرنٹر چیک کریں');
+  }
+  if(lbl) lbl.textContent = '🖨️ PRINT BILL';
+}
+
 function fallbackPending(){
   if(!pendingSale){ return; }
+  // 🕓 PENDING واٹر مارک فوراً بل کے نیچے دکھائیں
+  const pendingPreviewSale = {...pendingSale, mode:'pending', _watermark:'PENDING'};
+  document.getElementById('billPreviewContent').innerHTML = buildBillHtml(pendingPreviewSale);
   const bill = {...pendingSale, mode:'pending', createdAt:Date.now()};
   pendingBills.push(bill);
   savePendingBills();
@@ -4846,16 +4930,19 @@ function fallbackPending(){
   pendingSale=null;
   setCurrentOrder({});
   renderItems(); buildTablePanel(); updatePayBtn();
-  document.getElementById('billPreviewModal').classList.remove('open');
-  document.getElementById('payModeBtns').style.display='grid';
-  document.getElementById('altRow').style.display='';
-  const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
-  const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
-  _showCustomerRow(false);
-  const pb=document.getElementById('bpfPrintBtn'); if(pb){ pb.style.display=''; pb.onclick=executePrint; }
-  _hideProcessBtn();
   renderSummary();
   showToast('🕓 بل پینڈنگ میں محفوظ — پیمنٹ آنے پر مکمل کریں');
+  // واٹر مارک ڈیڑھ سیکنڈ دکھا کر خودکار مین پیج پر واپس
+  setTimeout(()=>{
+    document.getElementById('billPreviewModal').classList.remove('open');
+    document.getElementById('payModeBtns').style.display='grid';
+    document.getElementById('altRow').style.display='';
+    const fb=document.getElementById('fallbackCompleteRow'); if(fb) fb.style.display='none';
+    const editRow=document.getElementById('billEditRow'); if(editRow) editRow.style.display='none';
+    _showCustomerRow(false);
+    const pb=document.getElementById('bpfPrintBtn'); if(pb){ pb.style.display=''; pb.onclick=executePrint; }
+    _hideProcessBtn();
+  }, 1500);
 }
 
 function fallbackComplete(){
@@ -4886,7 +4973,6 @@ function fallbackComplete(){
   }, 1200);
 }
 
-function fallbackPending(){ /* removed */ }
 
 // ============================================================
 // PAY MODAL (Cash / Card)
@@ -4906,7 +4992,7 @@ function openPayModal(){
     time:new Date().toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit',hour12:true}),
     dateStr:new Date().toLocaleDateString('en-PK'),
     items,total,mode:null,_editable:true,
-    customerName:'', customerMobile:'',
+    customerName:'', customerMobile:'', advancePaid:false,
   };
   showBillPreview(pendingSale);
 }
@@ -5076,6 +5162,7 @@ function buildBillHtml(sale){
   return `
     <div style="background:${bt.bodyBg};min-height:100%;padding:10px 12px;box-sizing:border-box;font-family:${_billFont};position:relative;overflow:hidden;">
       ${sale._watermark==='PAID' ? `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:64px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;color:rgba(46,125,50,0.18);letter-spacing:4px;pointer-events:none;white-space:nowrap;z-index:999;text-align:center;line-height:1.2;">✅ PAID</div>` : ''}
+      ${sale._watermark==='PENDING' ? `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:56px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;color:rgba(230,81,0,0.22);letter-spacing:3px;pointer-events:none;white-space:nowrap;z-index:999;text-align:center;line-height:1.2;">🕓 PENDING</div>` : ''}
       <div style="background:${bt.shopBg};border-radius:10px;padding:12px 10px 12px;text-align:center;margin-bottom:8px;box-shadow:0 3px 10px rgba(0,0,0,0.12);">
         <div style="font-family:${_billFont};font-weight:900;font-size:22px;color:${bt.shopText};letter-spacing:.5px;text-shadow:${bt.shopBg.includes('gradient')?'0 1px 4px rgba(0,0,0,0.3)':'none'};">&#127828; ${cfg.shopName}</div>
         ${subHtml?`<div style="display:flex;justify-content:center;margin-top:5px;">${subHtml}</div>`:''}
@@ -6701,20 +6788,30 @@ function renderSummary(){
       if(pendingBills.length){
         pbCard.style.display='block';
         pbList.innerHTML = pendingBills.map((b,i)=>{
-          const bJson = JSON.stringify(b).replace(/'/g,"&#39;");
-          const tName = b.table==='C' ? 'Counter' : (getTableName(b.table)||('Table '+b.table));
+          const isDelivery = b.table==='D';
+          const tName = isDelivery ? '🛵 Out for Delivery' : (b.table==='C' ? 'Counter' : (getTableName(b.table)||('Table '+b.table)));
           const custLine = (b.customerName||b.customerMobile)
             ? `<div style="font-size:10px;color:#e65100;font-weight:900;margin-top:1px;">${b.customerName?('👤 '+b.customerName):''}${(b.customerName&&b.customerMobile)?' | ':''}${b.customerMobile?('📱 '+b.customerMobile):''}</div>` : '';
-          return `<div class="hist-item" style="position:relative;overflow:hidden;border-left:3px solid #e65100;background:linear-gradient(90deg,rgba(230,81,0,0.09),transparent);padding:6px 4px;gap:3px;flex-wrap:wrap;">
+          // ڈلیوری کے لیے: ایڈوانس مل چکی ہو تو "✅ Delivered" (پیسے پہلے آ چکے)، ورنہ COD کا "💵 وصول"
+          const advTag = isDelivery
+            ? (b.advancePaid
+                ? `<span style="font-size:9px;background:#2e7d32;color:#fff;border-radius:5px;padding:2px 6px;font-weight:900;">💰 Advance Paid</span>`
+                : `<span style="font-size:9px;background:#c62828;color:#fff;border-radius:5px;padding:2px 6px;font-weight:900;">🕓 COD — Payment Due</span>`)
+            : '';
+          const actionBtn = (isDelivery && b.advancePaid)
+            ? `<button onclick="event.stopPropagation();markPendingAsPaid(${i})" title="ڈیلیور ہو گیا" style="background:#2e7d32;color:#fff;border:none;border-radius:5px;padding:4px 9px;font-size:11px;font-weight:900;cursor:pointer;flex-shrink:0;">✅ Delivered</button>`
+            : `<button onclick="event.stopPropagation();markPendingAsPaid(${i})" title="پیمنٹ وصول" style="background:#2e7d32;color:#fff;border:none;border-radius:5px;padding:4px 9px;font-size:11px;font-weight:900;cursor:pointer;flex-shrink:0;">💵 وصول</button>`;
+          return `<div class="hist-item" style="position:relative;overflow:hidden;border-left:3px solid ${isDelivery?'#7c4dff':'#e65100'};background:linear-gradient(90deg,${isDelivery?'rgba(124,77,255,0.09)':'rgba(230,81,0,0.09)'},transparent);padding:6px 4px;gap:3px;flex-wrap:wrap;">
             <div style="flex:1;min-width:0;">
-              <div style="display:flex;align-items:center;gap:5px;">
-                <span style="font-size:10px;color:#e65100;font-weight:900;flex-shrink:0;">${tName}</span>
+              <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                <span style="font-size:10px;color:${isDelivery?'#5e35b1':'#e65100'};font-weight:900;flex-shrink:0;">${tName}</span>
+                ${advTag}
                 <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#1b3a1f;">${b.items.map(it=>it.name).join(', ')}</span>
               </div>
               ${custLine}
             </div>
-            <span class="hist-amt" style="color:#e65100;font-size:12px;flex-shrink:0;">Rs.${b.total}</span>
-            <button onclick="event.stopPropagation();markPendingAsPaid(${i})" title="پیمنٹ وصول" style="background:#2e7d32;color:#fff;border:none;border-radius:5px;padding:4px 9px;font-size:11px;font-weight:900;cursor:pointer;flex-shrink:0;">💵 وصول</button>
+            <span class="hist-amt" style="color:${isDelivery?'#5e35b1':'#e65100'};font-size:12px;flex-shrink:0;">Rs.${b.total}</span>
+            ${actionBtn}
             <button onclick="event.stopPropagation();deletePendingBill(${i})" title="حذف" style="background:none;color:#c62828;border:1px solid #c62828;border-radius:4px;padding:3px 6px;font-size:11px;cursor:pointer;flex-shrink:0;">🗑</button>
           </div>`;
         }).join('');
@@ -8004,7 +8101,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug0534am';
+const APP_VERSION = '12aug0615am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
