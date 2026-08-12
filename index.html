@@ -2959,7 +2959,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug1133am';
+const FF_APP_VERSION = '12aug1149am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -5426,6 +5426,13 @@ function buildBillHtml(sale){
         <div style="font-family:${_billFont};font-weight:900;font-size:${F(22)}px;color:${bt.shopText};letter-spacing:.5px;text-shadow:${bt.shopBg.includes('gradient')?'0 1px 4px rgba(0,0,0,0.3)':'none'};">&#127828; ${cfg.shopName}</div>
         ${subHtml?`<div style="display:flex;justify-content:center;margin-top:5px;">${subHtml}</div>`:''}
         ${phoneHtml?`<div style="display:flex;justify-content:center;margin-top:4px;">${phoneHtml}</div>`:''}
+        <div style="display:flex;align-items:center;justify-content:center;gap:5px;margin-top:5px;flex-wrap:wrap;">
+          <span style="position:relative;width:12px;height:12px;border-radius:4px;background:#25D366;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-size:7px;">📞</span>
+            <span style="position:absolute;right:-2px;bottom:-2px;width:7px;height:7px;border-radius:50%;background:#fff;color:#128C7E;font-size:5px;font-weight:900;line-height:7px;text-align:center;">B</span>
+          </span>
+          <span style="font-family:'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:${F(8.5)}px;color:${bt.shopText};opacity:.85;">Build Your Business Android App Today &nbsp;03206793793</span>
+        </div>
       </div>
       <div style="background:${bt.metaBg};border-radius:7px;padding:${RP(5)}px 10px;margin-bottom:6px;text-align:center;">
         <div style="font-family:${_billFont};font-size:${F(10)}px;font-weight:900;color:${bt.metaText};">${invLabel} ${sale.invNo} &nbsp;|&nbsp; ${tableName}</div>
@@ -5474,15 +5481,6 @@ function buildBillHtml(sale){
       </table>
       <div style="background:${bt.footerBg};border-radius:8px;padding:${RP(6)}px 10px;text-align:center;margin-top:2px;">
         <div style="font-family:${_billFont};font-weight:900;font-size:${F(9.5)}px;color:${bt.footerText};line-height:1.6;">${footerLines}</div>
-      </div>
-      <div style="text-align:center;padding:${RP(7)}px 4px ${RP(4)}px;margin-top:2px;">
-        <div style="font-family:'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:${F(9)}px;color:#888;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;line-height:1.5;">
-          <span style="position:relative;width:13px;height:13px;border-radius:4px;background:#25D366;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <span style="font-size:8px;">📞</span>
-            <span style="position:absolute;right:-3px;bottom:-3px;width:8px;height:8px;border-radius:50%;background:#fff;color:#128C7E;font-size:6px;font-weight:900;line-height:8px;text-align:center;">B</span>
-          </span>
-          <span>Build Your Business Android App Today &nbsp;03206793793</span>
-        </div>
       </div>
     </div>`;
 }
@@ -5955,20 +5953,18 @@ function _buildBillCanvas(sale, forPrint, lightMode, printWidthPx){
 
     // ===== اونچائی کا اندازہ (فونٹ سائز اور رو-ہائٹ سکیل کے مطابق) =====
     const ROW_H   = RS(38);   // آئٹم ٹیبل کی ہر قطار — Row Height سلائیڈر سے علیحدہ کنٹرول
-    const HEAD_H  = S(isUrdu ? 160 : 140);
+    const HEAD_H  = S(isUrdu ? 175 : 155);   // برانڈنگ لائن کے لیے تھوڑی اضافی جگہ
     const META_H  = S(60);
     const extraRows = sale.deliveryCharge ? 2 : 0;
     const TBL_H   = ROW_H * (items.length + 1 + extraRows) + S(16);
     const TOT_H   = S(90);
-    // فوٹر باکس — "Thank You" لائنیں + اسی ڈبے کے اندر نیچے "Get Our Mobile App" لائن،
-    // مکمل اونچائی کا حساب پہلے سے لگاتے ہیں تاکہ پرنٹ پر یہ کبھی کٹے نہیں
+    // فوٹر باکس — صرف "Thank You" لائنیں (برانڈنگ لائن اب ہیڈر میں منتقل ہو چکی ہے)
     const ftLinesCalc = (cfg.footer||'THANK YOU! VISIT AGAIN').split('\n');
     const FOOT_PAD    = S(14);
     const FOOT_LINE_H = S(24);
-    const FOOT_APP_H  = S(30);
-    // اضافی حفاظتی مارجن — تاکہ "Thank You" اور نیچے ایڈ لائن کبھی کینوس کے کنارے پر کٹ کر غائب نہ ہوں
-    const FOOT_SAFETY = S(12);
-    const FOOT_H  = FOOT_PAD*2 + ftLinesCalc.length*FOOT_LINE_H + FOOT_APP_H + FOOT_SAFETY;
+    // اضافی حفاظتی مارجن — تاکہ "Thank You" کینوس کے کنارے پر کٹ کر غائب نہ ہو
+    const FOOT_SAFETY = S(10);
+    const FOOT_H  = FOOT_PAD*2 + ftLinesCalc.length*FOOT_LINE_H + FOOT_SAFETY;
     const deliveryBannerLines = sale.table==='D' ? (sale.deliveryBoyName ? 2 : 1) : 0;
     const DELIVERY_BANNER_H = deliveryBannerLines ? (S(10)*2 + deliveryBannerLines*S(30) + S(10)) : 0;
     const H = HEAD_H + META_H + DELIVERY_BANNER_H + TBL_H + TOT_H + FOOT_H + PAD*2;
@@ -6025,6 +6021,37 @@ function _buildBillCanvas(sale, forPrint, lightMode, printWidthPx){
       ctx.fillStyle = useLightBgText ? C_GRAY : 'rgba(255,255,255,0.85)';
       ctx.fillText((lightMode?'Tel: ':'📞  ') + cfg.phone, W/2, hy);
       hy += S(22);
+    }
+
+    // ===== "Build Your Business Android App Today" برانڈنگ لائن — ہیڈر میں محفوظ جگہ =====
+    // (پہلے یہ نیچے فوٹر کے آخر میں تھی جہاں کبھی کبھار کینوس کے کنارے پر کٹ جاتی تھی —
+    // اب ہیڈر کے اندر مخصوص جگہ پر رکھی ہے جو ہمیشہ محفوظ اور مکمل نظر آئے گی)
+    {
+      const waText = 'Build Your Business Android App Today   03206793793';
+      const maxW = iW - S(10);
+      let waFont = S(11);
+      ctx.font = `700 ${waFont}px Arial, sans-serif`;
+      let waTextW = ctx.measureText(waText).width;
+      let waIconS = Math.round(waFont * 1.3);
+      let waGap   = S(5);
+      while((waIconS + waGap + waTextW) > maxW && waFont > S(7)){
+        waFont -= 1;
+        ctx.font = `700 ${waFont}px Arial, sans-serif`;
+        waTextW = ctx.measureText(waText).width;
+        waIconS = Math.round(waFont * 1.3);
+        waGap   = Math.max(S(3), Math.round(waFont*0.45));
+      }
+      const waTotalW = waIconS + waGap + waTextW;
+      const waStartX = Math.max(PAD + S(4), W/2 - waTotalW/2);
+      const waIconCX = waStartX + waIconS/2;
+      const waTextX  = waStartX + waIconS + waGap;
+      const savedAlign = ctx.textAlign;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = useLightBgText ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.85)';
+      ctx.fillText(waText, waTextX, hy);
+      _drawWaBizIcon(ctx, waIconCX, hy + waFont*0.55, waIconS, forPrint ? '#333333' : null);
+      ctx.textAlign = savedAlign;
+      hy += S(20);
     }
 
     // Header separator line
@@ -6223,8 +6250,8 @@ function _buildBillCanvas(sale, forPrint, lightMode, printWidthPx){
     if(sale.deliveryCharge){
       const subT = sale.itemsTotal!=null ? sale.itemsTotal : (sale.total - sale.deliveryCharge);
       const extraRowsData = [
-        [isUrdu?'ذیلی کل':'Subtotal', 'Rs.'+subT],
-        [isUrdu?'ڈلیوری چارجز':'🚚 Delivery Charges', 'Rs.'+sale.deliveryCharge]
+        [isUrdu?'ذیلی کل':'Subtotal', String(subT)],
+        [isUrdu?'ڈلیوری چارجز':'🚚 Delivery Charges', String(sale.deliveryCharge)]
       ];
       extraRowsData.forEach(([label,val],ei)=>{
         const rowTop = ty;
@@ -6342,36 +6369,8 @@ function _buildBillCanvas(sale, forPrint, lightMode, printWidthPx){
       ctx.fillText(fl, W/2, ftY);
       ftY += FOOT_LINE_H;
     });
-
-    // ===== "Build Your Business Android App Today" + واٹس ایپ بزنس نمبر — اسی فوٹر باکس کے
-    // اندر، Thank You کے فوراً نیچے۔ آئیکن + متن دونوں کو ایک ساتھ سینٹر کرتے ہیں =====
-    {
-      const waText = 'Build Your Business Android App Today   03206793793';
-      const maxW = iW - S(10);
-      let waFont = S(13);
-      ctx.font = `700 ${waFont}px Arial, sans-serif`;
-      let waTextW = ctx.measureText(waText).width;
-      let waIconS = S(17);
-      let waGap   = S(6);
-      // متن کبھی کنارے سے باہر نہ جائے — چوڑائی سے بڑا ہو تو فونٹ خودکار چھوٹا کریں
-      while((waIconS + waGap + waTextW) > maxW && waFont > S(8)){
-        waFont -= 1;
-        ctx.font = `700 ${waFont}px Arial, sans-serif`;
-        waTextW = ctx.measureText(waText).width;
-        waIconS = Math.round(waFont * 1.3);
-        waGap   = Math.max(S(4), Math.round(waFont*0.45));
-      }
-      const waTotalW = waIconS + waGap + waTextW;
-      const waStartX = Math.max(PAD + S(4), W/2 - waTotalW/2);
-      const waIconCX = waStartX + waIconS/2;
-      const waTextX  = waStartX + waIconS + waGap;
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'top';
-      ctx.fillStyle = useLightBgText ? '#444' : 'rgba(255,255,255,0.9)';
-      ctx.fillText(waText, waTextX, ftY);
-      _drawWaBizIcon(ctx, waIconCX, ftY + waFont*0.55, waIconS, forPrint ? '#333333' : null);
-      ctx.textAlign = 'center'; // آگے کے کوڈ کے لیے ڈیفالٹ واپس
-    }
+    // نوٹ: "Build Your Business..." برانڈنگ لائن اب ہیڈر میں محفوظ جگہ پر ہے (اوپر ملاحظہ کریں) —
+    // یہاں فوٹر کے آخر میں دوبارہ نہیں دہرائی جاتی تاکہ کینوس کے کنارے پر کبھی نہ کٹے۔
 
     resolve(canvas);
     }); // fontPromise end
@@ -8659,7 +8658,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug1133am';
+const APP_VERSION = '12aug1149am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
