@@ -13,9 +13,6 @@
 <link id="gfontLink" rel="stylesheet" href="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap">
-<!-- ===== FIREBASE SDK — لائسنس سسٹم کے لیے ===== -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
   :root {
     --item-name-size: 11px;
@@ -1344,20 +1341,13 @@
     <div class="expired-icon">⏳</div>
     <div class="expired-title ur">سبسکرپشن ختم ہو گئی</div>
     <div class="expired-sub ur">
-      آپ کی مدت ختم ہو گئی ہے۔<br>
-      نیا Activation Code حاصل کریں۔
+      دوبارہ استعمال کے لیے نیچے سے اپنا پلان منتخب کر کے سبسکرائب کریں۔
     </div>
-    <div class="uid-badge">
-      <div class="uid-label ur">آپ کا یوزر آئی ڈی</div>
-      <div class="uid-value" id="expiredUidShow">——</div>
-    </div>
-    <input class="act-input" id="expActInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Activation Code یہاں ڈالیں">
-    <button class="act-btn ur" onclick="tryActivate('expired')">✅ ایکٹیویٹ کریں</button>
+    <div id="expiredPlansList" style="display:flex;flex-direction:column;gap:8px;margin:14px 0;"></div>
     <div class="ff-ov-msg" id="expActMsg"></div>
     <div style="border-top:1px dashed rgba(255,200,50,0.2);margin:12px 0 10px;"></div>
     <div style="background:rgba(255,200,0,0.06);border:1.5px solid rgba(255,200,0,0.2);border-radius:14px;padding:14px;text-align:center;">
-      <div style="font-size:15px;font-family:'Noto Nastaliq Urdu',Arial;font-weight:700;color:#ffd700;margin-bottom:8px;direction:rtl;">📲 ایپ خریدنے کے لیے رابطہ کریں</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:12px;line-height:1.8;font-family:'Noto Nastaliq Urdu',Arial;direction:rtl;">اپنا User ID اوپر سے نوٹ کریں اور رابطہ کریں:</div>
+      <div style="font-size:15px;font-family:'Noto Nastaliq Urdu',Arial;font-weight:700;color:#ffd700;margin-bottom:8px;direction:rtl;">📲 مدد یا سوال کے لیے رابطہ کریں</div>
       <button onclick="openGmailCompose()" style="
         display:block;width:100%;background:linear-gradient(135deg,#ea4335,#c62828);
         color:#fff;padding:11px 14px;border-radius:12px;border:none;
@@ -1580,67 +1570,18 @@
           text-shadow:0 0 20px rgba(255,215,0,0.5),0 2px 6px rgba(0,0,0,0.4);">——</div>
         <div style="font-size:9px;color:rgba(255,255,255,0.38);margin-top:5px;
           font-family:'Arial Narrow',Arial,sans-serif;line-height:1.5;">
-          Activation Code کے لیے یہ ID Developer کو دیں
+          مدد/سپورٹ رابطے میں یہ ID بتائیں
         </div>
       </div>
 
-      <!-- Activation Code Label -->
-      <div style="font-size:10px;color:rgba(255,200,100,0.55);margin-bottom:6px;
+      <!-- Plan Label -->
+      <div style="font-size:10px;color:rgba(255,200,100,0.55);margin-bottom:8px;
         font-family:'Arial Black',Arial,sans-serif;letter-spacing:1px;text-align:left;">
-        ACTIVATION CODE — Developer سے لیں
+        اپنا پلان منتخب کریں — Google Play سے سبسکرائب کریں
       </div>
 
-      <!-- Activation Input -->
-      <input class="act-input" id="setupActInput" type="text" inputmode="numeric" pattern="[0-9]*"
-        placeholder="Activation Code یہاں ڈالیں"
-        onkeyup="if(event.key==='Enter') completeSetup()"
-        style="
-          background:linear-gradient(135deg,#4a1f00,#3d1a00);
-          border:1.5px solid rgba(255,160,0,0.5);
-          color:#fff;
-          border-radius:12px;padding:13px 14px;
-          font-size:16px;font-family:'Arial Black',Arial,sans-serif;
-          width:100%;box-sizing:border-box;margin-bottom:12px;
-          text-align:center;letter-spacing:2px;
-          box-shadow:inset 0 2px 8px rgba(0,0,0,0.3);
-          outline:none;">
-
-
-      <!-- Activate Button — 3D Green -->
-      <button type="button" onclick="completeSetup()" style="
-        width:100%;padding:14px;
-        background:linear-gradient(135deg,#2e7d32,#1b5e20,#0a3d0a);
-        color:#fff;font-size:16px;
-        font-family:'Arial Black',Arial,sans-serif;font-weight:900;
-        border:none;border-radius:14px;cursor:pointer;margin-bottom:10px;
-        box-shadow:
-          0 6px 0 #0a3d0a,
-          0 8px 20px rgba(0,0,0,0.4),
-          inset 0 1px 0 rgba(255,255,255,0.2);
-        letter-spacing:.5px;
-        transition:transform .1s,box-shadow .1s;">
-        ✅ ایکٹیویٹ کریں
-      </button>
-
-      <!-- Divider -->
-      <div style="display:flex;align-items:center;gap:8px;margin:4px 0 10px;">
-        <div style="flex:1;height:1px;background:rgba(255,255,255,0.1);"></div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.3);font-family:'Arial Narrow',Arial,sans-serif;">یا</div>
-        <div style="flex:1;height:1px;background:rgba(255,255,255,0.1);"></div>
-      </div>
-
-      <!-- Free Trial Button — 3D Gold -->
-      <button type="button" onclick="startFreeTrial()" style="
-        width:100%;padding:13px;
-        background:linear-gradient(135deg,#4a1f00,#6b2d00,#4a1f00);
-        border:2px solid rgba(255,160,0,0.6);border-radius:14px;
-        color:#ffd700;font-size:15px;
-        font-family:'Arial Black',Arial,sans-serif;font-weight:900;
-        cursor:pointer;
-        box-shadow:0 4px 16px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,200,0,0.15);
-        letter-spacing:.5px;">
-        🎁 7 دن مفت ٹرائل شروع کریں
-      </button>
+      <!-- Subscription Plans — Play Billing کے ذریعے پُر ہوتی ہے -->
+      <div id="setupPlansList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
 
       <!-- Message -->
       <div class="ff-ov-msg" id="setupMsg"
@@ -2745,31 +2686,32 @@
 
 <script>
 // ============================================================
-// ACTIVATION & SUBSCRIPTION SYSTEM — FIREBASE (ONLINE) VERSION
+// ACTIVATION & SUBSCRIPTION SYSTEM — GOOGLE PLAY BILLING VERSION
+// (Digital Goods API + Payment Request API — صرف Play Store سے
+//  انسٹال کی گئی ایپ کے اندر کام کرتا ہے)
 // ============================================================
 
-// ---- Firebase Config — یہاں اپنے Firebase پراجیکٹ کی تفصیلات ڈالیں ----
-// یہ تفصیلات Firebase Console > Project Settings > General > Your apps میں ملتی ہیں
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCEMLxC9stjQFbDz-LIgrcZV4Nu0gbXAj8",
-  authDomain: "ffpos-license.firebaseapp.com",
-  projectId: "ffpos-license",
-  storageBucket: "ffpos-license.firebasestorage.app",
-  messagingSenderId: "641553421260",
-  appId: "1:641553421260:web:3649a16e4a7bc33d564369"
-};
+// ---- Play Console میں بنایا گیا Subscription Product ID ----
+// یہ ID Play Console > Monetize > Products > Subscriptions میں سیٹ کریں
+// اور یہاں بالکل ویسا ہی ID ڈالیں (فی الحال placeholder ہے)
+const FF_SUBSCRIPTION_ID = 'ffpos_premium';
 
-let _ffDb = null;
-try{
-  firebase.initializeApp(FIREBASE_CONFIG);
-  _ffDb = firebase.firestore();
-}catch(e){ console.warn('Firebase init failed:', e); }
+// ---- چاروں Base Plans — یہ IDs بھی Play Console میں اسی طرح بنائیں ----
+const FF_BASE_PLANS = [
+  { id:'monthly',     label:'1 مہینہ' },
+  { id:'quarterly',   label:'3 مہینے' },
+  { id:'half-yearly', label:'6 مہینے' },
+  { id:'yearly',      label:'1 سال'   }
+];
 
-// Generate stable 5-digit UID from device fingerprint
+const PLAY_BILLING_METHOD = 'https://play.google.com/billing';
+let _digitalGoodsService = null;
+
+// Generate stable 5-digit ID from device fingerprint — اب صرف سپورٹ/رابطے کے لیے،
+// سبسکرپشن کی تصدیق کے لیے استعمال نہیں ہوتا (وہ اب Google Play خود سنبھالتا ہے)
 function generateUID(){
   const saved = localStorage.getItem('ff_uid');
   if(saved) return parseInt(saved);
-  // Fingerprint from multiple sources
   const fp = [
     navigator.userAgent.length,
     screen.width, screen.height,
@@ -2780,7 +2722,6 @@ function generateUID(){
   ].join('');
   let hash = 0;
   for(let i=0;i<fp.length;i++){ hash = ((hash<<5)-hash)+fp.charCodeAt(i); hash|=0; }
-  // Map to 10000–99999
   let uid = 10000 + (Math.abs(hash) % 90000);
   localStorage.setItem('ff_uid', uid);
   return uid;
@@ -2788,77 +2729,100 @@ function generateUID(){
 
 const FF_UID = generateUID();
 
-// ---- Activate subscription using a code generated by the Code Builder ----
-// Firestore collection: "licenses", document id = the code itself
-// Fields: { boundUid, days, lifetime, active, activatedAt, expiresAt, note }
-async function activateSub(code){
-  code = (code || '').toString().toUpperCase().replace(/[^0-9A-Z]/g,'').trim();
-  if(!code) return { ok:false, reason:'empty' };
-  if(!_ffDb) return { ok:false, reason:'nofirebase' };
-
-  let snap;
+// ---- Digital Goods API دستیاب ہے یا نہیں (صرف Play Store TWA کے اندر دستیاب ہوتی ہے) ----
+async function initPlayBilling(){
   try{
-    snap = await _ffDb.collection('licenses').doc(code).get();
+    if('getDigitalGoodsService' in window){
+      _digitalGoodsService = await window.getDigitalGoodsService(PLAY_BILLING_METHOD);
+    }
   }catch(e){
-    return { ok:false, reason:'network' };
+    _digitalGoodsService = null;
   }
-  if(!snap.exists) return { ok:false, reason:'invalid' };
-
-  const data = snap.data();
-  if(data.active === false) return { ok:false, reason:'revoked' };
-  if(String(data.boundUid) !== String(FF_UID)) return { ok:false, reason:'wronguid' };
-
-  const now = Date.now();
-  let expiresAt = data.expiresAt;
-  let activatedAt = data.activatedAt;
-
-  // پہلی بار activate ہو رہا ہے — میعاد اسی وقت سے شروع ہو
-  if(!activatedAt){
-    activatedAt = now;
-    expiresAt = data.lifetime ? null : (now + (data.days * 86400000));
-    try{
-      await _ffDb.collection('licenses').doc(code).update({
-        activatedAt: activatedAt,
-        expiresAt: expiresAt
-      });
-    }catch(e){ /* آف لائن ہو تو بھی مقامی طور پر فعال کر دیں، اگلی بار sync ہو جائے گا */ }
-  }
-
-  if(!data.lifetime && expiresAt && now > expiresAt){
-    return { ok:false, reason:'expired' };
-  }
-
-  localStorage.setItem('ff_sub_code', code);
-  localStorage.setItem('ff_sub_lifetime', data.lifetime ? '1' : '0');
-  localStorage.setItem('ff_sub_expiry', data.lifetime ? '0' : expiresAt);
-  localStorage.setItem('ff_sub_start', activatedAt);
-  localStorage.setItem('ff_sub_days', data.days || 0);
-
-  return { ok:true, days: data.days, lifetime: !!data.lifetime };
+  return !!_digitalGoodsService;
 }
 
-// ---- ہر بار ایپ کھلنے پر (انٹرنیٹ ہو تو) دوبارہ تصدیق — دور سے بند (revoke) کرنے کے لیے ----
-async function resyncLicenseOnline(){
-  const code = localStorage.getItem('ff_sub_code');
-  if(!code || !_ffDb) return;
+// ---- Play سے پلانز کی اصل قیمتیں منگوائیں (Play Console میں سیٹ کی گئی قیمت) ----
+async function fetchPlayPlanDetails(){
+  if(!_digitalGoodsService) return null;
   try{
-    const snap = await _ffDb.collection('licenses').doc(code).get();
-    if(!snap.exists) return;
-    const data = snap.data();
-    if(data.active === false){
-      // مالک نے دور سے بند کر دیا — لائسنس فوراً منسوخ
-      localStorage.removeItem('ff_sub_expiry');
-      localStorage.removeItem('ff_sub_start');
-      localStorage.removeItem('ff_sub_days');
-      localStorage.removeItem('ff_sub_lifetime');
-      localStorage.removeItem('ff_sub_code');
-      location.reload();
-      return;
+    const skus = FF_BASE_PLANS.map(p => FF_SUBSCRIPTION_ID + ':' + p.id);
+    const details = await _digitalGoodsService.getDetails(skus);
+    const map = {};
+    details.forEach(d => { map[d.itemId] = d; });
+    return map;
+  }catch(e){ return null; }
+}
+
+// ---- موجودہ فعال خریداری چیک کریں — یہی اصل ماخذ ہے (localStorage صرف کیشے ہے) ----
+async function refreshSubscriptionStatus(){
+  if(!_digitalGoodsService){
+    return; // آف لائن/Play کے علاوہ — پچھلا کیشڈ نتیجہ برقرار رہے گا
+  }
+  try{
+    const purchases = await _digitalGoodsService.listPurchases();
+    const active = purchases.find(p => (p.itemId || '').indexOf(FF_SUBSCRIPTION_ID) === 0);
+    if(active){
+      localStorage.setItem('ff_play_active', '1');
+      localStorage.setItem('ff_play_plan', active.itemId || '');
+    } else {
+      localStorage.setItem('ff_play_active', '0');
     }
-    if(!data.lifetime && data.expiresAt){
-      localStorage.setItem('ff_sub_expiry', data.expiresAt);
+    localStorage.setItem('ff_play_last_check', String(Date.now()));
+    localStorage.setItem('ff_play_ever_checked', '1');
+  }catch(e){ /* آف لائن — پچھلا کیشڈ نتیجہ استعمال ہوگا */ }
+}
+
+// ---- ایک Base Plan خریدیں (Play کا اپنا خریداری کا صفحہ کھلے گا) ----
+async function purchaseBasePlan(basePlanId){
+  const msg = document.getElementById('setupMsg') || document.getElementById('expActMsg');
+  if(!_digitalGoodsService){
+    if(msg){ msg.textContent = '⚠️ یہ صرف Google Play سے انسٹال شدہ ایپ میں دستیاب ہے'; msg.className='ff-ov-msg error'; }
+    return;
+  }
+  try{
+    if(msg){ msg.textContent = '⏳ Google Play کھل رہا ہے...'; msg.className='ff-ov-msg info'; }
+    const sku = FF_SUBSCRIPTION_ID + ':' + basePlanId;
+    const request = new PaymentRequest(
+      [{ supportedMethods: PLAY_BILLING_METHOD, data: { sku } }],
+      { total: { label: 'FF POS Subscription', amount: { currency: 'PKR', value: '0' } } }
+    );
+    const response = await request.show();
+    await response.complete('success');
+    await refreshSubscriptionStatus();
+    const sub = getSubStatus();
+    if(sub.active){
+      if(msg){ msg.textContent = '✅ سبسکرپشن فعال ہو گئی!'; msg.className='ff-ov-msg ok'; }
+      setTimeout(()=>{
+        document.getElementById('setupOverlay').classList.add('hidden');
+        document.getElementById('expiredOverlay').classList.add('hidden');
+        unlockApp();
+        showSubStatusBar();
+      }, 700);
+    } else {
+      if(msg){ msg.textContent = '⚠️ خریداری مکمل نہیں ہوئی — دوبارہ کوشش کریں'; msg.className='ff-ov-msg error'; }
     }
-  }catch(e){ /* آف لائن — کوئی مسئلہ نہیں، مقامی cache پر انحصار کریں */ }
+  }catch(e){
+    // صارف نے خود منسوخ کیا — خاموشی سے واپس
+    if(msg && e && e.name !== 'AbortError'){ msg.textContent = ''; }
+  }
+}
+
+// ---- پلان بٹن بنا کر دی گئی جگہ میں دکھائیں (setupOverlay اور expiredOverlay دونوں کے لیے) ----
+async function renderPlanButtons(containerId){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const prices = await fetchPlayPlanDetails();
+  el.innerHTML = FF_BASE_PLANS.map(p=>{
+    const d = prices && prices[FF_SUBSCRIPTION_ID + ':' + p.id];
+    const priceStr = d ? (d.price.currency + ' ' + d.price.value) : '';
+    return `<button type="button" onclick="purchaseBasePlan('${p.id}')" style="
+      width:100%;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;
+      background:linear-gradient(135deg,#2e7d32,#1b5e20);color:#fff;border:none;border-radius:12px;
+      font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:14px;cursor:pointer;
+      box-shadow:0 4px 0 #0a3d0a,0 6px 14px rgba(0,0,0,0.35);">
+      <span>${p.label}</span><span style="opacity:.9;font-size:12px;">${priceStr}</span>
+    </button>`;
+  }).join('');
 }
 
 // ============================================================
@@ -2874,9 +2838,9 @@ function getContactWA(){
 
 function openGmailCompose(){
   const uid = FF_UID;
-  const sub = encodeURIComponent('FFPOS App Purchase — UID: ' + uid);
+  const sub = encodeURIComponent('FF POS — Support Request — ID: ' + uid);
   const body = encodeURIComponent(
-    'Assalam o Alaikum,\n\nMujhe FFPOS app khareedni hai.\n\nMera User ID: ' + uid + '\n\nPlease activation code send karein.\n\nShukria'
+    'Assalam o Alaikum,\n\nMujhe FF POS app ke bare mein madad chahiye.\n\nMera ID: ' + uid + '\n\nShukria'
   );
   window.open('mailto:' + getContactEmail() + '?subject=' + sub + '&body=' + body, '_blank');
 }
@@ -2884,7 +2848,7 @@ function openGmailCompose(){
 function openWhatsAppChat(){
   const uid = FF_UID;
   const msg = encodeURIComponent(
-    'Assalam o Alaikum, mujhe FFPOS app khareedni hai.\nMera User ID: ' + uid
+    'Assalam o Alaikum, mujhe FF POS app ke bare mein madad chahiye.\nMera ID: ' + uid
   );
   window.open('https://wa.me/' + getContactWA() + '?text=' + msg, '_blank');
 }
@@ -2903,85 +2867,19 @@ function closeContactModal(){
 }
 
 // ============================================================
-// FREE TRIAL — اب Firestore میں UID کے ساتھ محفوظ (data clear/reinstall سے دوبارہ نہیں ملتا)
+// SUBSCRIPTION STATUS — Google Play Billing کے کیشڈ نتیجے پر مبنی
+// (نوٹ: مفت ٹرائل اب Play Console میں ہر Base Plan پر بطور
+//  "introductory offer" سیٹ کیا جاتا ہے — Play کا اپنا خریداری کا
+//  صفحہ خود بخود ٹرائل کی شرائط دکھا دیتا ہے، ایپ کے کوڈ کو الگ
+//  سے ٹرائل مینج کرنے کی ضرورت نہیں رہی)
 // ============================================================
-const TRIAL_DAYS = 7;
-const TRIAL_KEY  = 'ff_free_trial_used';
-
-async function startFreeTrial(){
-  const msg = document.getElementById('setupMsg');
-
-  if(!_ffDb){
-    msg.textContent = '⚠️ ٹرائل کے لیے انٹرنیٹ کنکشن درکار ہے';
-    msg.className = 'ff-ov-msg error';
-    return;
-  }
-
-  msg.textContent = '⏳ چیک ہو رہا ہے...';
-  msg.className = 'ff-ov-msg info';
-
-  const trialRef = _ffDb.collection('trials').doc(String(FF_UID));
-  let snap;
-  try{
-    snap = await trialRef.get();
-  }catch(e){
-    msg.textContent = '⚠️ انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں';
-    msg.className = 'ff-ov-msg error';
-    return;
-  }
-
-  if(snap.exists){
-    // اس UID پر ٹرائل پہلے ہی استعمال ہو چکا — دوبارہ نہیں مل سکتا
-    msg.textContent = '⚠️ ٹرائل پہلے استعمال ہو چکا — Activation Code لیں';
-    msg.className = 'ff-ov-msg error';
-    setTimeout(()=>{
-      document.getElementById('setupOverlay').classList.add('hidden');
-      openContactModal();
-    }, 1500);
-    return;
-  }
-
-  const _tnow = Date.now();
-  const expiry = _tnow + (TRIAL_DAYS * 86400000);
-
-  try{
-    // یہ ریکارڈ Firestore میں مستقل رہے گا — دوبارہ نہیں بن سکتا (rules میں update/delete بند ہے)
-    await trialRef.set({ uid: FF_UID, usedAt: _tnow });
-  }catch(e){
-    msg.textContent = '⚠️ ناکام — دوبارہ کوشش کریں';
-    msg.className = 'ff-ov-msg error';
-    return;
-  }
-
-  localStorage.setItem('ff_sub_expiry', expiry);
-  localStorage.setItem('ff_sub_start', _tnow);
-  localStorage.setItem('ff_sub_days', TRIAL_DAYS);
-  localStorage.setItem('ff_sub_salt', 'trial');
-  localStorage.setItem(TRIAL_KEY, '1');
-
-  msg.textContent = '✅ 7 دن کا مفت ٹرائل شروع!';
-  msg.className = 'ff-ov-msg ok';
-
-  setTimeout(()=>{
-    document.getElementById('setupOverlay').classList.add('hidden');
-    unlockApp();
-    showSubStatusBar();
-  }, 900);
-}
-
-// Check subscription status — trial included
 function getSubStatus(){
-  const isTrial = localStorage.getItem('ff_sub_salt')==='trial';
-  const isLifetime = localStorage.getItem('ff_sub_lifetime')==='1';
-  if(isLifetime){
-    return { active:true, expired:false, neverActivated:false, daysLeft:99999, isTrial:false, isLifetime:true };
+  const everChecked = localStorage.getItem('ff_play_ever_checked') === '1';
+  if(!everChecked){
+    return { active:false, expired:false, neverActivated:true };
   }
-  const expiry = parseInt(localStorage.getItem('ff_sub_expiry')||'0');
-  if(!expiry) return { active:false, expired:false, neverActivated:true, daysLeft:0, isTrial:false };
-  const now = Date.now();
-  const daysLeft = Math.ceil((expiry - now) / 86400000);
-  if(daysLeft <= 0) return { active:false, expired:true, neverActivated:false, daysLeft:0, isTrial };
-  return { active:true, expired:false, neverActivated:false, daysLeft, isTrial };
+  const active = localStorage.getItem('ff_play_active') === '1';
+  return { active, expired:!active, neverActivated:false };
 }
 
 // ============================================================
@@ -2989,6 +2887,7 @@ function getSubStatus(){
 // ============================================================
 function previewSetupScreen(){
   closeOwnerPanel();
+  renderPlanButtons('setupPlansList');
   const el = document.getElementById('setupOverlay');
   if(el){ el.classList.remove('hidden'); el.style.display='flex'; }
   const uid = document.getElementById('setupUidShow');
@@ -3004,9 +2903,9 @@ function resetToSetupScreen(){
 // VERSION CHECK — اب صرف ورژن ٹریک ہوتا ہے، سبسکرپشن کو ہاتھ نہیں لگاتا
 // (چونکہ ایپ اب لائیو خودکار اپڈیٹ ہوتی ہے — ہر چھوٹی تبدیلی پر
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
-//  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
+//  ہمیشہ Google Play سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '21sep1240pm';
+const FF_APP_VERSION = '21sep0210pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -3068,148 +2967,45 @@ function unlockApp(){
   showSubStatusBar();
 }
 
-function bootApp(){
+async function bootApp(){
   const uid = FF_UID;
   ['setupUidShow','expiredUidShow','ownerUidDisplay','settingsUidDisplay'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.textContent = uid;
   });
 
+  await initPlayBilling();
+  await refreshSubscriptionStatus();
+
   const sub = getSubStatus();
 
   if(sub.neverActivated){
+    renderPlanButtons('setupPlansList');
     const el = document.getElementById('setupOverlay');
     if(el){ el.classList.remove('hidden'); el.style.display='flex'; }
     return;
   }
 
   if(sub.expired){
+    renderPlanButtons('expiredPlansList');
     const el = document.getElementById('expiredOverlay');
     if(el){ el.classList.remove('hidden'); el.style.display='flex'; }
     return;
   }
-
-  // انٹرنیٹ ہو تو خاموشی سے لائسنس دوبارہ چیک کر لیں (دور سے بند/تجدید کے لیے)
-  if(!sub.isLifetime) resyncLicenseOnline();
 
   // Subscription active — سیدھے داخل
   unlockApp();
 }
 
 // ============================================================
-// SETUP SCREEN
-// ============================================================
-async function completeSetup(){
-  const rawCode = document.getElementById('setupActInput').value;
-  const actCode = rawCode.replace(/[^0-9A-Za-z]/g,'').trim();
-  const msg     = document.getElementById('setupMsg');
-
-  if(!actCode || actCode.length < 6){
-    msg.textContent='⚠️ Activation Code ڈالیں';
-    msg.className='ff-ov-msg error';
-    return;
-  }
-
-  msg.textContent='⏳ تصدیق ہو رہی ہے... (انٹرنیٹ چیک کریں)';
-  msg.className='ff-ov-msg info';
-
-  const result = await activateSub(actCode);
-  if(!result.ok){
-    msg.textContent = _ffActivationError(result.reason);
-    msg.className='ff-ov-msg error';
-    return;
-  }
-
-  const sub = getSubStatus();
-  msg.textContent = result.lifetime ? '✅ Lifetime کے لیے فعال!' : ('✅ ' + sub.daysLeft + ' دن کے لیے فعال!');
-  msg.className = 'ff-ov-msg ok';
-
-  setTimeout(()=>{
-    document.getElementById('setupOverlay').classList.add('hidden');
-    unlockApp();
-    showSubStatusBar();
-  }, 800);
-}
-
-// Firebase activation کی ناکامی کی وجہ کو انسانی زبان میں بتائیں
-function _ffActivationError(reason){
-  switch(reason){
-    case 'invalid':   return '❌ کوڈ غلط ہے — Developer سے صحیح کوڈ لیں';
-    case 'wronguid':  return '❌ یہ کوڈ اس فون کے لیے نہیں ہے';
-    case 'revoked':   return '❌ یہ کوڈ منسوخ کر دیا گیا ہے';
-    case 'expired':   return '❌ اس کوڈ کی میعاد ختم ہو چکی ہے';
-    case 'network':   return '⚠️ انٹرنیٹ کنیکشن چیک کریں اور دوبارہ کوشش کریں';
-    case 'nofirebase':return '⚠️ سسٹم تیار نہیں — Developer سے رابطہ کریں';
-    default:          return '❌ کوڈ غلط ہے';
-  }
-}
-
-// ============================================================
-// EXPIRED SCREEN ACTIVATION
-// ============================================================
-async function tryActivate(screen){
-  const inputId = screen==='expired' ? 'expActInput' : 'ownerActInput';
-  const msgId   = screen==='expired' ? 'expActMsg'   : 'ownerActMsg';
-  const code = document.getElementById(inputId).value.trim();
-  const msg  = document.getElementById(msgId);
-
-  msg.textContent = '⏳ تصدیق ہو رہی ہے...';
-  msg.className = 'ff-ov-msg info';
-
-  const result = await activateSub(code);
-  if(!result.ok){
-    msg.textContent = _ffActivationError(result.reason);
-    msg.className = 'ff-ov-msg error';
-    return;
-  }
-
-  const sub = getSubStatus();
-  msg.textContent = result.lifetime ? '✅ Lifetime کے لیے فعال' : ('✅ ' + sub.daysLeft + ' دن کے لیے فعال');
-  msg.className = 'ff-ov-msg ok';
-
-  if(screen === 'expired'){
-    setTimeout(()=>{
-      document.getElementById('expiredOverlay').classList.add('hidden');
-      unlockApp();
-    }, 1000);
-  } else {
-    refreshOwnerPanel();
-    updateSettingsSubInfo();
-  }
-}
-
-// ============================================================
 // SUBSCRIPTION STATUS BAR
 // ============================================================
-function _fmtDate(ms){
-  if(!ms) return '—';
-  const d=new Date(parseInt(ms));
-  const dd=String(d.getDate()).padStart(2,'0');
-  const mm=String(d.getMonth()+1).padStart(2,'0');
-  const yy=d.getFullYear();
-  return dd+'/'+mm+'/'+yy;
-}
 function showSubStatusBar(){
   const bar = document.getElementById('subStatusBar');
   const sub = getSubStatus();
   if(!sub.active){ bar.classList.remove('show'); return; }
-  const expiry = parseInt(localStorage.getItem('ff_sub_expiry')||'0');
-  const start  = parseInt(localStorage.getItem('ff_sub_start')||'0') || (expiry - (parseInt(localStorage.getItem('ff_sub_days')||'28')*86400000));
-  const startStr  = _fmtDate(start);
-  const expiryStr = sub.isLifetime ? 'Lifetime ♾️' : _fmtDate(expiry);
-  const tag = sub.isTrial ? ' [Trial]' : '';
-  if(sub.isLifetime){
-    bar.innerHTML = `<span>✅ Subscribed: <b>${startStr}</b></span><span style="opacity:.6;">|</span><span style="font-weight:900;">Lifetime ♾️</span>`;
-    bar.className = 'sub-status-bar show';
-    return;
-  }
-  if(sub.daysLeft <= 7){
-    bar.innerHTML = `<span>⚠️ Subscribed${tag}: <b>${startStr}</b></span><span style="opacity:.6;">|</span><span>Ends: <b>${expiryStr}</b></span><span style="opacity:.6;">|</span><span style="color:#ffccbc;font-weight:900;">${sub.daysLeft} Days Left</span>`;
-    bar.className = 'sub-status-bar warning show';
-  } else {
-    bar.innerHTML = `<span>✅ Subscribed${tag}: <b>${startStr}</b></span><span style="opacity:.6;">|</span><span>Ends: <b>${expiryStr}</b></span><span style="opacity:.6;">|</span><span>${sub.daysLeft} Days Left</span>`;
-    bar.className = 'sub-status-bar show';
-  }
+  bar.innerHTML = `<span>✅ Subscribed via Google Play</span>`;
+  bar.className = 'sub-status-bar show';
 }
 
 function updateSettingsSubInfo(){
@@ -3218,10 +3014,10 @@ function updateSettingsSubInfo(){
   if(!el) return;
   if(sub.active){
     el.style.color = '#2e7d32';
-    el.textContent = '✅ فعال — ' + sub.daysLeft + ' دن باقی';
+    el.textContent = '✅ فعال (Google Play)';
   } else if(sub.expired){
     el.style.color = '#c62828';
-    el.textContent = '❌ ختم — نیا کوڈ لیں';
+    el.textContent = '❌ ختم — سبسکرائب کریں';
   } else {
     el.style.color = '#a06020';
     el.textContent = '— سیٹ نہیں';
@@ -3286,10 +3082,6 @@ function resetAllOrders(){
 
 function closeOwnerPanel(){
   document.getElementById('ownerModal').classList.remove('open');
-  const _v=['ownerActInput'];
-  _v.forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  const _m=['ownerActMsg'];
-  _m.forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=''; });
 }
 
 function refreshOwnerPanel(){
@@ -3306,16 +3098,12 @@ function refreshOwnerPanel(){
   const sub = getSubStatus();
   const info = document.getElementById('ownerSubInfo');
   if(sub.active){
-    info.innerHTML = '<b style="color:#66bb6a;">✅ فعال</b> — ' + sub.daysLeft + ' دن باقی';
+    info.innerHTML = '<b style="color:#66bb6a;">✅ فعال (Google Play)</b>';
   } else if(sub.expired){
-    info.innerHTML = '<b style="color:#ff5252;">❌ ختم</b> — نیا کوڈ لگائیں';
+    info.innerHTML = '<b style="color:#ff5252;">❌ ختم</b> — دوبارہ سبسکرائب کریں';
   } else {
     info.innerHTML = '<b style="color:#ff9800;">⚠️ ابھی تک فعال نہیں</b>';
   }
-}
-
-function ownerActivate(){
-  tryActivate('owner');
 }
 
 function ownerSavePhone(){
@@ -8837,7 +8625,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '21sep1240pm';
+const APP_VERSION = '21sep0210pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
