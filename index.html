@@ -2320,6 +2320,9 @@
           </div>
         </a>
       </div>
+      <div style="text-align:center;margin-top:14px;">
+        <a href="privacy-policy.html" target="_blank" style="font-size:11px;color:var(--muted);text-decoration:underline;">🔒 Privacy Policy</a>
+      </div>
       <!-- Owner Panel Button -->
       <!-- OWNER PANEL: ABOUT heading پر 5 بار ٹیپ کریں -->
     </div>
@@ -3003,7 +3006,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Firebase سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '12aug0330pm';
+const FF_APP_VERSION = '21sep1240pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -8834,7 +8837,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '12aug0330pm';
+const APP_VERSION = '21sep1240pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
@@ -9232,14 +9235,6 @@ window.addEventListener("load", function(){
 });
 </script>
 <script>
-// ---------- GitHub اپلوڈ کاپی — DevTools کو مشکل بنانے کی کوشش (مکمل روک نہیں سکتا، صرف عام یوزر کے لیے رکاوٹ) ----------
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('keydown', e => {
-  const k = e.key ? e.key.toUpperCase() : '';
-  if (k === 'F12') { e.preventDefault(); return false; }
-  if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k)) { e.preventDefault(); return false; }
-  if (e.ctrlKey && k === 'U') { e.preventDefault(); return false; }
-});
 // ---------- Service Worker رجسٹر کریں — آف لائن سپورٹ اور کیشے مینجمنٹ کے لیے ----------
 if ('serviceWorker' in navigator) {
   let _swRefreshing = false;
