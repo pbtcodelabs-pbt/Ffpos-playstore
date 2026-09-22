@@ -2905,7 +2905,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Google Play سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '21sep0210pm';
+const FF_APP_VERSION = '22sep1035am';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -2967,12 +2967,25 @@ function unlockApp(){
   showSubStatusBar();
 }
 
+// ============================================================
+// عارضی ٹیسٹنگ موڈ — کلوزڈ ٹیسٹنگ کے دنوں میں ٹرائل/سبسکرپشن پیج
+// چھپا کر ایپ سیدھی ہوم پیج پر کھولنے کے لیے۔ Play Store پاس ہونے
+// اور پبلش ہونے کے بعد اسے false کر دیں — پورا سبسکرپشن سسٹم واپس
+// اپنے آپ فعال ہو جائے گا، کوڈ میں کوئی اور تبدیلی درکار نہیں۔
+// ============================================================
+const FF_TESTING_MODE = true;
+
 async function bootApp(){
   const uid = FF_UID;
   ['setupUidShow','expiredUidShow','ownerUidDisplay','settingsUidDisplay'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.textContent = uid;
   });
+
+  if(FF_TESTING_MODE){
+    unlockApp();
+    return;
+  }
 
   await initPlayBilling();
   await refreshSubscriptionStatus();
@@ -8625,7 +8638,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '21sep0210pm';
+const APP_VERSION = '22sep1035am';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
