@@ -1879,6 +1879,17 @@
   </div>
 </div>
 
+<!-- ===== BILL HISTORY MODAL — پرانا ریکارڈ ===== -->
+<div id="billHistoryModal" onclick="if(event.target===this) closeBillHistory()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.68);z-index:900;align-items:center;justify-content:center;padding:12px;">
+  <div style="background:#fff;border-radius:16px;max-width:480px;width:100%;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(135deg,#6a1b9a,#4a148c);color:#fff;">
+      <span style="font-weight:900;font-size:15px;">📅 پرانا ریکارڈ — Bill History</span>
+      <button onclick="closeBillHistory()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:15px;">✕</button>
+    </div>
+    <div id="billHistoryBody" style="padding:14px;overflow-y:auto;flex:1;"></div>
+  </div>
+</div>
+
 <!-- ===== PRINTER SETTINGS MODAL — دیدیکیٹڈ، اوپر والا پرنٹر/گیئر ائیکن اسے کھولے (general Settings سے مکمل الگ) ===== -->
 <div id="printerModal" onclick="if(event.target===this) closePrinterModal()">
   <div class="pmodal-box">
@@ -2222,6 +2233,15 @@
     </div>
 
 
+
+    <div class="settings-card">
+      <h3>💾 ڈیٹا بیک اپ / Backup &amp; Restore</h3>
+      <div style="font-size:11px;color:#a06020;font-weight:bold;margin-bottom:8px;">اپنا سارا ڈیٹا (بل، مینیو، سیٹنگز، پرانا ریکارڈ) محفوظ رکھیں — موبائل خراب یا بدلنے پر بھی ڈیٹا واپس مل جائے۔</div>
+      <button class="manage-btn mbtn-save" style="width:100%;margin-bottom:8px;" onclick="backupToGoogleDrive()">☁️ Backup Now (Google Drive پر شیئر کریں)</button>
+      <button class="manage-btn" style="width:100%;background:#1565c0;color:#fff;margin-bottom:8px;" onclick="restoreFromFile()">📂 Restore (بیک اپ فائل سے واپس لائیں)</button>
+      <input type="file" id="ffRestoreFileInput" accept="application/json,.json" style="display:none;" onchange="_onRestoreFileSelected(this)">
+      <button class="manage-btn" style="width:100%;background:#6a1b9a;color:#fff;" onclick="openBillHistory()">📅 پرانا ریکارڈ دیکھیں (Bill History)</button>
+    </div>
 
     <div class="settings-card">
       <h3 id="aboutHeading5tap" onclick="ownerSecretTap()" style="cursor:default;user-select:none;-webkit-tap-highlight-color:transparent;">ℹ️ ABOUT</h3>
@@ -2905,7 +2925,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Google Play سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '22sep1035am';
+const FF_APP_VERSION = '22sep0553pm';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -7398,18 +7418,173 @@ function endDay(){
   const csh=state.sales.filter(s=>s.mode==='cash').reduce((s,x)=>s+x.total,0);
   const exp=state.expenses.reduce((s,e)=>s+e.amt,0);
   const fin=(state.opening||0)+csh-exp;
-  // پرانا ڈیٹا backup میں محفوظ کریں — تاکہ Restore ہو سکے
+  // پرانا ڈیٹا backup میں محفوظ کریں — تاکہ Restore ہو سکے (صرف آخری دن کا فوری undo)
   localStorage.setItem('pos_state_backup', JSON.stringify(state));
   localStorage.setItem('pos_last_day',JSON.stringify({
     closedAt:new Date().toLocaleString('en-PK'),
     bills:state.sales.length,opening:state.opening||0,
     cashSales:csh,totalSales:csh,totalExp:exp,finalCash:fin
   }));
+  // ہمیشہ کے لیے پرانا ریکارڈ (Bill History) میں بھی محفوظ کریں — یہ کبھی نہیں مٹتا
+  _archiveDay({
+    date: state.date || getBusinessDate(),
+    closedAt: new Date().toLocaleString('en-PK'),
+    opening: state.opening||0,
+    sales: state.sales,
+    expenses: state.expenses,
+    cashSales: csh, totalExp: exp, finalCash: fin
+  });
   state={date:getBusinessDate(),opening:0,sales:[],expenses:[],credits:state.credits};
   localStorage.removeItem('ff_day_locked');
   saveState(); renderSummary();
   checkDayLock();
   showToast('✅ New Day Started — Cash Rs.'+csh+' | Net Rs.'+fin);
+}
+
+// ============================================================
+// BILL HISTORY — ہر "End Day" کا مکمل ریکارڈ ہمیشہ کے لیے محفوظ
+// (پہلے صرف ایک دن کا backup رکھا جاتا تھا جو اگلے دن اوور رائٹ ہو
+//  جاتا تھا — اب ہر دن الگ سے، مستقل طور پر، اس آرکائیو میں رہتا ہے)
+// ============================================================
+function _archiveDay(dayInfo){
+  try{
+    const arr = JSON.parse(localStorage.getItem('ff_bill_archive')||'[]');
+    arr.push(dayInfo);
+    // اسٹوریج بھرنے سے بچنے کے لیے زیادہ سے زیادہ 400 دن رکھیں
+    while(arr.length>400) arr.shift();
+    localStorage.setItem('ff_bill_archive', JSON.stringify(arr));
+  }catch(e){}
+}
+
+function _getBillArchive(){
+  try{ return JSON.parse(localStorage.getItem('ff_bill_archive')||'[]'); }catch(e){ return []; }
+}
+
+function openBillHistory(){
+  const arr = _getBillArchive().slice().reverse(); // تازہ ترین دن سب سے اوپر
+  const body = document.getElementById('billHistoryBody');
+  if(!arr.length){
+    body.innerHTML = '<div style="text-align:center;color:#888;padding:30px 10px;font-size:13px;">ابھی کوئی پرانا ریکارڈ موجود نہیں۔<br>یہ "END DAY" دبانے کے بعد یہاں جمع ہونا شروع ہوگا۔</div>';
+  } else {
+    body.innerHTML = arr.map((d,i)=>{
+      const realIdx = arr.length-1-i; // اصل array میں انڈیکس
+      const billsCount = (d.sales||[]).length;
+      return `<div style="border:2px solid #e1bee7;border-radius:12px;margin-bottom:10px;overflow:hidden;">
+        <div onclick="_toggleHistoryDay(${realIdx})" style="background:#f3e5f5;padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:900;font-size:13px;color:#4a148c;">📆 ${d.date||''}</div>
+            <div style="font-size:10px;color:#7b1fa2;">بند: ${d.closedAt||''} · بلز: ${billsCount}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:900;color:#2e7d32;font-size:13px;">Rs. ${d.cashSales||0}</div>
+            <div style="font-size:9px;color:#888;">خرچہ: Rs.${d.totalExp||0}</div>
+          </div>
+        </div>
+        <div id="histDayBody${realIdx}" style="display:none;padding:8px 10px;"></div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('billHistoryModal').style.display = 'flex';
+}
+
+function closeBillHistory(){
+  document.getElementById('billHistoryModal').style.display = 'none';
+}
+
+function _toggleHistoryDay(idx){
+  const el = document.getElementById('histDayBody'+idx);
+  if(!el) return;
+  if(el.style.display === 'block'){ el.style.display='none'; return; }
+  const arr = _getBillArchive();
+  const d = arr[idx];
+  if(!d){ el.style.display='none'; return; }
+  const sales = d.sales||[];
+  if(!sales.length){
+    el.innerHTML = '<div style="font-size:11px;color:#888;text-align:center;padding:8px;">اس دن کوئی بل نہیں</div>';
+  } else {
+    el.innerHTML = sales.map((s,si)=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-top:1px solid #f0e0f5;font-size:12px;">
+        <span>🧾 بل #${si+1} — ${s.mode==='cash'?'کیش':(s.mode||'')}</span>
+        <span style="font-weight:900;color:#2e7d32;">Rs. ${s.total||0}</span>
+        <button onclick='_reprintHistoryBill(${idx},${si})' style="background:#6a1b9a;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;">🖨️ پرنٹ</button>
+      </div>`).join('');
+  }
+  el.style.display = 'block';
+}
+
+function _reprintHistoryBill(dayIdx, saleIdx){
+  const arr = _getBillArchive();
+  const d = arr[dayIdx];
+  const sale = d && d.sales && d.sales[saleIdx];
+  if(!sale){ showToast('⚠️ بل نہیں ملا'); return; }
+  reprintBill(sale);
+}
+
+// ============================================================
+// BACKUP / RESTORE — سادہ طریقہ: پوری ایپ کا ڈیٹا (بل، مینیو،
+// سیٹنگز، Bill History آرکائیو — سب localStorage کیز) ایک JSON
+// فائل میں جمع کر کے Android کا اپنا Share شیٹ کھول دیں، جہاں
+// صارف خود "Google Drive" منتخب کر کے محفوظ کر لیتا ہے۔ کوئی
+// OAuth/Google Sign-in درکار نہیں — Play Store ریویو پر اثر نہیں۔
+// ============================================================
+async function backupToGoogleDrive(){
+  try{
+    const data = {};
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      data[k] = localStorage.getItem(k);
+    }
+    const json = JSON.stringify(data);
+    const now = new Date();
+    const stamp = now.getFullYear()+''+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'_'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0');
+    const fname = 'FFPOS_Backup_'+stamp+'.json';
+    const blob = new Blob([json], {type:'application/json'});
+
+    if(navigator.canShare && window.File){
+      try{
+        const file = new File([blob], fname, {type:'application/json'});
+        if(navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title:'FFPOS Backup', text:'FFPOS ڈیٹا بیک اپ — محفوظ کرنے کے لیے Google Drive منتخب کریں'});
+          showToast('✅ شیئر مینو کھل گیا — "Drive" پر ٹیپ کر کے محفوظ کریں');
+          return;
+        }
+      }catch(shareErr){
+        // شیئر منسوخ یا ناکام ہو تو نیچے fallback چلے گا
+        if(shareErr && shareErr.name === 'AbortError') return; // صارف نے خود بند کیا
+      }
+    }
+    // Fallback: عام ڈاؤن لوڈ (پرانے/نامعلوم براؤزر کے لیے)
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    showToast('📥 فائل Downloads میں محفوظ ہو گئی — خود Google Drive ایپ میں اپلوڈ کر لیں');
+  }catch(e){
+    showToast('❌ بیک اپ ناکام: '+e.message);
+  }
+}
+
+function restoreFromFile(){
+  if(!confirm('⚠️ Restore کرنے سے موجودہ تمام ڈیٹا (مینیو، بل، سیٹنگز) بیک اپ فائل کے ڈیٹا سے بدل جائے گا۔\n\nآگے بڑھنے سے پہلے فائل چننے والی سکرین میں "Drive" کھول کر اپنی FFPOS_Backup فائل ڈھونڈیں۔\n\nجاری رکھنا ہے؟')) return;
+  document.getElementById('ffRestoreFileInput').click();
+}
+
+async function _onRestoreFileSelected(input){
+  const f = input.files && input.files[0];
+  if(!f){ return; }
+  try{
+    const text = await f.text();
+    const data = JSON.parse(text);
+    if(typeof data !== 'object' || data===null) throw new Error('غلط فائل فارمیٹ');
+    localStorage.clear();
+    Object.keys(data).forEach(k=>{ localStorage.setItem(k, data[k]); });
+    showToast('✅ Restore ہو گیا — ایپ دوبارہ کھل رہی ہے...');
+    setTimeout(()=>location.reload(), 1200);
+  }catch(e){
+    showToast('❌ Restore ناکام — یہ FFPOS بیک اپ فائل نہیں لگتی');
+  }
+  input.value='';
 }
 
 // آج کا ڈیٹا واپس لائیں (End of Day کے بعد)
@@ -8638,7 +8813,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '22sep1035am';
+const APP_VERSION = '22sep0553pm';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
