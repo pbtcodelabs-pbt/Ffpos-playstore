@@ -1,1 +1,151 @@
+# ══════════════════════════════════════════════════════════════════
+#  FF POS (پلے سٹور) — خودکار اَن زِپ + حفاظتی نظام
+#  جگہ: ریپو میں  .github/workflows/auto.yml
+#
+#  1) قاعدے والی زِپ (مثلاً FFPOS610TU001.zip) ریپو کے روٹ میں ڈالیں → خود اَن زِپ
+#  2) جس زِپ کا نام قاعدے کے مطابق نہ ہو → خود ڈیلیٹ (کسی اور ایپ کی فائل نہیں لگے گی)
+#  3) زِپ سے صرف FF POS کی اجازت والی فائلیں نکلتی ہیں
+#  4) index.html کے دونوں ورژن (APP_VERSION اور FF_APP_VERSION) اور
+#     sw.js کا CACHE_NAME زِپ کے نام سے ملنے ضروری ہیں — نہ ملیں تو زِپ ڈیلیٹ
+#  5) index.html میں ڈائریکٹ ورژن کی کوئی چیز ملے تو زِپ ڈیلیٹ
+#  6) کامیاب اَن زِپ کے بعد زِپ خود ڈیلیٹ، پھر GitHub Pages کو پبلش کا حکم
+#
+#  زِپ کے نام کا قاعدہ: FFPOS + تاریخ + مہینہ + دن کے دو حروف + تین ہندسوں کا سیریل
+#     مثال: FFPOS610TU001.zip = 6 اکتوبر، منگل، سیریل 001  (اگلا: …002، …003)
+# ══════════════════════════════════════════════════════════════════
+name: FF POS Auto Unzip & Deploy
 
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.zip'
+      - '**.ZIP'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: ffpos-auto-unzip
+  cancel-in-progress: false
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ریپو حاصل کریں
+        uses: actions/checkout@v4
+
+      - name: زِپ چیک، اَن زِپ اور فالتو زِپ ڈیلیٹ
+        shell: python
+        run: |
+          import os, re, zipfile, subprocess, sys
+
+          ALLOWED = {"index.html", "sw.js", "manifest.json", "privacy-policy.html",
+                     "icon-192.png", "icon-256.png", "icon-384.png", "icon-512.png", "icon-512-maskable.png"}
+          REQUIRED = {"index.html", "sw.js"}
+          NAME_OK = re.compile(r"^FFPOS(?:[1-9]|[12][0-9]|3[01])(?:[1-9]|1[0-2])(?:MO|TU|WE|TH|FR|SA|SU)[0-9]{3}\.zip$")
+          APP_VER_RE = re.compile(r"(?<![A-Za-z0-9_])APP_VERSION\s*=\s*['\"]([^'\"]+)['\"]")
+          FF_VER_RE  = re.compile(r"FF_APP_VERSION\s*=\s*['\"]([^'\"]+)['\"]")
+          SW_VER_RE  = re.compile(r"CACHE_NAME\s*=\s*['\"]ffpos-cache-([^'\"]+)['\"]")
+          # پلے سٹور فائل میں ڈائریکٹ ورژن کی کوئی چیز نہ ہو
+          FORBIDDEN = [r"\bDirect\b", r"\bDIRECT\b", r"FFDR", r"ffd_", r"(?i)firebase|firestore", r"(?i)developer\s*panel"]
+
+          def git(*a):
+              subprocess.run(["git", *a], check=True)
+
+          def drop(path, why):
+              print(f"❌ ڈیلیٹ ({why}): {path}")
+              git("rm", "-q", "-f", path)
+              removed.append(os.path.basename(path))
+
+          zips = []
+          for root, dirs, files in os.walk("."):
+              if ".git" in root.split(os.sep):
+                  continue
+              for f in files:
+                  if f.lower().endswith(".zip"):
+                      zips.append(os.path.join(root, f))
+
+          if not zips:
+              print("کوئی زِپ نہیں ملی")
+              sys.exit(0)
+
+          removed, extracted = [], []
+          for path in sorted(zips, key=lambda p: os.path.basename(p)):
+              name = os.path.basename(path)
+              in_root = os.path.dirname(os.path.normpath(path)) in ("", ".")
+
+              if not NAME_OK.match(name):
+                  drop(path, "نام قاعدے کے مطابق نہیں، مثال FFPOS610TU001.zip"); continue
+              if not in_root:
+                  drop(path, "زِپ ریپو کے روٹ میں نہیں"); continue
+
+              try:
+                  z = zipfile.ZipFile(path)
+                  members = [m for m in z.infolist() if not m.is_dir()]
+              except zipfile.BadZipFile:
+                  drop(path, "خراب زِپ"); continue
+
+              picked = {}
+              for m in members:
+                  base = os.path.basename(m.filename.replace("\\", "/")).lower()
+                  if base in ALLOWED:
+                      picked[base] = m
+                  else:
+                      print(f"   ⚠️ نظرانداز (اجازت نہیں): {m.filename}")
+
+              if not REQUIRED.issubset(picked):
+                  z.close(); drop(path, "index.html یا sw.js موجود نہیں"); continue
+
+              ver = name[:-4]
+              html = z.read(picked["index.html"]).decode("utf-8", "ignore")
+              sw   = z.read(picked["sw.js"]).decode("utf-8", "ignore")
+
+              checks = [("APP_VERSION", APP_VER_RE.search(html)),
+                        ("FF_APP_VERSION", FF_VER_RE.search(html)),
+                        ("sw.js کا CACHE_NAME", SW_VER_RE.search(sw))]
+              bad = [f"{lbl}: {(m.group(1) if m else 'نہیں ملا')}" for lbl, m in checks if not m or m.group(1) != ver]
+              if bad:
+                  z.close(); drop(path, f"ورژن زِپ کے نام ({ver}) سے نہیں ملتا — " + "، ".join(bad)); continue
+
+              hits = [p for p in FORBIDDEN if re.search(p, html) or re.search(p, sw)]
+              if hits:
+                  z.close(); drop(path, f"اس میں ڈائریکٹ ورژن کی چیز ملی: {hits}"); continue
+
+              for base, info in picked.items():
+                  with open(base, "wb") as out:
+                      out.write(z.read(info))
+                  git("add", base)
+                  print(f"   ✅ نکالی: {base}")
+              z.close()
+              git("rm", "-q", "-f", path)
+              extracted.append(name)
+              print(f"✅ اَن زِپ مکمل: {name}")
+
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              env.write(f"FF_DONE={' '.join(extracted) or '-'}\n")
+              env.write(f"FF_REMOVED={' '.join(removed) or '-'}\n")
+
+      - name: تبدیلیاں محفوظ (commit + push)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          if git diff --cached --quiet; then
+            echo "کوئی تبدیلی نہیں"
+            exit 0
+          fi
+          git commit -m "🤖 FF POS Auto: unzipped [${FF_DONE}] · removed [${FF_REMOVED}]"
+          git push
+          echo "FF_PUSHED=1" >> "$GITHUB_ENV"
+
+      - name: GitHub Pages پر نیا ورژن پبلش
+        if: env.FF_PUSHED == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" >/dev/null \
+            && echo "✅ Pages پبلش شروع — 1-2 منٹ میں نیا ورژن لائیو" \
+            || echo "ℹ️ Pages کا حکم نہیں گیا — فائلیں پھر بھی ریپو میں لگ گئی ہیں"
