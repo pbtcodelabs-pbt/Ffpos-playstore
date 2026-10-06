@@ -1664,7 +1664,7 @@
         <span style="font-size:20px;">📧</span>
         <div style="text-align:left;">
           <div>Gmail پر لکھیں</div>
-          <div style="font-size:10px;opacity:.85;font-weight:normal;" id="contactModalEmail">feejalati@gmail.com</div>
+          <div style="font-size:10px;opacity:.85;font-weight:normal;" id="contactModalEmail">pbtcodelabs@gmail.com</div>
         </div>
       </button>
       <button onclick="openWhatsAppChat()" style="
@@ -1676,7 +1676,7 @@
         <span style="font-size:20px;">💬</span>
         <div style="text-align:left;">
           <div>WhatsApp پر میسج کریں</div>
-          <div style="font-size:10px;opacity:.85;font-weight:normal;" id="contactModalWA">0308-5857766</div>
+          <div style="font-size:10px;opacity:.85;font-weight:normal;" id="contactModalWA">0320-6793793</div>
         </div>
       </button>
     </div>
@@ -2263,7 +2263,7 @@
             <span style="font-size:26px;">📧</span>
             <div>
               <div style="font-size:9px;font-family:var(--font-black);font-weight:900;color:var(--muted);letter-spacing:.5px;margin-bottom:2px;">GMAIL — ٹیپ کریں</div>
-              <div style="font-size:13px;font-weight:900;font-family:var(--font-black);color:#c62828;" id="aboutGmailDisplay">feejalati@gmail.com</div>
+              <div style="font-size:13px;font-weight:900;font-family:var(--font-black);color:#c62828;" id="aboutGmailDisplay">pbtcodelabs@gmail.com</div>
               <div style="font-size:9px;color:#a06020;margin-top:1px;">Gmail compose کھل جائے گا</div>
             </div>
             <span style="margin-left:auto;font-size:18px;color:var(--muted);">›</span>
@@ -2274,7 +2274,7 @@
             <span style="font-size:26px;">💬</span>
             <div>
               <div style="font-size:9px;font-family:var(--font-black);font-weight:900;color:var(--green-dk);letter-spacing:.5px;margin-bottom:2px;">WHATSAPP CHAT ONLY — ٹیپ کریں</div>
-              <div style="font-size:13px;font-weight:900;font-family:var(--font-black);color:#2e7d32;" id="aboutWaDisplay">0308-5857766</div>
+              <div style="font-size:13px;font-weight:900;font-family:var(--font-black);color:#2e7d32;" id="aboutWaDisplay">0320-6793793</div>
               <div style="font-size:9px;color:#4a7a50;margin-top:1px;">WhatsApp chat کھل جائے گا</div>
             </div>
             <span style="margin-left:auto;font-size:18px;color:var(--muted);">›</span>
@@ -2849,9 +2849,9 @@ async function renderPlanButtons(containerId){
 // CONTACT FUNCTIONS — Gmail Compose + WhatsApp Chat
 // ============================================================
 // Contact info from owner settings (localStorage)
-function getContactEmail(){ return localStorage.getItem('ff_contact_email') || 'feejalati@gmail.com'; }
+function getContactEmail(){ return localStorage.getItem('ff_contact_email') || 'pbtcodelabs@gmail.com'; }
 function getContactWA(){ 
-  const num = localStorage.getItem('ff_contact_wa') || '923085857766';
+  const num = localStorage.getItem('ff_contact_wa') || '923206793793';
   // convert 03XX to 923XX international
   return num.startsWith('0') ? '92' + num.slice(1) : num;
 }
@@ -2925,7 +2925,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Google Play سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = '22sep0553pm';
+const FF_APP_VERSION = 'FFPOS610TU001';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -7532,12 +7532,11 @@ async function backupToGoogleDrive(){
     const data = {};
     for(let i=0;i<localStorage.length;i++){
       const k = localStorage.key(i);
+      if(_ffIsSystemKey(k)) continue; // سبسکرپشن/ڈیوائس ID بیک اپ میں نہیں جاتیں
       data[k] = localStorage.getItem(k);
     }
     const json = JSON.stringify(data);
-    const now = new Date();
-    const stamp = now.getFullYear()+''+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'_'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0');
-    const fname = 'FFPOS_Backup_'+stamp+'.json';
+    const fname = _ffBackupFileName()+'.json';
     const blob = new Blob([json], {type:'application/json'});
 
     if(navigator.canShare && window.File){
@@ -7565,8 +7564,24 @@ async function backupToGoogleDrive(){
   }
 }
 
+// سبسکرپشن، ڈیوائس ID اور ورژن — یہ نہ بیک اپ میں جائیں، نہ بحالی پر بدلیں
+function _ffIsSystemKey(k){
+  return k==='ff_uid' || k==='ff_app_version' || String(k).indexOf('ff_play_')===0;
+}
+// بیک اپ فائل کا نام: BK + FF + تاریخ + مہینہ + دن + وقت (12 گھنٹے) + AM/PM
+// مثال: 6 اکتوبر، منگل، شام 4:31 → BKFF610TU0431PM
+function _ffBackupFileName(){
+  const d = getPKTNow();
+  const DAY = ['SU','MO','TU','WE','TH','FR','SA'][d.getDay()];
+  const h24 = d.getHours();
+  const h12 = (h24 % 12) || 12;
+  return 'BKFF' + d.getDate() + (d.getMonth()+1) + DAY
+       + String(h12).padStart(2,'0') + String(d.getMinutes()).padStart(2,'0')
+       + (h24 < 12 ? 'AM' : 'PM');
+}
+
 function restoreFromFile(){
-  if(!confirm('⚠️ Restore کرنے سے موجودہ تمام ڈیٹا (مینیو، بل، سیٹنگز) بیک اپ فائل کے ڈیٹا سے بدل جائے گا۔\n\nآگے بڑھنے سے پہلے فائل چننے والی سکرین میں "Drive" کھول کر اپنی FFPOS_Backup فائل ڈھونڈیں۔\n\nجاری رکھنا ہے؟')) return;
+  if(!confirm('⚠️ Restore کرنے سے موجودہ تمام ڈیٹا (مینیو، بل، سیٹنگز) بیک اپ فائل کے ڈیٹا سے بدل جائے گا۔\n\nآگے بڑھنے سے پہلے فائل چننے والی سکرین میں "Drive" کھول کر اپنی BKFF والی بیک اپ فائل ڈھونڈیں۔\n\nجاری رکھنا ہے؟')) return;
   document.getElementById('ffRestoreFileInput').click();
 }
 
@@ -7577,8 +7592,12 @@ async function _onRestoreFileSelected(input){
     const text = await f.text();
     const data = JSON.parse(text);
     if(typeof data !== 'object' || data===null) throw new Error('غلط فائل فارمیٹ');
+    // صرف کاروبار کا ڈیٹا بدلیں — سبسکرپشن/ڈیوائس ID جیسی ہیں ویسی رہیں
+    const _keep = [];
+    for(let i=0;i<localStorage.length;i++){ const k = localStorage.key(i); if(_ffIsSystemKey(k)) _keep.push([k, localStorage.getItem(k)]); }
     localStorage.clear();
-    Object.keys(data).forEach(k=>{ localStorage.setItem(k, data[k]); });
+    _keep.forEach(([k,v])=>localStorage.setItem(k, v));
+    Object.keys(data).forEach(k=>{ if(!_ffIsSystemKey(k)) localStorage.setItem(k, data[k]); });
     showToast('✅ Restore ہو گیا — ایپ دوبارہ کھل رہی ہے...');
     setTimeout(()=>location.reload(), 1200);
   }catch(e){
@@ -8813,7 +8832,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = '22sep0553pm';
+const APP_VERSION = 'FFPOS610TU001';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
@@ -8873,8 +8892,8 @@ setImgFont(_imgFont);
 
 // Apply stored contact info to About section
 function applyContactInfo(){
-  const email = localStorage.getItem('ff_contact_email') || 'feejalati@gmail.com';
-  const wa    = localStorage.getItem('ff_contact_wa')    || '0308-5857766';
+  const email = localStorage.getItem('ff_contact_email') || 'pbtcodelabs@gmail.com';
+  const wa    = localStorage.getItem('ff_contact_wa')    || '0320-6793793';
   ['aboutGmailDisplay','contactModalEmail'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.textContent=email;
   });
@@ -9143,7 +9162,7 @@ document.addEventListener('click', function(e){
 });
 function _loginDevChatMsg(){
   const uid = (typeof FF_UID!=='undefined') ? FF_UID : '';
-  return 'Respected Sir!\n\nI am interested in your app\nFast POS\n\nthis is my ' + uid + '\n\nPLZ provide me activation code\nFor. Duration of....';
+  return 'Assalam o Alaikum!\n\nMujhe FF POS app ke bare mein madad chahiye.\n\nMera ID: ' + uid + '\n\nShukria';
 }
 function loginDevChatWhatsApp(){
   const msg = encodeURIComponent(_loginDevChatMsg());
