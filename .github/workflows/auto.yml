@@ -2,7 +2,7 @@
 #  FF POS (پلے سٹور) — خودکار اَن زِپ + حفاظتی نظام
 #  جگہ: ریپو میں  .github/workflows/auto.yml
 #
-#  1) قاعدے والی زِپ (مثلاً FFPOS610TU001.zip) ریپو کے روٹ میں ڈالیں → خود اَن زِپ
+#  1) قاعدے والی زِپ (مثلاً FF710WE002.zip) ریپو کے روٹ میں ڈالیں → خود اَن زِپ
 #  2) جس زِپ کا نام قاعدے کے مطابق نہ ہو → خود ڈیلیٹ (کسی اور ایپ کی فائل نہیں لگے گی)
 #  3) زِپ سے صرف FF POS کی اجازت والی فائلیں نکلتی ہیں
 #  4) index.html کے دونوں ورژن (APP_VERSION اور FF_APP_VERSION) اور
@@ -10,8 +10,9 @@
 #  5) index.html میں ڈائریکٹ ورژن کی کوئی چیز ملے تو زِپ ڈیلیٹ
 #  6) کامیاب اَن زِپ کے بعد زِپ خود ڈیلیٹ، پھر GitHub Pages کو پبلش کا حکم
 #
-#  زِپ کے نام کا قاعدہ: FFPOS + تاریخ + مہینہ + دن کے دو حروف + تین ہندسوں کا سیریل
-#     مثال: FFPOS610TU001.zip = 6 اکتوبر، منگل، سیریل 001  (اگلا: …002، …003)
+#  زِپ کے نام کا قاعدہ: FF + تاریخ + مہینہ + دن کے دو حروف + تین ہندسوں کا سیریل
+#     مثال: FF710WE002.zip = 7 اکتوبر، بدھ، سیریل 002  (اگلا: …003، …004)
+#     صرف FF سے شروع ہونے والی زِپ قبول ہوگی
 # ══════════════════════════════════════════════════════════════════
 name: FF POS Auto Unzip & Deploy
 
@@ -46,7 +47,8 @@ jobs:
           ALLOWED = {"index.html", "sw.js", "manifest.json", "privacy-policy.html",
                      "icon-192.png", "icon-256.png", "icon-384.png", "icon-512.png", "icon-512-maskable.png"}
           REQUIRED = {"index.html", "sw.js"}
-          NAME_OK = re.compile(r"^FFPOS(?:[1-9]|[12][0-9]|3[01])(?:[1-9]|1[0-2])(?:MO|TU|WE|TH|FR|SA|SU)[0-9]{3}\.zip$")
+          # نام: FF + تاریخ + مہینہ + دن + سیریل، مثال FF710WE002.zip
+          NAME_OK = re.compile(r"^FF(?:[1-9]|[12][0-9]|3[01])(?:[1-9]|1[0-2])(?:MO|TU|WE|TH|FR|SA|SU)[0-9]{3}\.zip$")
           APP_VER_RE = re.compile(r"(?<![A-Za-z0-9_])APP_VERSION\s*=\s*['\"]([^'\"]+)['\"]")
           FF_VER_RE  = re.compile(r"FF_APP_VERSION\s*=\s*['\"]([^'\"]+)['\"]")
           SW_VER_RE  = re.compile(r"CACHE_NAME\s*=\s*['\"]ffpos-cache-([^'\"]+)['\"]")
@@ -79,7 +81,7 @@ jobs:
               in_root = os.path.dirname(os.path.normpath(path)) in ("", ".")
 
               if not NAME_OK.match(name):
-                  drop(path, "نام قاعدے کے مطابق نہیں، مثال FFPOS610TU001.zip"); continue
+                  drop(path, "نام قاعدے کے مطابق نہیں، مثال FF710WE002.zip"); continue
               if not in_root:
                   drop(path, "زِپ ریپو کے روٹ میں نہیں"); continue
 
@@ -107,45 +109,4 @@ jobs:
               checks = [("APP_VERSION", APP_VER_RE.search(html)),
                         ("FF_APP_VERSION", FF_VER_RE.search(html)),
                         ("sw.js کا CACHE_NAME", SW_VER_RE.search(sw))]
-              bad = [f"{lbl}: {(m.group(1) if m else 'نہیں ملا')}" for lbl, m in checks if not m or m.group(1) != ver]
-              if bad:
-                  z.close(); drop(path, f"ورژن زِپ کے نام ({ver}) سے نہیں ملتا — " + "، ".join(bad)); continue
-
-              hits = [p for p in FORBIDDEN if re.search(p, html) or re.search(p, sw)]
-              if hits:
-                  z.close(); drop(path, f"اس میں ڈائریکٹ ورژن کی چیز ملی: {hits}"); continue
-
-              for base, info in picked.items():
-                  with open(base, "wb") as out:
-                      out.write(z.read(info))
-                  git("add", base)
-                  print(f"   ✅ نکالی: {base}")
-              z.close()
-              git("rm", "-q", "-f", path)
-              extracted.append(name)
-              print(f"✅ اَن زِپ مکمل: {name}")
-
-          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
-              env.write(f"FF_DONE={' '.join(extracted) or '-'}\n")
-              env.write(f"FF_REMOVED={' '.join(removed) or '-'}\n")
-
-      - name: تبدیلیاں محفوظ (commit + push)
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          if git diff --cached --quiet; then
-            echo "کوئی تبدیلی نہیں"
-            exit 0
-          fi
-          git commit -m "🤖 FF POS Auto: unzipped [${FF_DONE}] · removed [${FF_REMOVED}]"
-          git push
-          echo "FF_PUSHED=1" >> "$GITHUB_ENV"
-
-      - name: GitHub Pages پر نیا ورژن پبلش
-        if: env.FF_PUSHED == '1'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api -X POST "repos/${{ github.repository }}/pages/builds" >/dev/null \
-            && echo "✅ Pages پبلش شروع — 1-2 منٹ میں نیا ورژن لائیو" \
-            || echo "ℹ️ Pages کا حکم نہیں گیا — فائلیں پھر بھی ریپو میں لگ گئی ہیں"
+              bad = [f
