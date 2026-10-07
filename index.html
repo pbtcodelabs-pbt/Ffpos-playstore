@@ -2726,6 +2726,8 @@ const FF_BASE_PLANS = [
 
 const PLAY_BILLING_METHOD = 'https://play.google.com/billing';
 let _digitalGoodsService = null;
+let _billingErr = '';
+function _errText(e){ return e ? ((e.name||'Error') + ': ' + (e.message||'')) : 'نامعلوم'; }
 
 // Generate stable 5-digit ID from device fingerprint — اب صرف سپورٹ/رابطے کے لیے،
 // سبسکرپشن کی تصدیق کے لیے استعمال نہیں ہوتا (وہ اب Google Play خود سنبھالتا ہے)
@@ -2757,6 +2759,10 @@ async function initPlayBilling(){
     }
   }catch(e){
     _digitalGoodsService = null;
+    _billingErr = 'Init — ' + _errText(e);
+  }
+  if(!_digitalGoodsService && !_billingErr){
+    _billingErr = ('getDigitalGoodsService' in window) ? 'Init — سروس نہیں ملی' : 'Digital Goods API دستیاب نہیں';
   }
   return !!_digitalGoodsService;
 }
@@ -2769,8 +2775,9 @@ async function fetchPlayPlanDetails(){
     const details = await _digitalGoodsService.getDetails(skus);
     const map = {};
     details.forEach(d => { map[d.itemId] = d; });
+    if(!details.length){ _billingErr = 'getDetails — کوئی پلان نہیں ملا (ID چیک کریں)'; return null; }
     return map;
-  }catch(e){ return null; }
+  }catch(e){ _billingErr = 'getDetails — ' + _errText(e); return null; }
 }
 
 // ---- موجودہ فعال خریداری چیک کریں — یہی اصل ماخذ ہے (localStorage صرف کیشے ہے) ----
@@ -2789,7 +2796,7 @@ async function refreshSubscriptionStatus(){
     }
     localStorage.setItem('ff_play_last_check', String(Date.now()));
     localStorage.setItem('ff_play_ever_checked', '1');
-  }catch(e){ /* آف لائن — پچھلا کیشڈ نتیجہ استعمال ہوگا */ }
+  }catch(e){ _billingErr = 'listPurchases — ' + _errText(e); /* آف لائن — پچھلا کیشڈ نتیجہ استعمال ہوگا */ }
 }
 
 // ---- ایک Base Plan خریدیں (Play کا اپنا خریداری کا صفحہ کھلے گا) ----
@@ -2822,8 +2829,11 @@ async function purchaseBasePlan(basePlanId){
       if(msg){ msg.textContent = '⚠️ خریداری مکمل نہیں ہوئی — دوبارہ کوشش کریں'; msg.className='ff-ov-msg error'; }
     }
   }catch(e){
-    // صارف نے خود منسوخ کیا — خاموشی سے واپس
-    if(msg && e && e.name !== 'AbortError'){ msg.textContent = ''; }
+    // صارف نے خود منسوخ کیا — خاموشی سے واپس؛ باقی غلطیاں کوڈ کے ساتھ دکھائیں
+    if(msg){
+      if(e && e.name !== 'AbortError'){ msg.textContent = '❌ خریداری ناکام — ' + _errText(e); msg.className='ff-ov-msg error'; }
+      else { msg.textContent = ''; }
+    }
   }
 }
 
@@ -2832,7 +2842,8 @@ async function renderPlanButtons(containerId){
   const el = document.getElementById(containerId);
   if(!el) return;
   const prices = await fetchPlayPlanDetails();
-  el.innerHTML = FF_BASE_PLANS.map(p=>{
+  const errHtml = (!prices && _billingErr) ? `<div style="background:#fff3f3;color:#b71c1c;border:1px solid #e57373;border-radius:10px;padding:8px 10px;font-size:12px;direction:ltr;text-align:left;word-break:break-word;">⚠️ پلانز لوڈ نہیں ہوئے<br>Code: ${_billingErr}</div>` : '';
+  el.innerHTML = errHtml + FF_BASE_PLANS.map(p=>{
     const d = prices && prices[FF_SUBSCRIPTION_ID + ':' + p.id];
     const priceStr = d ? (d.price.currency + ' ' + d.price.value) : '';
     return `<button type="button" onclick="purchaseBasePlan('${p.id}')" style="
@@ -2925,7 +2936,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Google Play سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = 'FFPOS610TU001';
+const FF_APP_VERSION = 'FF710WE002';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -2993,7 +3004,7 @@ function unlockApp(){
 // اور پبلش ہونے کے بعد اسے false کر دیں — پورا سبسکرپشن سسٹم واپس
 // اپنے آپ فعال ہو جائے گا، کوڈ میں کوئی اور تبدیلی درکار نہیں۔
 // ============================================================
-const FF_TESTING_MODE = true;
+const FF_TESTING_MODE = false;
 
 async function bootApp(){
   const uid = FF_UID;
@@ -8832,7 +8843,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = 'FFPOS610TU001';
+const APP_VERSION = 'FF710WE002';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
