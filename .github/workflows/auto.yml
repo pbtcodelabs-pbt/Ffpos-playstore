@@ -108,5 +108,29 @@ jobs:
 
               checks = [("APP_VERSION", APP_VER_RE.search(html)),
                         ("FF_APP_VERSION", FF_VER_RE.search(html)),
-                        ("sw.js کا CACHE_NAME", SW_VER_RE.search(sw))]
-              bad = [f
+                        ("sw CACHE_NAME", SW_VER_RE.search(sw))]
+              bad = []
+              for lbl, mt in checks:
+                  found = mt.group(1) if mt else "not found"
+                  if found != ver:
+                      bad.append(lbl + ": " + found)
+              if bad:
+                  z.close()
+                  drop(path, "ورژن زِپ کے نام (" + ver + ") سے نہیں ملتا — " + ", ".join(bad))
+                  continue
+
+              hits = [p for p in FORBIDDEN if re.search(p, html) or re.search(p, sw)]
+              if hits:
+                  z.close(); drop(path, f"اس میں ڈائریکٹ ورژن کی چیز ملی: {hits}"); continue
+
+              for base, info in picked.items():
+                  with open(base, "wb") as out:
+                      out.write(z.read(info))
+                  git("add", base)
+                  print(f"   ✅ نکالی: {base}")
+              z.close()
+              git("rm", "-q", "-f", path)
+              extracted.append(name)
+              print(f"✅ اَن زِپ مکمل: {name}")
+
+          with open
