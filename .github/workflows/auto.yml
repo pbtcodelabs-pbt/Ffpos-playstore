@@ -10,7 +10,7 @@
 #  5) index.html میں ڈائریکٹ ورژن کی کوئی چیز ملے تو زِپ ڈیلیٹ
 #  6) کامیاب اَن زِپ کے بعد زِپ خود ڈیلیٹ، پھر GitHub Pages کو پبلش کا حکم
 #
-#  زِپ کے نام کا قاعدہ: FF + تاریخ + مہینہ + دن کے دو حروف + تین ہندسوں کا سیریل
+#  زِپ کے نام کا نیا قاعدہ: FF + تاریخ + مہینہ + دن کے دو حروف + تین ہندسوں کا سیریل
 #     مثال: FF710WE002.zip = 7 اکتوبر، بدھ، سیریل 002  (اگلا: …003، …004)
 #     صرف FF سے شروع ہونے والی زِپ قبول ہوگی
 # ══════════════════════════════════════════════════════════════════
@@ -133,4 +133,31 @@ jobs:
               extracted.append(name)
               print(f"✅ اَن زِپ مکمل: {name}")
 
-          with open
+          done_txt = " ".join(extracted) or "-"
+          rem_txt = " ".join(removed) or "-"
+          env_path = os.environ["GITHUB_ENV"]
+          env_file = open(env_path, "a", encoding="utf-8")
+          env_file.write("FF_DONE=" + done_txt + "\n")
+          env_file.write("FF_REMOVED=" + rem_txt + "\n")
+          env_file.close()
+
+      - name: تبدیلیاں محفوظ (commit + push)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          if git diff --cached --quiet; then
+            echo "کوئی تبدیلی نہیں"
+            exit 0
+          fi
+          git commit -m "🤖 FF POS Auto: unzipped [${FF_DONE}] · removed [${FF_REMOVED}]"
+          git push
+          echo "FF_PUSHED=1" >> "$GITHUB_ENV"
+
+      - name: GitHub Pages پر نیا ورژن پبلش
+        if: env.FF_PUSHED == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" >/dev/null \
+            && echo "✅ Pages پبلش شروع — 1-2 منٹ میں نیا ورژن لائیو" \
+            || echo "ℹ️ Pages کا حکم نہیں گیا — فائلیں پھر بھی ریپو میں لگ گئی ہیں"
