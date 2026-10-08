@@ -2711,18 +2711,49 @@
 //  انسٹال کی گئی ایپ کے اندر کام کرتا ہے)
 // ============================================================
 
-// ---- Play Console میں بنایا گیا Subscription Product ID ----
-// یہ ID Play Console > Monetize > Products > Subscriptions میں سیٹ کریں
-// اور یہاں بالکل ویسا ہی ID ڈالیں (فی الحال placeholder ہے)
-const FF_SUBSCRIPTION_ID = 'ffpos_premium';
-
-// ---- چاروں Base Plans — یہ IDs بھی Play Console میں اسی طرح بنائیں ----
+// ---- اہم: TWA کی Play Billing لائبریری "productId:basePlanId" کو نہیں سمجھتی
+// اور ہر سبسکرپشن پروڈکٹ کا صرف پہلا (index 0) آفر/بیس پلان کھولتی ہے۔
+// اس لیے ہر پلان کا Play Console میں الگ Subscription Product ہونا لازمی ہے
+// (ہر پروڈکٹ میں صرف ایک Base Plan)۔ نیچے والی IDs بالکل اسی طرح بنائیں۔
 const FF_BASE_PLANS = [
-  { id:'monthly',     label:'1 مہینہ' },
-  { id:'quarterly',   label:'3 مہینے' },
-  { id:'half-yearly', label:'6 مہینے' },
-  { id:'yearly',      label:'1 سال'   }
+  { id:'ffpos_monthly',    label:'1 مہینہ' },
+  { id:'ffpos_quarterly',  label:'3 مہینے' },
+  { id:'ffpos_halfyearly', label:'6 مہینے' },
+  { id:'ffpos_yearly',     label:'1 سال'   }
 ];
+// پرانی ID — صرف پیچھے کی مطابقت کے لیے (اگر کسی نے پہلے خریدی ہو)
+const FF_LEGACY_SUB_ID = 'ffpos_premium';
+const FF_ALL_SUB_IDS = FF_BASE_PLANS.map(p=>p.id).concat([FF_LEGACY_SUB_ID]);
+function _isOurSub(itemId){
+  itemId = String(itemId||'');
+  return FF_ALL_SUB_IDS.some(id => itemId === id || itemId.indexOf(id + ':') === 0);
+}
+
+// ---- ماحول کی تشخیص — ایپ TWA میں کھلی ہے یا WebView/براؤزر میں ----
+function _envInfo(){
+  const ua = navigator.userAgent || '';
+  const chromeM = ua.match(/Chrome\/(\d+)/);
+  return {
+    twa: (document.referrer||'').indexOf('android-app://') === 0 || sessionStorage.getItem('ff_is_twa') === '1',
+    webview: /; wv\)/.test(ua) || /Median|GoNative/i.test(ua),
+    chrome: chromeM ? parseInt(chromeM[1]) : 0,
+    dgapi: ('getDigitalGoodsService' in window),
+    pr: ('PaymentRequest' in window)
+  };
+}
+(function(){ try{ if((document.referrer||'').indexOf('android-app://')===0) sessionStorage.setItem('ff_is_twa','1'); }catch(e){} })();
+function _envReason(){
+  const e = _envInfo();
+  if(e.webview) return 'ایپ WebView میں بنی ہے (Median وغیرہ) — گوگل بلنگ صرف TWA ایپ میں چلتی ہے';
+  if(e.chrome && e.chrome < 101) return 'موبائل کا Chrome پرانا ہے (' + e.chrome + ') — Play Store سے Chrome اپڈیٹ کریں';
+  if(!e.twa) return 'ایپ Play Store والی TWA ایپ کے اندر نہیں کھلی (براؤزر میں کھلی ہے)';
+  if(!e.dgapi) return 'TWA میں playBilling فیچر آن نہیں — بلڈ میں playBilling فعال کریں';
+  return '';
+}
+function _envLine(){
+  const e = _envInfo();
+  return 'ENV: TWA=' + (e.twa?'Y':'N') + ' WV=' + (e.webview?'Y':'N') + ' CH=' + e.chrome + ' DG=' + (e.dgapi?'Y':'N') + ' PR=' + (e.pr?'Y':'N');
+}
 
 const PLAY_BILLING_METHOD = 'https://play.google.com/billing';
 let _digitalGoodsService = null;
@@ -2762,7 +2793,8 @@ async function initPlayBilling(){
     _billingErr = 'Init — ' + _errText(e);
   }
   if(!_digitalGoodsService && !_billingErr){
-    _billingErr = ('getDigitalGoodsService' in window) ? 'Init — سروس نہیں ملی' : 'Digital Goods API دستیاب نہیں';
+    _billingErr = (('getDigitalGoodsService' in window) ? 'Init — سروس نہیں ملی' : 'Digital Goods API دستیاب نہیں')
+      + (_envReason() ? ' — ' + _envReason() : '');
   }
   return !!_digitalGoodsService;
 }
@@ -2771,11 +2803,11 @@ async function initPlayBilling(){
 async function fetchPlayPlanDetails(){
   if(!_digitalGoodsService) return null;
   try{
-    const skus = FF_BASE_PLANS.map(p => FF_SUBSCRIPTION_ID + ':' + p.id);
+    const skus = FF_BASE_PLANS.map(p => p.id);
     const details = await _digitalGoodsService.getDetails(skus);
     const map = {};
     details.forEach(d => { map[d.itemId] = d; });
-    if(!details.length){ _billingErr = 'getDetails — کوئی پلان نہیں ملا (ID چیک کریں)'; return null; }
+    if(!details.length){ _billingErr = 'getDetails — کوئی پلان نہیں ملا: Play Console میں یہ IDs فعال (Active) ہوں: ' + skus.join(', ') + ' — اور ایپ Play Store سے انسٹال ہو'; return null; }
     return map;
   }catch(e){ _billingErr = 'getDetails — ' + _errText(e); return null; }
 }
@@ -2787,8 +2819,9 @@ async function refreshSubscriptionStatus(){
   }
   try{
     const purchases = await _digitalGoodsService.listPurchases();
-    const active = purchases.find(p => (p.itemId || '').indexOf(FF_SUBSCRIPTION_ID) === 0);
+    const active = purchases.find(p => _isOurSub(p.itemId));
     if(active){
+      _tryAcknowledge(active);
       localStorage.setItem('ff_play_active', '1');
       localStorage.setItem('ff_play_plan', active.itemId || '');
     } else {
@@ -2799,23 +2832,43 @@ async function refreshSubscriptionStatus(){
   }catch(e){ _billingErr = 'listPurchases — ' + _errText(e); /* آف لائن — پچھلا کیشڈ نتیجہ استعمال ہوگا */ }
 }
 
+// ---- خریداری کی تصدیق (Acknowledge) — اگر براؤزر یہ سہولت دے تو ایپ سے ہی
+// (ورنہ گوگل تین دن بعد پیسے واپس کر دیتا ہے — مستقل حل سرور سے تصدیق ہے)
+function _tryAcknowledge(purchase){
+  try{
+    if(!purchase || !purchase.purchaseToken || !_digitalGoodsService) return;
+    if(typeof _digitalGoodsService.acknowledge !== 'function') return;
+    const key = 'ff_play_ack_' + purchase.purchaseToken.slice(-16);
+    if(localStorage.getItem(key) === '1') return;
+    _digitalGoodsService.acknowledge(purchase.purchaseToken, 'onetime')
+      .then(()=>{ localStorage.setItem(key,'1'); })
+      .catch(()=>{});
+  }catch(e){}
+}
+
 // ---- ایک Base Plan خریدیں (Play کا اپنا خریداری کا صفحہ کھلے گا) ----
 async function purchaseBasePlan(basePlanId){
   const msg = document.getElementById('setupMsg') || document.getElementById('expActMsg');
+  if(!_digitalGoodsService){ await initPlayBilling(); }
   if(!_digitalGoodsService){
-    if(msg){ msg.textContent = '⚠️ یہ صرف Google Play سے انسٹال شدہ ایپ میں دستیاب ہے'; msg.className='ff-ov-msg error'; }
+    if(msg){ msg.textContent = '⚠️ گوگل بلنگ دستیاب نہیں — ' + (_envReason() || _billingErr || 'نامعلوم') + ' | ' + _envLine(); msg.className='ff-ov-msg error'; }
     return;
   }
   try{
     if(msg){ msg.textContent = '⏳ Google Play کھل رہا ہے...'; msg.className='ff-ov-msg info'; }
-    const sku = FF_SUBSCRIPTION_ID + ':' + basePlanId;
+    const sku = basePlanId;
     const request = new PaymentRequest(
       [{ supportedMethods: PLAY_BILLING_METHOD, data: { sku } }],
       { total: { label: 'FF POS Subscription', amount: { currency: 'PKR', value: '0' } } }
     );
     const response = await request.show();
     await response.complete('success');
-    await refreshSubscriptionStatus();
+    // Play کو خریداری درج کرنے میں چند سیکنڈ لگ سکتے ہیں — تین بار دوبارہ چیک کریں
+    for(let i=0;i<4;i++){
+      await refreshSubscriptionStatus();
+      if(getSubStatus().active) break;
+      await new Promise(r=>setTimeout(r,1500));
+    }
     const sub = getSubStatus();
     if(sub.active){
       if(msg){ msg.textContent = '✅ سبسکرپشن فعال ہو گئی!'; msg.className='ff-ov-msg ok'; }
@@ -2831,7 +2884,7 @@ async function purchaseBasePlan(basePlanId){
   }catch(e){
     // صارف نے خود منسوخ کیا — خاموشی سے واپس؛ باقی غلطیاں کوڈ کے ساتھ دکھائیں
     if(msg){
-      if(e && e.name !== 'AbortError'){ msg.textContent = '❌ خریداری ناکام — ' + _errText(e); msg.className='ff-ov-msg error'; }
+      if(e && e.name !== 'AbortError'){ msg.textContent = '❌ خریداری ناکام — ' + _errText(e) + ' | ' + _envLine(); msg.className='ff-ov-msg error'; }
       else { msg.textContent = ''; }
     }
   }
@@ -2842,9 +2895,9 @@ async function renderPlanButtons(containerId){
   const el = document.getElementById(containerId);
   if(!el) return;
   const prices = await fetchPlayPlanDetails();
-  const errHtml = (!prices && _billingErr) ? `<div style="background:#fff3f3;color:#b71c1c;border:1px solid #e57373;border-radius:10px;padding:8px 10px;font-size:12px;direction:ltr;text-align:left;word-break:break-word;">⚠️ پلانز لوڈ نہیں ہوئے<br>Code: ${_billingErr}</div>` : '';
+  const errHtml = (!prices && _billingErr) ? `<div style="background:#fff3f3;color:#b71c1c;border:1px solid #e57373;border-radius:10px;padding:8px 10px;font-size:12px;direction:ltr;text-align:left;word-break:break-word;">⚠️ پلانز لوڈ نہیں ہوئے<br>Code: ${_billingErr}<br>${_envLine()}</div>` : '';
   el.innerHTML = errHtml + FF_BASE_PLANS.map(p=>{
-    const d = prices && prices[FF_SUBSCRIPTION_ID + ':' + p.id];
+    const d = prices && prices[p.id];
     const priceStr = d ? (d.price.currency + ' ' + d.price.value) : '';
     return `<button type="button" onclick="purchaseBasePlan('${p.id}')" style="
       width:100%;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;
@@ -2936,7 +2989,7 @@ function resetToSetupScreen(){
 //  کسٹمرز کی فعال سبسکرپشن ختم کرنا مناسب نہیں۔ لائسنس کی اصل تصدیق
 //  ہمیشہ Google Play سے ہوتی ہے، اس لیے یہاں ریسیٹ کی ضرورت نہیں)
 // ============================================================
-const FF_APP_VERSION = 'FF710WE002';
+const FF_APP_VERSION = 'FF810TH003';
 (function checkAppVersion(){
   const saved = localStorage.getItem('ff_app_version');
   if(saved !== FF_APP_VERSION){
@@ -8843,7 +8896,7 @@ function generateFFPOSFileName(d){
   return 'FFPOS'+DD+M+DAY+HH+MM;
 }
 
-const APP_VERSION = 'FF710WE002';
+const APP_VERSION = 'FF810TH003';
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('appVersionVal');
   if(el) el.textContent = APP_VERSION;
